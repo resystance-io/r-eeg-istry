@@ -52,13 +52,31 @@
     <html lang="en">
 
         <head>
-            <title>Chores</title>
+            <title>EEG Registrierungsportal | R-EEG-ISTRY</title>
+            <link rel="stylesheet" href="/styles/style.css">
         </head>
 
         <body>
 
-            <div id="canvas">&nbsp;</div>
-            <input type="button" value="Foo" onclick="jaxon_foo()" /><br />
+        <?php
+
+            if(isset($_REQUEST['join']))
+            {
+                include_once('views/view_join.inc.php');
+                view_render();
+            }
+            elseif(isset($_REQUEST['lookup']))
+            {
+                include_once('views/view_lookup.inc.php');
+                view_render();
+            }
+            else
+            {
+                include_once('views/view_default.inc.php');
+                view_render();
+            }
+
+        ?>
 
         </body>
 

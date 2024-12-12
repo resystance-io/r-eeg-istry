@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?Roboto&display=swap');
+
+
+.mainbtn {
+    cursor: pointer;
+    border: 0px solid rgb(255, 255, 255);
+    font-family: "system-ui";
+    font-size: 18px;
+    font-weight: bold;
+    color: rgb(0, 0, 0);
+    padding: 69px 69px 69px 69px;
+    transition: 0.5s;
+    width: 400px;
+    height: 200px;
+    box-shadow: rgb(0, 0, 0) 0px 0px 0px 0px;
+    border-radius: 3px;
+    background: rgba(1, 166, 48, 0.608);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row-reverse;
+    --hover-width: 320px;
+    --hover-color: #ffffff;
+    --hover-bgc: #44a1ff;
+    --hover-borderc: #ffffff;
+    --hover-borderSize: 0px;
+}
+
+.mainbtn:hover {
+
+    color: rgb(255, 255, 255);
+    width: 420px;
+    background: rgb(68, 161, 255) none repeat scroll 0% 0% / auto padding-box border-box;
+    border-color: rgb(255, 255, 255);
+    border-width: 0px;
+    border-style: solid;
+}
+
+.canvas_center {
+    display: flex;
+    justify-content: center; /* Horizontally center */
+    align-items: center;    /* Vertically center */
+    position: fixed;        /* Fix it to the viewport */
+    top: 0;
+    left: 0;
+    width: 100vw;           /* Full viewport width */
+    height: 100vh;          /* Full viewport height */
+}
