@@ -1,0 +1,68 @@
+body {
+    justify-content: center; /* Horizontally center */
+}
+
+.mainbtn {
+    cursor: pointer;
+    border: 0px solid rgb(255, 255, 255);
+    font-size: 18px;
+    font-weight: bold;
+    color: black !important;
+    display: inline-block;
+    padding: 60px 60px;
+    transition: 0.5s;
+    width: 400px;
+    height: 200px;
+    margin: 10px;
+    box-shadow: rgb(0, 0, 0) 0px 0px 0px 0px;
+    border-radius: 3px;
+    background: rgb(68, 161, 255);
+    justify-content: center;
+    align-items: center;
+    flex-direction: row-reverse;
+    --hover-color: #ffffff;
+    --hover-bgc: #44a1ff;
+    --hover-borderc: #ffffff;
+    --hover-borderSize: 0px;
+    box-sizing: border-box;
+}
+
+.button-container {
+    display: flex;
+    align-items: center; /* Centers items vertically */
+}
+
+.canvas_center {
+    display: block;
+    justify-content: center; /* Horizontally center */
+    align-items: center;    /* Vertically center */
+    position: absolute;        /* Fix it to the viewport */
+    top: 0;
+    left: 0;
+    width: 100%;           /* Full viewport width */
+}
+
+.form-container {
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.4);
+    border-radius: 8px;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    padding: 40px;
+}
+
+input.prefix {
+    position: relative;
+    padding-left: 50px;
+}
+
+input.prefix::before {
+    content: "Prefix: ";
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: black;
+}

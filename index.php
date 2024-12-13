@@ -53,10 +53,13 @@
 
         <head>
             <title>EEG Registrierungsportal | R-EEG-ISTRY</title>
-            <link rel="stylesheet" href="/styles/style.css">
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+            <link rel="stylesheet" href="/assets/css/main.css" />
+            <link rel="stylesheet" href="/assets/css/secondary.css" />
         </head>
 
-        <body>
+        <body class="is-preload">
 
         <?php
 
@@ -77,6 +80,10 @@
             }
 
         ?>
+
+
+            <!-- Scripts -->
+            <script src="assets/js/main.js"></script>
 
         </body>
 
