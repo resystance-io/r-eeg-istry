@@ -404,8 +404,8 @@ header h6 + p {
     text-transform: none !important;
     font-family: 'Font Awesome 5 Free';
     font-weight: 400; }
-  .icon > .label {
-    display: none; }
+  /*.icon > .label {
+    display: none; }*/
   .icon:before {
     line-height: inherit; }
   .icon.solid:before {

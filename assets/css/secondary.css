@@ -52,17 +52,30 @@ body {
     padding: 40px;
 }
 
-input.prefix {
-    position: relative;
-    padding-left: 50px;
+.input-box {
+    display: flex;
+    align-items: center;
+    border: 1px solid #a0a0a0;
+    border-radius: 4px;
+    background-color: white;
+    color: #AAAAAA;
+    font-family: "Roboto", sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    padding-left: 16px;
+    width: 300px;
+
 }
 
-input.prefix::before {
-    content: "Prefix: ";
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-    color: black;
+.input-box input {
+    border: none;
+    outline: none;
+    margin-left: 1px;
+    padding-left: 0px;
+    width: 100px;
+}
+
+.input-box:focus-within {
+    border-color: #4f7df3;
 }
