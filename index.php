@@ -14,7 +14,6 @@
     $config = $object_broker->instance['config'] = new CONTROLLER_CONFIG($object_broker);
 
     include_once('controllers/controller_db.php.inc');
-
     // connect to basic database
     $db = $object_broker->instance['db'] = new CONTROLLER_DB($object_broker);
 
@@ -23,29 +22,16 @@
     use Jaxon\Jaxon;
     use function Jaxon\jaxon;
 
-    // 1. Define your functions or classes.
-    function foo()
-    {
-        $response = jaxon()->newResponse();
-        $text = 'bar';
-        $response->assign('canvas', 'innerHTML', $text);
-        return $response;
-    }
-
-    // 2. Initialize and configure the library.
     $jaxon = jaxon();
 
-    // 3. Register your functions or classes.
-    $jaxon->register(Jaxon::CALLABLE_FUNCTION, "foo");
+    include('controllers/controller_jaxon.php.inc');
+    $jaxon->register(Jaxon::CALLABLE_CLASS, Interactives::class);
 
-    // 4. Process the request.
     if($jaxon->canProcessRequest())
     {
-        // This function will return the response and exit.
         $jaxon->processRequest();
     }
 
-    // 5. Insert the Jaxon codes in your HTML page.
     ?>
 
     <!DOCTYPE html>

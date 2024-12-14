@@ -149,9 +149,9 @@ function view_render_consumption_meters()
     print "<h3>Z&auml;hlpunkte (Bezug)</h3>";
     print "<div class=\"form-container\">";
 
-    view_render_part_captioned_prefixed_inputfield("Z&auml;hlpunktnummer (letzte 9 Stellen)", "AT003000000000000000000003", "consume0", "consume0");
+    view_render_part_captioned_prefixed_inputfield("1. Z&auml;hlpunktnummer (letzte 9 Stellen)", "AT003000000000000000000003", "consume0", "consume0");
 
-    print '<br /><i style="font-size:16px" class="icon fa-plus-square"></i><span class="label" style="font-weight:normal;font-size:16px">&nbsp; Einen weiteren Z&auml;hlpunkt hinzuf&uuml;gen</span>';
+    print '<br /><i style="font-size:16px" class="icon fa-plus-square" onclick="JaxonInteractives.add_consume_meter();"></i><span class="label" style="font-weight:normal;font-size:16px" onclick="JaxonInteractives.add_consume_meter();">&nbsp; Einen weiteren Bezugsz&auml;hlpunkt hinzuf&uuml;gen</span>';
     print "</div>";
 }
 
@@ -160,9 +160,9 @@ function view_render_supply_meters()
     print "<h3>Z&auml;hlpunkte (Einspeisung)</h3>";
     print "<div class=\"form-container\">";
 
-    view_render_part_captioned_prefixed_inputfield("Z&auml;hlpunktnummer (letzte 9 Stellen)", "AT003000000000000000000003", "supply0", "supply0");
+    view_render_part_captioned_prefixed_inputfield("1. Z&auml;hlpunktnummer (letzte 9 Stellen)", "AT003000000000000000000003", "supply0", "supply0");
 
-    print '<br /><i style="font-size:16px" class="icon fa-plus-square"></i><span class="label" style="font-weight:normal;font-size:16px">&nbsp; Einen weiteren Z&auml;hlpunkt hinzuf&uuml;gen</span>';
+    print '<br /><i style="font-size:16px" class="icon fa-plus-square" onclick="JaxonInteractives.add_supply_meter();"></i><span class="label" style="font-weight:normal;font-size:16px" onclick="JaxonInteractives.add_supply_meter();">&nbsp; Einen weiteren Einspeisez&auml;hlpunkt hinzuf&uuml;gen</span>';
     print "</div>";
 }
 
@@ -174,10 +174,12 @@ function view_render_part_captioned_inputfield($caption, $name, $id)
 function view_render_part_captioned_prefixed_inputfield($caption, $prefix, $name, $id)
 {
     //print "<input type=\"text\" name=\"$name\" id=\"$id\" class=\"prefix\" /><br />";
-    print $caption . '<br>
-        <div class="input-box">
-            <span class="prefix">' . $prefix . '</span>
-            <input type="text" name="' . $name . '" id="' . $id . '" value="000000000" maxlength="9" onfocus="this.select()" />
+    print '
+        <div id="container-' . $id . '">' . $caption . '<br>
+            <div class="input-box">
+                <span class="prefix">' . $prefix . '</span>
+                <input type="text" name="' . $name . '" id="' . $id . '" value="000000000" maxlength="9" onfocus="this.select()" />
+            </div>
         </div>';
 }
 
