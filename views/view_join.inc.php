@@ -149,7 +149,14 @@ function view_render_consumption_meters()
     print "<h3>Z&auml;hlpunkte (Bezug)</h3>";
     print "<div class=\"form-container\">";
 
-    view_render_part_captioned_prefixed_inputfield("1. Z&auml;hlpunktnummer (letzte 9 Stellen)", "AT003000000000000000000003", "consume0", "consume0");
+    if(isset($_SESSION['consumers']))
+    {
+        foreach($_SESSION['consumers'] as $consumer_key => $consumer_value)
+        {
+            $display_key = $consumer_key + 1;
+            view_render_part_captioned_prefixed_inputfield("$display_key. Z&auml;hlpunktnummer (letzte 9 Stellen)", "AT003000000000000000000003", "consume0", "consume0", $consumer_value);
+        }
+    }
 
     print '<br /><i style="font-size:16px" class="icon fa-plus-square" onclick="JaxonInteractives.add_consume_meter();"></i><span class="label" style="font-weight:normal;font-size:16px" onclick="JaxonInteractives.add_consume_meter();">&nbsp; Einen weiteren Bezugsz&auml;hlpunkt hinzuf&uuml;gen</span>';
     print "</div>";
@@ -171,14 +178,14 @@ function view_render_part_captioned_inputfield($caption, $name, $id)
     print "$caption<br><input type=\"text\" name=\"$name\" id=\"$id\" /><br />";
 }
 
-function view_render_part_captioned_prefixed_inputfield($caption, $prefix, $name, $id)
+function view_render_part_captioned_prefixed_inputfield($caption, $prefix, $name, $id, $value="000000000")
 {
     //print "<input type=\"text\" name=\"$name\" id=\"$id\" class=\"prefix\" /><br />";
     print '
-        <div id="container-' . $id . '">' . $caption . '<br>
+        &nbsp;<br /><div id="container-' . $id . '">' . $caption . '<br>
             <div class="input-box">
                 <span class="prefix">' . $prefix . '</span>
-                <input type="text" name="' . $name . '" id="' . $id . '" value="000000000" maxlength="9" onfocus="this.select()" />
+                <input type="text" name="' . $name . '" id="' . $id . '" value="' . $value . '" maxlength="9" onfocus="this.select()" />
             </div>
         </div>';
 }

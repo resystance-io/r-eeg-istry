@@ -17,6 +17,9 @@
     // connect to basic database
     $db = $object_broker->instance['db'] = new CONTROLLER_DB($object_broker);
 
+    include_once('controllers/controller_session.php.inc');
+    $session = $object_broker->instance['session'] = new CONTROLLER_SESSION($object_broker);
+
     require('./vendor/autoload.php');
 
     use Jaxon\Jaxon;

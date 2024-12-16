@@ -20,6 +20,8 @@ class Interactives
         $name = 'consume1';
         $id = 'consume1';
 
+        $_SESSION['consumers'][] = '000000000';
+
         $element = '
             &nbsp;<br />2. Z&auml;hlpunktnummer (letzte 9 Stellen) <div class="input-box">
                 <span class="prefix">' . $prefix . '</span>
@@ -39,6 +41,8 @@ class Interactives
 
         $name = 'supply1';
         $id = 'supply1';
+
+        $_SESSION['suppliers'][] = '000000000';
 
         $element = '
                 &nbsp;<br />2. Z&auml;hlpunktnummer (letzte 9 Stellen) <div class="input-box">
