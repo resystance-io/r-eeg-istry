@@ -22,6 +22,7 @@ class Interactives
 
         $id = $this->generate_uuid4();
 
+        $_SESSION['meters']["$id"]['prefix'] = $prefix;
         $_SESSION['meters']["$id"]['value'] = '000000000';
         $_SESSION['meters']["$id"]['type'] = $meter_type;
 
@@ -29,7 +30,7 @@ class Interactives
             Z&auml;hlpunktnummer (letzte 9 Stellen) <div class="input-box">
                 <span class="prefix">' . $prefix . '</span>
                 <input type="text" name="' . $id . '" id="' . $id . '" value="000000000" maxlength="9" onfocus="this.select()"  onfocusout="JaxonInteractives.update_meter_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
-                &nbsp;&nbsp;<button style="background-color:darkred"  onclick="JaxonInteractives.rmv_additional_meter(' . "'" . $id . "'" . ', ' . "'" . $meter_type . "'" . ');"><i style="font-size:16px;color:white;" class="icon fa-trash-alt"></i></button>
+                &nbsp;&nbsp;<button style="background-color:darkred"  onclick="JaxonInteractives.rmv_meter(' . "'" . $id . "'" . ', ' . "'" . $meter_type . "'" . ');"><i style="font-size:16px;color:white;" class="icon fa-trash-alt"></i></button>
             </div>
             <br />
         ';

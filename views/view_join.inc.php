@@ -20,6 +20,10 @@ function view_render()
             view_render_company();
             break;
 
+        case "meters":
+            view_render_meter_details();
+            break;
+
         default:
 
             print '
@@ -147,6 +151,54 @@ function view_render_agriculture()
     view_render_supply_meters();
 }
 
+function view_render_meter_details()
+{
+
+    print '
+                <header id="header">
+                    <h1>Erneuerbare Energiegemeinschaft VIERE</h1>
+                    <h2>Informationen zu den angegebenen Z&auml;hlpunkten</h2>
+                    <p>Bitte erg&auml;nze die Informationen zu den von dir angegebenen Z&auml;hlpunkten</p>
+                </header>
+    ';
+
+    if(isset($_SESSION['meters']))
+    {
+        foreach ($_SESSION['meters'] as $meter_key => $meter_object)
+        {
+            if ($meter_object['type'] == "consumers")
+            {
+                print "<h4>Bezugsz&auml;hlpunkt " . $meter_object['value'] . "</h4>";
+            }
+            elseif ($meter_object['type'] == "suppliers")
+            {
+                print "<h4>Einspeisez&auml;hlpunkt " . $meter_object['value'] . "</h4>";
+            }
+
+            print "<div class=\"form-container\">";
+            print "<div style='float:left;'>";
+            print ' street' . '<br><input type="text" name="id" id="' . 'street' . '" />';
+            print ' city' . '<br><input type="text" name="id" id="' . 'city' . '" />';
+            print ' zip' . '<br><input type="text" name="id" id="' . 'zip' . '" />';
+            print "</div>";
+
+            print "
+                <div style='float:left;width:200px;text-align:center;'>
+                ODER
+                </div>
+            ";
+            print "<div style='float:left;height:100%;valign:middle'>";
+            print '
+                <button type="button" class="defaultbtn" id="btn_prefill_' . $meter_key . '" onClick="Jaxon...">Hauptadresse &uuml;bernehmen</button>
+            ';
+            print "</div>";
+
+            print "</div><br />";
+        }
+    }
+
+}
+
 function view_render_consumption_meters()
 {
     print "<h3>Z&auml;hlpunkte (Bezug)</h3>";
@@ -170,6 +222,9 @@ function view_render_consumption_meters()
     if(!isset($_SESSION['meters']) || $consumer_count == 0)
     {
         $id = generate_uuid4();
+        $_SESSION['meters']["$id"]['prefix'] = 'AT003000000000000000000000';
+        $_SESSION['meters']["$id"]['value'] = '000000000';
+        $_SESSION['meters']["$id"]['type'] = 'consumers';
         view_render_part_captioned_prefixed_inputfield("Z&auml;hlpunktnummer (letzte 9 Stellen)", "AT003000000000000000000000", $id);
     }
 
