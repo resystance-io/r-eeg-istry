@@ -3,7 +3,7 @@
 class OBJECT_BROKER
 {
 
-    public $instance;           // Instantiated objects
+    public $instance;           // Holds instanciated objects
 
     public function __construct()
     {
