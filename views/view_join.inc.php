@@ -8,20 +8,24 @@ function view_render()
         case "individual":
             $_SESSION['generic_information']['join_type'] = "individual";
             view_render_individual();
+            view_render_navigation();
             break;
 
         case "agriculture":
             $_SESSION['generic_information']['join_type'] = "agriculture";
             view_render_agriculture();
+            view_render_navigation();
             break;
 
         case "company":
             $_SESSION['generic_information']['join_type'] = "company";
             view_render_company();
+            view_render_navigation();
             break;
 
         case "meters":
             view_render_meter_details();
+            view_render_navigation();
             break;
 
         default:
@@ -81,6 +85,10 @@ function view_render_company()
     print "<br />";
 
     view_render_supply_meters();
+
+    print "<br />";
+
+    view_render_energy_storage();
 }
 
 function view_render_individual()
@@ -115,6 +123,11 @@ function view_render_individual()
     print "<br />";
 
     view_render_supply_meters();
+
+    print "<br />";
+
+    view_render_energy_storage();
+
 }
 
 
@@ -149,6 +162,11 @@ function view_render_agriculture()
     print "<br />";
 
     view_render_supply_meters();
+
+    print "<br />";
+
+    view_render_energy_storage();
+
 }
 
 function view_render_meter_details()
@@ -157,7 +175,7 @@ function view_render_meter_details()
     print '
                 <header id="header">
                     <h1>Erneuerbare Energiegemeinschaft VIERE</h1>
-                    <h2>Informationen zu den angegebenen Z&auml;hlpunkten</h2>
+                    <h2>Erg&auml;nzende Angaben</h2>
                     <p>Bitte erg&auml;nze die Informationen zu den von dir angegebenen Z&auml;hlpunkten</p>
                 </header>
     ';
@@ -211,7 +229,7 @@ function view_render_consumption_meters()
         {
             if($meter_object['type'] == "consumers")
             {
-                view_render_part_captioned_prefixed_inputfield("Z&auml;hlpunktnummer (letzte 9 Stellen)", "AT003000000000000000000000", $meter_key, $meter_object['value']);
+                view_render_prefixed_meter("Z&auml;hlpunktnummer (letzte 9 Stellen)", "AT003000000000000000000000", $meter_key, $meter_object['value']);
                 $consumer_count++;
             }
         }
@@ -225,7 +243,7 @@ function view_render_consumption_meters()
         $_SESSION['meters']["$id"]['prefix'] = 'AT003000000000000000000000';
         $_SESSION['meters']["$id"]['value'] = '000000000';
         $_SESSION['meters']["$id"]['type'] = 'consumers';
-        view_render_part_captioned_prefixed_inputfield("Z&auml;hlpunktnummer (letzte 9 Stellen)", "AT003000000000000000000000", $id);
+        view_render_prefixed_meter("Z&auml;hlpunktnummer (letzte 9 Stellen)", "AT003000000000000000000000", $id);
     }
 
     print '<br /><i style="font-size:16px;cursor:pointer;" class="icon fa-plus-square" onclick="JaxonInteractives.add_meter(' . "'consumers'" . ',' . "'AT003000000000000000000000'" . ');"></i><span class="label" style="font-weight:normal;font-size:16px;cursor:pointer;" onclick="JaxonInteractives.add_meter(' . "'consumers'" . ',' . "'AT003000000000000000000000'" . ');">&nbsp; Einen Bezugsz&auml;hlpunkt hinzuf&uuml;gen</span>';
@@ -243,7 +261,7 @@ function view_render_supply_meters()
         {
             if($meter_object['type'] == "suppliers")
             {
-                view_render_part_captioned_prefixed_inputfield("Z&auml;hlpunktnummer (letzte 9 Stellen)", "AT003000000000000000000003", $meter_key, $meter_object['value']);
+                view_render_prefixed_meter("Z&auml;hlpunktnummer (letzte 9 Stellen)", "AT003000000000000000000003", $meter_key, $meter_object['value']);
             }
         }
 
@@ -253,6 +271,26 @@ function view_render_supply_meters()
     print '<br /><i style="font-size:16px;cursor:pointer;" class="icon fa-plus-square" onclick="JaxonInteractives.add_meter(' . "'suppliers'" . ',' . "'AT003000000000000000000003'" . ');"></i><span class="label" style="font-weight:normal;font-size:16px;cursor:pointer;" onclick="JaxonInteractives.add_meter(' . "'suppliers'" . ',' . "'AT003000000000000000000003'" . ');">&nbsp; Einen Einspeisez&auml;hlpunkt hinzuf&uuml;gen</span>';
     print "</div>";
 }
+
+function view_render_energy_storage()
+{
+    print "<h3>Vorhandene Energiespeicher</h3>";
+    print "<div class=\"form-container\">";
+
+    if(isset($_SESSION['storages']))
+    {
+        foreach($_SESSION['storages'] as $storage_key => $storage_object)
+        {
+                view_render_prefixed_storage("Energiespeicher", $storage_key, $storage_object['value']);
+        }
+
+        print "<div id='end_of_storages'></div>";
+    }
+
+    print '<br /><i style="font-size:16px;cursor:pointer;" class="icon fa-plus-square" onclick="JaxonInteractives.add_storage();"></i><span class="label" style="font-weight:normal;font-size:16px;cursor:pointer;" onclick="JaxonInteractives.add_storage();">&nbsp; Einen Energiespeicher hinzuf&uuml;gen</span>';
+    print "</div>";
+}
+
 
 function view_render_part_captioned_inputfield($caption, $id, $session_bucket = null)
 {
@@ -277,7 +315,7 @@ function view_render_part_captioned_inputfield($caption, $id, $session_bucket = 
     print '<br />';
 }
 
-function view_render_part_captioned_prefixed_inputfield($caption, $prefix, $id, $value="000000000")
+function view_render_prefixed_meter($caption, $prefix, $id, $value="000000000")
 {
 
     print '
@@ -289,6 +327,44 @@ function view_render_part_captioned_prefixed_inputfield($caption, $prefix, $id, 
             </div>
             <br />
         </div>';
+}
+
+
+function view_render_prefixed_storage($caption, $id, $value=0)
+{
+
+    print '
+        <div id="container-' . $id . '">' . $caption . '<br>
+            <div class="input-box" style="width:254px;">
+                <span class="prefix">Kapazit&auml;t:&nbsp;</span>
+                <input type="text" name="' . $id . '" id="' . $id . '" value="' . $value . '" maxlength="4" style="width:80px;text-align:center" onfocus="this.select()" onfocusout="JaxonInteractives.update_storage_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
+                <span class="prefix">kWh</span>
+                &nbsp;&nbsp;&nbsp;&nbsp;<button style="background-color:darkred"  onclick="JaxonInteractives.rmv_storage(' . "'" . $id . "'" . ');"><i style="font-size:16px;color:white;" class="icon fa-trash-alt"></i></button><br>
+            </div>
+            <br />
+        </div>';
+}
+
+function view_render_navigation()
+{
+    switch($_REQUEST['join'])
+    {
+        case 'personal':
+        case 'company':
+        case 'agriculture':
+            print "<br />";
+            print '<button type="button" class="defaultbtn" id="btn_step_meters" onClick="JaxonInteractives.step_meters();">Weiter zum n&auml;chsten Schritt</button>';
+            break;
+
+        case 'meters':
+            print "<br />";
+            print '<button type="button" class="defaultbtn" id="btn_step_banking" onClick="JaxonInteractives.step_banking();">Weiter zum n&auml;chsten Schritt</button>';
+            break;
+
+        default:
+            break;
+    }
+
 }
 
 function generate_uuid4($data = null)

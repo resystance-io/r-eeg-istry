@@ -49,6 +49,30 @@ class Interactives
         return $response;
     }
 
+    public function add_storage()
+    {
+        $response = jaxon()->newResponse();
+
+        $id = $this->generate_uuid4();
+
+        $_SESSION['storages']["$id"]['value'] = '0';
+
+        $element = '
+        <div id="container-' . $id . '">Speicher<br>
+            <div class="input-box" style="width:254px;">
+                <span class="prefix">Kapazit&auml;t:&nbsp;</span>
+                <input type="text" name="' . $id . '" id="' . $id . '" value="0" maxlength="4" style="width:80px;text-align:center" onfocus="this.select()" onfocusout="JaxonInteractives.update_storage_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
+                <span class="prefix">kWh</span>
+                &nbsp;&nbsp;&nbsp;&nbsp;<button style="background-color:darkred"  onclick="JaxonInteractives.rmv_storage(' . "'" . $id . "'" . ');"><i style="font-size:16px;color:white;" class="icon fa-trash-alt"></i></button><br>
+            </div>
+            <br />
+        </div>';
+
+        $response->insertBefore('end_of_storages', 'div', 'container-' . $id);
+        $response->assign('container-' . $id, 'innerHTML', $element);
+        return $response;
+    }
+
     public function rmv_meter($id)
     {
         if(isset($_SESSION['meters']["$id"]))
@@ -86,6 +110,25 @@ class Interactives
         }
     }
 
+    public function rmv_storage($id)
+    {
+        if(isset($_SESSION['storages']["$id"]))
+        {
+            unset($_SESSION['storages']["$id"]);
+            $response = jaxon()->newResponse();
+            $response->remove('container-' . $id);
+            return $response;
+        }
+    }
+
+    public function update_storage_value($id, $value)
+    {
+        if(isset($_SESSION['storages']["$id"]))
+        {
+            $_SESSION['storages']["$id"]['value'] = $value;
+        }
+    }
+
     public function update_meter_value($id, $value)
     {
         if(isset($_SESSION['meters']["$id"]))
@@ -97,6 +140,21 @@ class Interactives
     public function update_session_bucket($field, $value, $session_bucket)
     {
         $_SESSION["$session_bucket"]["$field"] = $value;
+    }
+
+    public function step_meters()
+    {
+        $response = jaxon()->newResponse();
+        $response->script("window.location.href='/?join=meters';");
+        return $response;
+    }
+
+    public function step_banking()
+    {
+        $response = jaxon()->newResponse();
+        $response->script("window.location.href='/?join=banking';");
+        return $response;
+
     }
 
     private function generate_uuid4($data = null)
