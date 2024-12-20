@@ -143,8 +143,65 @@ class Interactives
         $_SESSION["$session_bucket"]["$field"] = $value;
     }
 
-    public function step_meters()
+    public function step_generic_to_meters()
     {
+        $failmsg = null;
+        switch($_SESSION['generic_information']['join_type'])
+        {
+            case 'company':
+
+                if(!isset($_SESSION['generic_information']['company']) || $_SESSION['generic_information']['company'] == '')
+                {
+                    $failmsg = "Bitte geben Sie einen Firmenwortlaut an.";
+                    break;
+                }
+
+                if(!isset($_SESSION['generic_information']['street']) || $_SESSION['generic_information']['street'] == '' )
+                {
+                    $failmsg = "Bitte geben Sie eine Straße an.";
+                    break;
+                }
+
+                if(!isset($_SESSION['generic_information']['zip']) || $_SESSION['generic_information']['zip'] == '' )
+                {
+                    $failmsg = "Bitte geben Sie eine Postleitzahl an.";
+                    break;
+                }
+
+                if(!isset($_SESSION['generic_information']['city']) || $_SESSION['generic_information']['city'] == '' )
+                {
+                    $failmsg = "Bitte geben Sie einen Ort an.";
+                    break;
+                }
+
+                if(!isset($_SESSION['generic_information']['number']) || $_SESSION['generic_information']['number'] == '' )
+                {
+                    $failmsg = "Bitte geben Sie eine Hausnummer an.";
+                    break;
+                }
+
+                if(!isset($_SESSION['generic_information']['phone']) || $_SESSION['generic_information']['phone'] == '' )
+                {
+                    $failmsg = "Bitte geben Sie eine Telefonnummer an.";
+                    break;
+                }
+                break;
+
+            case 'individual':
+                break;
+
+            case 'agriculture':
+                break;
+
+        }
+
+        if($failmsg)
+        {
+            $response = jaxon()->newResponse();
+            $response->alert($failmsg);
+            return $response;
+        }
+
         $response = jaxon()->newResponse();
         $response->script("window.location.href='/?join=meters';");
         return $response;

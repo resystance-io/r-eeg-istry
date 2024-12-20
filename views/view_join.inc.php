@@ -355,7 +355,7 @@ class VIEW_JOIN
             case 'company':
             case 'agriculture':
                 print "<br />";
-                print '<button type="button" class="defaultbtn" id="btn_step_meters" onClick="JaxonInteractives.step_meters();">Weiter zum n&auml;chsten Schritt</button>';
+                print '<button type="button" class="defaultbtn" id="btn_step_meters" onClick="JaxonInteractives.step_generic_to_meters();">Weiter zum n&auml;chsten Schritt</button>';
                 break;
 
             case 'meters':
