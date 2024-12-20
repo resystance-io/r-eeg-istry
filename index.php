@@ -11,7 +11,7 @@
     // going on a regular basis, like writers, databases, etc.
 
     include_once('controllers/controller_config.php.inc');
-    $config = $object_broker->instance['config'] = new CONTROLLER_CONFIG($object_broker);
+    $config = $object_broker->instance['config'] = new CONTROLLER_CONFIG();
 
     include_once('controllers/controller_db.php.inc');
     // connect to basic database
@@ -55,7 +55,8 @@
             if(isset($_REQUEST['join']))
             {
                 include_once('views/view_join.inc.php');
-                view_render();
+                $view_join = new VIEW_JOIN($object_broker);
+                $view_join->view_render();
             }
             elseif(isset($_REQUEST['lookup']))
             {

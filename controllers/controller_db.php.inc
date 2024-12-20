@@ -29,24 +29,6 @@ class CONTROLLER_DB
 
 		switch($database)
 		{
-			case 'sot':
-				$this->db = new DATABASE_MODEL(
-					$config->user['DBLOGON_SOT_HOST'],
-					$config->user['DBLOGON_SOT_DB'],
-					$config->user['DBLOGON_SOT_USER'],
-					$config->user['DBLOGON_SOT_PASS']
-				);
-				break;
-
-			case 'mx':
-				$this->db = new DATABASE_MODEL(
-					$config->user['DBLOGON_MX_HOST'],
-					$config->user['DBLOGON_MX_DB'],
-					$config->user['DBLOGON_MX_USER'],
-					$config->user['DBLOGON_MX_PASS']
-				);
-				break;
-
 			default:
 				$this->db = new DATABASE_MODEL(
 					$config->user['DBLOGON_HOST'],

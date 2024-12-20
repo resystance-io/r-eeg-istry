@@ -7,10 +7,12 @@ class Interactives
 
     private $object_broker;
     private $session;
+    private $config;
 
     public function __construct()
     {
-
+        include_once('controllers/controller_config.php.inc');
+        $this->config = new CONTROLLER_CONFIG();
     }
     public function __destruct()
     {
@@ -54,7 +56,6 @@ class Interactives
         $response = jaxon()->newResponse();
 
         $id = $this->generate_uuid4();
-
         $_SESSION['storages']["$id"]['value'] = '0';
 
         $element = '
@@ -153,6 +154,16 @@ class Interactives
     {
         $response = jaxon()->newResponse();
         $response->script("window.location.href='/?join=banking';");
+        return $response;
+
+    }
+
+    public function copy_address($meter_key)
+    {
+        $response = jaxon()->newResponse();
+        $response->assign('street_' . $meter_key, 'value', $_SESSION['generic_information']['street']);
+        $response->assign('zip_' . $meter_key, 'value', $_SESSION['generic_information']['zip']);
+        $response->assign('city_' . $meter_key, 'value', $_SESSION['generic_information']['city']);
         return $response;
 
     }
