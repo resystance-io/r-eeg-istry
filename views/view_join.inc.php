@@ -81,13 +81,15 @@ class VIEW_JOIN
         print "<h3>Allgemeine Daten</h3>";
         print "<div class=\"form-container\">";
 
-        $this->view_render_part_captioned_inputfield("Firmenwortlaut", "company", "generic_information");
+        $this->view_render_part_captioned_inputfield("Firmenwortlaut", "company", "generic_information", "required");
         $this->view_render_part_captioned_inputfield("UID", "uid", "generic_information");
-        $this->view_render_part_captioned_inputfield("Postleitzahl", "zip", "generic_information");
-        $this->view_render_part_captioned_inputfield("Ort", "city", "generic_information");
-        $this->view_render_part_captioned_inputfield("Stra&szlig;e", "street", "generic_information");
-        $this->view_render_part_captioned_inputfield("Hausnummer", "number", "generic_information");
-        $this->view_render_part_captioned_inputfield("Telefonnummer", "phone", "generic_information");
+        $this->view_render_part_captioned_inputfield("Postleitzahl", "zip", "generic_information", "numbers");
+        $this->view_render_part_captioned_inputfield("Ort", "city", "generic_information", "required");
+        $this->view_render_part_captioned_inputfield("Stra&szlig;e", "street", "generic_information", "required");
+        $this->view_render_part_captioned_inputfield("Hausnummer", "number", "generic_information", "required");
+        $this->view_render_part_captioned_inputfield("Telefonnummer", "phone", "generic_information", "phone");
+        $this->view_render_part_captioned_inputfield("E-Mail Adresse", "email", "generic_information", "email");
+
 
         print "</div><br />";
 
@@ -117,15 +119,15 @@ class VIEW_JOIN
         print "<h3>Allgemeine Daten</h3>";
         print "<div class=\"form-container\">";
 
-        $this->view_render_part_captioned_inputfield("Vorname", "firstname", "generic_information");
-        $this->view_render_part_captioned_inputfield("Nachname", "lastname", "generic_information");
-        $this->view_render_part_captioned_inputfield("Stra&szlig;e", "street", "generic_information");
-        $this->view_render_part_captioned_inputfield("Hausnummer", "number", "generic_information");
-        $this->view_render_part_captioned_inputfield("Postleitzahl", "zip", "generic_information");
-        $this->view_render_part_captioned_inputfield("Ort", "city", "generic_information");
+        $this->view_render_part_captioned_inputfield("Vorname", "firstname", "generic_information", "required");
+        $this->view_render_part_captioned_inputfield("Nachname", "lastname", "generic_information", "required");
+        $this->view_render_part_captioned_inputfield("Stra&szlig;e", "street", "generic_information", "required");
+        $this->view_render_part_captioned_inputfield("Hausnummer", "number", "generic_information", "required");
+        $this->view_render_part_captioned_inputfield("Postleitzahl", "zip", "generic_information", "numbers");
+        $this->view_render_part_captioned_inputfield("Ort", "city", "generic_information", "required");
         $this->view_render_part_captioned_inputfield("Geburtsdatum", "birthdate", "generic_information");
-        $this->view_render_part_captioned_inputfield("Telefonnummer", "phone", "generic_information");
-        $this->view_render_part_captioned_inputfield("E-Mail Adresse", "email", "generic_information");
+        $this->view_render_part_captioned_inputfield("Telefonnummer", "phone", "generic_information", "phone");
+        $this->view_render_part_captioned_inputfield("E-Mail Adresse", "email", "generic_information", "email");
 
         print "</div><br />";
 
@@ -156,15 +158,15 @@ class VIEW_JOIN
         print "<h3>Allgemeine Daten</h3>";
         print "<div class=\"form-container\">";
 
-        $this->view_render_part_captioned_inputfield("Vorname", "firstname", "generic_information");
-        $this->view_render_part_captioned_inputfield("Nachname", "lastname", "generic_information");
-        $this->view_render_part_captioned_inputfield("Stra&szlig;e", "street", "generic_information");
-        $this->view_render_part_captioned_inputfield("Hausnummer", "number", "generic_information");
-        $this->view_render_part_captioned_inputfield("Postleitzahl", "zip", "generic_information");
-        $this->view_render_part_captioned_inputfield("Ort", "city", "generic_information");
+        $this->view_render_part_captioned_inputfield("Vorname", "firstname", "generic_information", "required");
+        $this->view_render_part_captioned_inputfield("Nachname", "lastname", "generic_information", "required");
+        $this->view_render_part_captioned_inputfield("Stra&szlig;e", "street", "generic_information", "required");
+        $this->view_render_part_captioned_inputfield("Hausnummer", "number", "generic_information", "required");
+        $this->view_render_part_captioned_inputfield("Postleitzahl", "zip", "generic_information", "numbers");
+        $this->view_render_part_captioned_inputfield("Ort", "city", "generic_information", "required");
         $this->view_render_part_captioned_inputfield("Geburtsdatum", "birthdate", "generic_information");
-        $this->view_render_part_captioned_inputfield("Telefonnummer", "phone", "generic_information");
-        $this->view_render_part_captioned_inputfield("E-Mail Adresse", "email", "generic_information");
+        $this->view_render_part_captioned_inputfield("Telefonnummer", "phone", "generic_information", "phone");
+        $this->view_render_part_captioned_inputfield("E-Mail Adresse", "email", "generic_information", "email");
 
         print "</div><br />";
 
@@ -206,9 +208,16 @@ class VIEW_JOIN
 
                 print "<div class=\"form-container\">";
                 print "<div style='float:left;'>";
-                print ' Stra&szlig;e' . '<br><input type="text" name="id" id="' . 'street' . '_' . $meter_key . '" /><br />';
-                print ' Ort' . '<br><input type="text" name="id" id="' . 'city' . '_' . $meter_key  . '" /><br />';
-                print ' PLZ' . '<br><input type="text" name="id" id="' . 'zip' . '_' . $meter_key  . '" /><br />';
+
+                $prefill = (isset($_SESSION['meters']["$meter_key"]['street'])) ? $_SESSION['meters']["$meter_key"]['street'] : '';
+                print ' Stra&szlig;e' . '<br><input type="text" name="id" value="' . $prefill . '" id="' . 'street' . '_' . $meter_key . '" /><br />';
+
+                $prefill = (isset($_SESSION['meters']["$meter_key"]['city'])) ? $_SESSION['meters']["$meter_key"]['city'] : '';
+                print ' Ort' . '<br><input type="text" name="id" value="' . $prefill . '"  id="' . 'city' . '_' . $meter_key  . '" /><br />';
+
+                $prefill = (isset($_SESSION['meters']["$meter_key"]['zip'])) ? $_SESSION['meters']["$meter_key"]['zip'] : '';
+                print ' PLZ' . '<br><input type="text" name="id" value="' . $prefill . '"  id="' . 'zip' . '_' . $meter_key  . '" /><br />';
+
                 print '<button type="button" class="thinbtn" id="btn_prefill_' . $meter_key . '" onClick="JaxonInteractives.copy_address(' . "'" . $meter_key . "'" . ');">Hauptadresse &uuml;bernehmen</button>';
                 print "</div>";
 
@@ -294,16 +303,17 @@ class VIEW_JOIN
     }
 
 
-    private function view_render_part_captioned_inputfield($caption, $id, $session_bucket = null)
+    private function view_render_part_captioned_inputfield($caption, $id, $session_bucket=null, $integrity=null)
     {
         if($session_bucket != null)
         {
             if(isset($_SESSION["$session_bucket"]["$id"]))
             {
-                $prefill = $_SESSION["$session_bucket"]["$id"];
+                $prefill = isset($_SESSION["$session_bucket"]["$id"]["value"]) ? $_SESSION["$session_bucket"]["$id"]["value"] : '';
             }
             else
             {
+                $_SESSION["$session_bucket"]["$id"]["integrity"] = $integrity;
                 $prefill = '';
             }
 

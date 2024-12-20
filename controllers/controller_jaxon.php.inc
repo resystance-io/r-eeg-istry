@@ -138,9 +138,9 @@ class Interactives
         }
     }
 
-    public function update_session_bucket($field, $value, $session_bucket)
+    public function update_session_bucket($record, $value, $session_bucket)
     {
-        $_SESSION["$session_bucket"]["$field"] = $value;
+        $_SESSION["$session_bucket"]["$record"]["value"] = $value;
     }
 
     public function step_generic_to_meters()
@@ -150,41 +150,46 @@ class Interactives
         {
             case 'company':
 
-                if(!isset($_SESSION['generic_information']['company']) || $_SESSION['generic_information']['company'] == '')
+                if($this->validate_bucket_record('generic_information', 'company') === false)
                 {
-                    $failmsg = "Bitte geben Sie einen Firmenwortlaut an.";
-                    break;
+                    $failmsg = "Bitte überprüfen Sie den Firmenwortlaut";
                 }
 
-                if(!isset($_SESSION['generic_information']['street']) || $_SESSION['generic_information']['street'] == '' )
+                if($this->validate_bucket_record('generic_information', 'street') === false)
                 {
-                    $failmsg = "Bitte geben Sie eine Straße an.";
-                    break;
+                    $failmsg = "Bitte überprüfen Sie die Straße";
                 }
 
-                if(!isset($_SESSION['generic_information']['zip']) || $_SESSION['generic_information']['zip'] == '' )
+                if($this->validate_bucket_record('generic_information', 'zip') === false)
                 {
-                    $failmsg = "Bitte geben Sie eine Postleitzahl an.";
-                    break;
+                    $failmsg = "Bitte überprüfen Sie die Postleitzahl";
                 }
 
-                if(!isset($_SESSION['generic_information']['city']) || $_SESSION['generic_information']['city'] == '' )
+                if($this->validate_bucket_record('generic_information', 'city') === false)
                 {
-                    $failmsg = "Bitte geben Sie einen Ort an.";
-                    break;
+                    $failmsg = "Bitte überprüfen Sie den Ort";
                 }
 
-                if(!isset($_SESSION['generic_information']['number']) || $_SESSION['generic_information']['number'] == '' )
+                if($this->validate_bucket_record('generic_information', 'number') === false)
                 {
-                    $failmsg = "Bitte geben Sie eine Hausnummer an.";
-                    break;
+                    $failmsg = "Bitte überprüfen Sie die Hausnummer";
                 }
 
-                if(!isset($_SESSION['generic_information']['phone']) || $_SESSION['generic_information']['phone'] == '' )
+                if($this->validate_bucket_record('generic_information', 'phone') === false)
                 {
-                    $failmsg = "Bitte geben Sie eine Telefonnummer an.";
-                    break;
+                    $failmsg = "Bitte überprüfen Sie die Telefonnummer";
                 }
+
+                if($this->validate_bucket_record('generic_information', 'email') === false)
+                {
+                    $failmsg = "Bitte überprüfen Sie die eMail Adresse";
+                }
+
+                if($this->validate_bucket_record('generic_information', 'uid') === false)
+                {
+                    $failmsg = "Bitte überprüfen Sie die UID";
+                }
+
                 break;
 
             case 'individual':
@@ -215,12 +220,72 @@ class Interactives
 
     }
 
+    private function validate_bucket_record($session_bucket, $record)
+    {
+        if(!isset($_SESSION["$session_bucket"]["$record"]["integrity"]) || $_SESSION["$session_bucket"]["$record"]["integrity"] == null)
+        {
+            return true;
+        }
+        else
+        {
+            switch($_SESSION["$session_bucket"]["$record"]["integrity"])
+            {
+                case 'required':
+                    if(isset($_SESSION["$session_bucket"]["$record"]["value"]) && $_SESSION["$session_bucket"]["$record"]["value"] != '')
+                    {
+                        return true;
+                    }
+                    break;
+
+                case 'numbers':
+                    if(isset($_SESSION["$session_bucket"]["$record"]["value"]) && is_numeric($_SESSION["$session_bucket"]["$record"]["value"]))
+                    {
+                        return true;
+                    }
+                    break;
+
+                case 'email':
+                    if(isset($_SESSION["$session_bucket"]["$record"]["value"]) && filter_var($_SESSION["$session_bucket"]["$record"]["value"], FILTER_VALIDATE_EMAIL))
+                    {
+                        return true;
+                    }
+                    break;
+
+                case 'phone':
+                    if(isset($_SESSION["$session_bucket"]["$record"]["value"]))
+                    {
+                        $value = str_replace(['/', '(', ')', ' ', '-'], '', $_SESSION["$session_bucket"]["$record"]["value"]);
+                        if (preg_match('/^\+?\d+$/', $value))
+                        {
+                            $_SESSION["$session_bucket"]["$record"]["value"] = $value;  // store the normalized number back to the source
+                            return true;
+                        }
+                    }
+                    break;
+
+                default:
+                    error_log('Unknown integrity type: ' . $_SESSION["$session_bucket"]["$record"]["integrity"] . ' for record ' . $record);
+
+            }
+
+            return false; // we did not return true earlier, so something was messed up!
+
+        }
+    }
+
     public function copy_address($meter_key)
     {
         $response = jaxon()->newResponse();
-        $response->assign('street_' . $meter_key, 'value', $_SESSION['generic_information']['street']);
-        $response->assign('zip_' . $meter_key, 'value', $_SESSION['generic_information']['zip']);
-        $response->assign('city_' . $meter_key, 'value', $_SESSION['generic_information']['city']);
+
+        $response->assign('street_' . $meter_key, 'value', $_SESSION['generic_information']['street']['value']);
+        $_SESSION['meters']["$meter_key"]['street'] = $_SESSION['generic_information']['street']['value'];
+
+        $response->assign('zip_' . $meter_key, 'value', $_SESSION['generic_information']['zip']['value']);
+        $_SESSION['meters']["$meter_key"]['zip'] = $_SESSION['generic_information']['zip']['value'];
+
+        $response->assign('city_' . $meter_key, 'value', $_SESSION['generic_information']['city']['value']);
+        $_SESSION['meters']["$meter_key"]['city'] = $_SESSION['generic_information']['city']['value'];
+
         return $response;
 
     }
