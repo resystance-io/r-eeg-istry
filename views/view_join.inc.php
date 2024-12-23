@@ -40,6 +40,16 @@ class VIEW_JOIN
                 $this->view_render_navigation();
                 break;
 
+            case "banking":
+                $this->view_render_banking_details();
+                $this->view_render_navigation();
+                break;
+
+            case "finished":
+                $this->view_render_finished();
+                $this->view_render_navigation();
+                break;
+
             default:
                 print '
                     <header id="header">
@@ -197,37 +207,90 @@ class VIEW_JOIN
         {
             foreach ($_SESSION['meters'] as $meter_key => $meter_object)
             {
-                if($meter_object['type'] == "consumers")
+
+                print "<div class=\"form-container\">";
+
+                print "
+                    <div style='float:left;margin-right:80px;'>
+                ";
+
+                if ($meter_object['type'] == "consumers")
                 {
-                    print "<h4>Bezugsz&auml;hlpunkt " . $meter_object['value'] . "</h4>";
+                    print "<h3>Adresse des Bezugsz&auml;hlpunkts " . $meter_object['value'] . "</h3>";
                 }
                 elseif ($meter_object['type'] == "suppliers")
                 {
-                    print "<h4>Einspeisez&auml;hlpunkt " . $meter_object['value'] . "</h4>";
+                    print "<h3>Adresse des Einspeisez&auml;hlpunkts " . $meter_object['value'] . "</h3>";
                 }
 
-                print "<div class=\"form-container\">";
-                print "<div style='float:left;'>";
+                $this->view_render_meter_detail_inputfield($meter_key, "Stra&szlig;e", 'street', 'required');
 
-                $prefill = (isset($_SESSION['meters']["$meter_key"]['street'])) ? $_SESSION['meters']["$meter_key"]['street'] : '';
-                print ' Stra&szlig;e' . '<br><input type="text" name="id" value="' . $prefill . '" id="' . 'street' . '_' . $meter_key . '" /><br />';
+                $this->view_render_meter_detail_inputfield($meter_key, "Nummer", 'number', 'required');
 
-                $prefill = (isset($_SESSION['meters']["$meter_key"]['city'])) ? $_SESSION['meters']["$meter_key"]['city'] : '';
-                print ' Ort' . '<br><input type="text" name="id" value="' . $prefill . '"  id="' . 'city' . '_' . $meter_key  . '" /><br />';
+                $this->view_render_meter_detail_inputfield($meter_key, "Ort", 'city', 'required');
 
-                $prefill = (isset($_SESSION['meters']["$meter_key"]['zip'])) ? $_SESSION['meters']["$meter_key"]['zip'] : '';
-                print ' PLZ' . '<br><input type="text" name="id" value="' . $prefill . '"  id="' . 'zip' . '_' . $meter_key  . '" /><br />';
+                $this->view_render_meter_detail_inputfield($meter_key, "PLZ", 'zip', 'numbers');
 
                 print '<button type="button" class="thinbtn" id="btn_prefill_' . $meter_key . '" onClick="JaxonInteractives.copy_address(' . "'" . $meter_key . "'" . ');">Hauptadresse &uuml;bernehmen</button>';
                 print "</div>";
 
                 print "<div style='float:left;height:100%;valign:middle'>";
 
+                if ($meter_object['type'] == "suppliers")
+                {
+                    print "<h3>Einspeiseleistung</h3>";
+
+                    $this->view_render_meter_detail_inputfield($meter_key, "Leistung (kWp)", 'power', 'numbers');
+                }
+
                 print "</div>";
 
                 print "</div><br />";
             }
         }
+
+    }
+
+    private function view_render_banking_details()
+    {
+        print '
+                    <header id="header">
+                        <h1>Erneuerbare Energiegemeinschaft VIERE</h1>
+                        <h2>Zahlungsinformationen</h2>
+                        <p>Noch ein paar Infos zum Konto, dann ist es geschafft...</p>
+                        
+                    </header>
+        ';
+
+        print "<h3>Kontoinformationen</h3>";
+        print "<div class=\"form-container\">";
+
+        $this->view_render_part_captioned_inputfield("Name d. Kontoinhabers", "bankingname", "generic_information", "required");
+        $this->view_render_part_captioned_inputfield("IBAN", "bankingiban", "generic_information", "iban");
+
+        print "</div><br />";
+
+    }
+
+    private function view_render_finished()
+    {
+        print '
+                    <header id="header">
+                        <h1>Erneuerbare Energiegemeinschaft VIERE</h1>
+                    </header>
+        ';
+
+        print "&nbsp;<br />&nbsp;<br />";
+        print "<h2>Vielen Dank f&uuml;r deine Anmeldung</h2>";
+        print "&nbsp;<br>Deine Daten werden schnellstm&ouml;glich &uuml;berpr&uuml;ft und in unser System &uuml;bernommen.<br />Sobald das Datum feststeht ab dem du eneuerbare Energie aus unserer Gemeinschaft beziehen wirst, kontaktieren wir dich umgehend. <br /><br />Solltest du Fragen haben, z&ouml;gere nicht, uns zu kontaktieren.";
+
+        print "<br />&nbsp;<br />&nbsp;<br />";
+        print "<h3>SESSION DUMP:</h3>";
+        print "<div class=\"form-container\">";
+        print "<pre>";
+        print_r($_SESSION);
+        print "</pre>";
+        print "</div>";
 
     }
 
@@ -303,6 +366,14 @@ class VIEW_JOIN
     }
 
 
+
+    private function view_render_meter_detail_inputfield($meter_key, $caption, $id, $integrity)
+    {
+        $prefill = (isset($_SESSION['meters']["$meter_key"]["$id"]['value'])) ? $_SESSION['meters']["$meter_key"]["$id"]['value'] : '';
+        $_SESSION['meters']["$meter_key"]["$id"]['integrity'] = $integrity;
+        print $caption . '<br><input type="text" name="' . $id . '_' . $meter_key . '" value="' . $prefill . '" id="' . $id . '_' . $meter_key . '" onfocus="this.select()" onfocusout="JaxonInteractives.update_meter_detail(' . "'" . $meter_key . "'" . ', ' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . '_' . $meter_key . "'" . ').value);" /><br />';
+    }
+
     private function view_render_part_captioned_inputfield($caption, $id, $session_bucket=null, $integrity=null)
     {
         if($session_bucket != null)
@@ -317,11 +388,11 @@ class VIEW_JOIN
                 $prefill = '';
             }
 
-            print $caption . '<br><input type="text" name="id" id="' . $id . '" value="' . $prefill . '" onfocusout="JaxonInteractives.update_session_bucket(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value, ' . "'" .  $session_bucket . "'" . ');" />';
+            print $caption . '<br><input type="text" onfocus="this.select()" name="id" id="' . $id . '" value="' . $prefill . '" onfocusout="JaxonInteractives.update_session_bucket(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value, ' . "'" .  $session_bucket . "'" . ');" />';
         }
         else
         {
-            print $caption . '<br><input type="text" name="id" id="' . $id . '" />';
+            print $caption . '<br><input type="text" onfocus="this.select()" name="id" id="' . $id . '" />';
         }
 
         print '<br />';
@@ -359,18 +430,22 @@ class VIEW_JOIN
 
     private function view_render_navigation()
     {
+        print "<br />";
+
         switch($_REQUEST['join'])
         {
-            case 'personal':
+            case 'individual':
             case 'company':
             case 'agriculture':
-                print "<br />";
                 print '<button type="button" class="defaultbtn" id="btn_step_meters" onClick="JaxonInteractives.step_generic_to_meters();">Weiter zum n&auml;chsten Schritt</button>';
                 break;
 
             case 'meters':
-                print "<br />";
                 print '<button type="button" class="defaultbtn" id="btn_step_banking" onClick="JaxonInteractives.step_banking();">Weiter zum n&auml;chsten Schritt</button>';
+                break;
+
+            case 'banking':
+                print '<button type="button" class="defaultbtn" id="btn_step_finish" onClick="JaxonInteractives.step_finish();">Anmeldung abschlie&szlig;en</button>';
                 break;
 
             default:

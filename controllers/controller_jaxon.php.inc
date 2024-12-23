@@ -143,67 +143,210 @@ class Interactives
         $_SESSION["$session_bucket"]["$record"]["value"] = $value;
     }
 
+    public function update_meter_detail($meter_key, $record, $value)
+    {
+        $_SESSION['meters']["$meter_key"]["$record"]['value'] = $value;
+    }
+
     public function step_generic_to_meters()
     {
         $failmsg = null;
+        $focustarget = null;
         switch($_SESSION['generic_information']['join_type'])
         {
             case 'company':
 
-                if($this->validate_bucket_record('generic_information', 'company') === false)
+                if($this->validate_record($_SESSION['generic_information']['company']['value'], $_SESSION['generic_information']['company']['integrity']) === false)
                 {
                     $failmsg = "Bitte überprüfen Sie den Firmenwortlaut";
+                    $focustarget = 'company';
                 }
 
-                if($this->validate_bucket_record('generic_information', 'street') === false)
+                if($this->validate_record($_SESSION['generic_information']['street']['value'], $_SESSION['generic_information']['street']['integrity']) === false)
                 {
                     $failmsg = "Bitte überprüfen Sie die Straße";
+                    $focustarget = 'street';
                 }
 
-                if($this->validate_bucket_record('generic_information', 'zip') === false)
+                if($this->validate_record($_SESSION['generic_information']['zip']['value'], $_SESSION['generic_information']['zip']['integrity']) === false)
                 {
                     $failmsg = "Bitte überprüfen Sie die Postleitzahl";
+                    $focustarget = 'zip';
                 }
 
-                if($this->validate_bucket_record('generic_information', 'city') === false)
+                if($this->validate_record($_SESSION['generic_information']['city']['value'], $_SESSION['generic_information']['city']['integrity']) === false)
                 {
                     $failmsg = "Bitte überprüfen Sie den Ort";
+                    $focustarget = 'city';
                 }
 
-                if($this->validate_bucket_record('generic_information', 'number') === false)
+                if($this->validate_record($_SESSION['generic_information']['number']['value'], $_SESSION['generic_information']['number']['integrity']) === false)
                 {
                     $failmsg = "Bitte überprüfen Sie die Hausnummer";
+                    $focustarget = 'number';
                 }
 
-                if($this->validate_bucket_record('generic_information', 'phone') === false)
+                if($this->validate_record($_SESSION['generic_information']['phone']['value'], $_SESSION['generic_information']['phone']['integrity']) === false)
                 {
                     $failmsg = "Bitte überprüfen Sie die Telefonnummer";
+                    $focustarget = 'phone';
                 }
 
-                if($this->validate_bucket_record('generic_information', 'email') === false)
+                if($this->validate_record($_SESSION['generic_information']['email']['value'], $_SESSION['generic_information']['email']['integrity']) === false)
                 {
                     $failmsg = "Bitte überprüfen Sie die eMail Adresse";
+                    $focustarget = 'email';
                 }
 
-                if($this->validate_bucket_record('generic_information', 'uid') === false)
+                if($this->validate_record($_SESSION['generic_information']['uid']['value'], $_SESSION['generic_information']['uid']['integrity']) === false)
                 {
                     $failmsg = "Bitte überprüfen Sie die UID";
+                    $focustarget = 'uid';
                 }
 
                 break;
 
             case 'individual':
+
+                if($this->validate_record($_SESSION['generic_information']['firstname']['value'], $_SESSION['generic_information']['firstname']['integrity']) === false)
+                {
+                    $failmsg = "Bitte überprüfen Sie den Vornamen";
+                    $focustarget = 'firstname';
+                }
+
+                if($this->validate_record($_SESSION['generic_information']['lastname']['value'], $_SESSION['generic_information']['lastname']['integrity']) === false)
+                {
+                    $failmsg = "Bitte überprüfen Sie den Nachnamen";
+                    $focustarget = 'lastname';
+                }
+
+                if($this->validate_record($_SESSION['generic_information']['street']['value'], $_SESSION['generic_information']['street']['integrity']) === false)
+                {
+                    $failmsg = "Bitte überprüfen Sie die Straße";
+                    $focustarget = 'street';
+                }
+
+                if($this->validate_record($_SESSION['generic_information']['zip']['value'], $_SESSION['generic_information']['zip']['integrity']) === false)
+                {
+                    $failmsg = "Bitte überprüfen Sie die Postleitzahl";
+                    $focustarget = 'zip';
+                }
+
+                if($this->validate_record($_SESSION['generic_information']['city']['value'], $_SESSION['generic_information']['city']['integrity']) === false)
+                {
+                    $failmsg = "Bitte überprüfen Sie den Ort";
+                    $focustarget = 'city';
+                }
+
+                if($this->validate_record($_SESSION['generic_information']['number']['value'], $_SESSION['generic_information']['number']['integrity']) === false)
+                {
+                    $failmsg = "Bitte überprüfen Sie die Hausnummer";
+                    $focustarget = 'number';
+                }
+
+                if($this->validate_record($_SESSION['generic_information']['phone']['value'], $_SESSION['generic_information']['phone']['integrity']) === false)
+                {
+                    $failmsg = "Bitte überprüfen Sie die Telefonnummer";
+                    $focustarget = 'phone';
+                }
+
+                if($this->validate_record($_SESSION['generic_information']['email']['value'], $_SESSION['generic_information']['email']['integrity']) === false)
+                {
+                    $failmsg = "Bitte überprüfen Sie die eMail Adresse";
+                    $focustarget = 'email';
+                }
+
+                if($this->validate_record($_SESSION['generic_information']['birthdate']['value'], $_SESSION['generic_information']['birthdate']['integrity']) === false)
+                {
+                    $failmsg = "Bitte überprüfen Sie das Geburtsdatum";
+                    $focustarget = 'birthdate';
+                }
+
                 break;
 
             case 'agriculture':
+
+                if($this->validate_record($_SESSION['generic_information']['firstname']['value'], $_SESSION['generic_information']['firstname']['integrity']) === false)
+                {
+                    $failmsg = "Bitte überprüfen Sie den Vornamen";
+                    $focustarget = 'firstname';
+                }
+
+                if($this->validate_record($_SESSION['generic_information']['lastname']['value'], $_SESSION['generic_information']['lastname']['integrity']) === false)
+                {
+                    $failmsg = "Bitte überprüfen Sie den Nachnamen";
+                    $focustarget = 'lastname';
+                }
+
+                if($this->validate_record($_SESSION['generic_information']['street']['value'], $_SESSION['generic_information']['street']['integrity']) === false)
+                {
+                    $failmsg = "Bitte überprüfen Sie die Straße";
+                    $focustarget = 'street';
+                }
+
+                if($this->validate_record($_SESSION['generic_information']['zip']['value'], $_SESSION['generic_information']['zip']['integrity']) === false)
+                {
+                    $failmsg = "Bitte überprüfen Sie die Postleitzahl";
+                    $focustarget = 'zip';
+                }
+
+                if($this->validate_record($_SESSION['generic_information']['city']['value'], $_SESSION['generic_information']['city']['integrity']) === false)
+                {
+                    $failmsg = "Bitte überprüfen Sie den Ort";
+                    $focustarget = 'city';
+                }
+
+                if($this->validate_record($_SESSION['generic_information']['number']['value'], $_SESSION['generic_information']['number']['integrity']) === false)
+                {
+                    $failmsg = "Bitte überprüfen Sie die Hausnummer";
+                    $focustarget = 'number';
+                }
+
+                if($this->validate_record($_SESSION['generic_information']['phone']['value'], $_SESSION['generic_information']['phone']['integrity']) === false)
+                {
+                    $failmsg = "Bitte überprüfen Sie die Telefonnummer";
+                    $focustarget = 'phone';
+                }
+
+                if($this->validate_record($_SESSION['generic_information']['email']['value'], $_SESSION['generic_information']['email']['integrity']) === false)
+                {
+                    $failmsg = "Bitte überprüfen Sie die eMail Adresse";
+                    $focustarget = 'email';
+                }
+
+                if($this->validate_record($_SESSION['generic_information']['birthdate']['value'], $_SESSION['generic_information']['birthdate']['integrity']) === false)
+                {
+                    $failmsg = "Bitte überprüfen Sie das Geburtsdatum";
+                    $focustarget = 'birthdate';
+                }
+
                 break;
 
+        }
+
+        foreach($_SESSION['meters'] as $meter_key => $meter_object)
+        {
+            if($this->validate_record($meter_object['value'], 'meter_shortid') === false)
+            {
+                $failmsg = "Bitte überprüfen Sie die Zählpunktnummer";
+                $focustarget = $meter_key;
+            }
+        }
+
+        foreach($_SESSION['storages'] as $storage_key => $storage_object)
+        {
+            if($this->validate_record($storage_object['value'], 'numbers>0') === false)
+            {
+                $failmsg = "Bitte überprüfen Sie die angegebene Speicherkapazität";
+                $focustarget = $storage_key;
+            }
         }
 
         if($failmsg)
         {
             $response = jaxon()->newResponse();
             $response->alert($failmsg);
+            $response->script("document.getElementById('" . $focustarget . "').focus();");
             return $response;
         }
 
@@ -214,57 +357,180 @@ class Interactives
 
     public function step_banking()
     {
+        $failmsg = null;
+        $focustarget = null;
+
+        if(isset($_SESSION['meters']))
+        {
+            foreach ($_SESSION['meters'] as $meter_key => $meter_object)
+            {
+                if ($this->validate_record($meter_object['street']['value'], $meter_object['street']['integrity']) === false)
+                {
+                    $failmsg = "Bitte überprüfen Sie die angegebene Straße";
+                    $focustarget = 'street_' . $meter_key;
+                }
+
+                if ($this->validate_record($meter_object['zip']['value'], $meter_object['zip']['integrity']) === false)
+                {
+                    $failmsg = "Bitte überprüfen Sie die angegebene Postleitzahl";
+                    $focustarget = 'zip_' . $meter_key;
+                }
+
+                if ($this->validate_record($meter_object['number']['value'], $meter_object['number']['integrity']) === false)
+                {
+                    $failmsg = "Bitte überprüfen Sie die angegebene Hausnummer";
+                    $focustarget = 'number_' . $meter_key;
+                }
+
+                if ($this->validate_record($meter_object['city']['value'], $meter_object['city']['integrity']) === false)
+                {
+                    $failmsg = "Bitte überprüfen Sie den angegebenen Ort";
+                    $focustarget = 'city_' . $meter_key;
+                }
+            }
+        }
+
+        if($failmsg)
+        {
+            $response = jaxon()->newResponse();
+            $response->alert($failmsg);
+            $response->script("document.getElementById('" . $focustarget . "').focus();");
+            return $response;
+        }
+
         $response = jaxon()->newResponse();
         $response->script("window.location.href='/?join=banking';");
         return $response;
 
     }
 
-    private function validate_bucket_record($session_bucket, $record)
+    public function step_finish()
     {
-        if(!isset($_SESSION["$session_bucket"]["$record"]["integrity"]) || $_SESSION["$session_bucket"]["$record"]["integrity"] == null)
+        $failmsg = null;
+        $focustarget = null;
+
+        if($this->validate_record($_SESSION['generic_information']['bankingname']['value'], $_SESSION['generic_information']['bankingname']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie den Namen d. Kontoinhabers";
+            $focustarget = 'bankingname';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['bankingiban']['value'], $_SESSION['generic_information']['bankingiban']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie die IBAN";
+            $focustarget = 'bankingiban';
+        }
+
+        if($failmsg)
+        {
+            $response = jaxon()->newResponse();
+            $response->alert($failmsg);
+            $response->script("document.getElementById('" . $focustarget . "').focus();");
+            return $response;
+        }
+
+        $response = jaxon()->newResponse();
+        $response->script("window.location.href='/?join=finished';");
+        return $response;
+
+    }
+
+    private function validate_record($value, $integrity=null)
+    {
+        if(!isset($integrity) || $integrity == null)
         {
             return true;
         }
         else
         {
-            switch($_SESSION["$session_bucket"]["$record"]["integrity"])
+            switch($integrity)
             {
                 case 'required':
-                    if(isset($_SESSION["$session_bucket"]["$record"]["value"]) && $_SESSION["$session_bucket"]["$record"]["value"] != '')
+                    if($value != '')
                     {
                         return true;
                     }
                     break;
 
                 case 'numbers':
-                    if(isset($_SESSION["$session_bucket"]["$record"]["value"]) && is_numeric($_SESSION["$session_bucket"]["$record"]["value"]))
+                    if(is_numeric($value))
+                    {
+                        return true;
+                    }
+                    break;
+
+                case 'numbers>0':
+                    if(is_numeric($value) && $value > 0)
                     {
                         return true;
                     }
                     break;
 
                 case 'email':
-                    if(isset($_SESSION["$session_bucket"]["$record"]["value"]) && filter_var($_SESSION["$session_bucket"]["$record"]["value"], FILTER_VALIDATE_EMAIL))
+                    if(filter_var($value, FILTER_VALIDATE_EMAIL))
                     {
                         return true;
                     }
                     break;
 
                 case 'phone':
-                    if(isset($_SESSION["$session_bucket"]["$record"]["value"]))
+                    if(isset($value))
                     {
-                        $value = str_replace(['/', '(', ')', ' ', '-'], '', $_SESSION["$session_bucket"]["$record"]["value"]);
+                        $value = str_replace(['/', '(', ')', ' ', '-'], '', $value);
                         if (preg_match('/^\+?\d+$/', $value))
                         {
-                            $_SESSION["$session_bucket"]["$record"]["value"] = $value;  // store the normalized number back to the source
+                            return true;
+                        }
+                    }
+                    break;
+                    
+                case 'iban':
+                    if(isset($value))
+                    {
+                        $value = strtoupper(str_replace(' ', '', $value));
+
+                        // Ensure IBAN is alphanumeric and at least 15 characters long
+                        if (!ctype_alnum($value) || strlen($value) < 15)
+                        {
+                            return false;
+                        }
+
+                        // Rearrange IBAN for validation: move the first 4 characters to the end
+                        $checkString = substr($value, 4) . substr($value, 0, 4);
+
+                        // Convert letters to numbers (A = 10, B = 11, ..., Z = 35)
+                        $numericString = '';
+                        foreach (str_split($checkString) as $char)
+                        {
+                            $numericString .= is_numeric($char) ? $char : ord($char) - 55;
+                        }
+
+                        // Perform mod-97 operation without bcmod
+                        $remainder = 0;
+                        foreach (str_split($numericString, 9) as $chunk)
+                        {
+                            $remainder = (int)(($remainder . $chunk) % 97);
+                        }
+
+                        if ($remainder === 1)
+                        {
+                            return true;
+                        }
+                    }
+                    break;
+
+                case 'meter_shortid':
+                    if(isset($value))
+                    {
+                        if (is_numeric($value) && strlen($value) == 9 && $value != '000000000')
+                        {
                             return true;
                         }
                     }
                     break;
 
                 default:
-                    error_log('Unknown integrity type: ' . $_SESSION["$session_bucket"]["$record"]["integrity"] . ' for record ' . $record);
+                    error_log('Unknown integrity type: ' . $integrity . ' for record ' . $value);
 
             }
 
@@ -278,13 +544,16 @@ class Interactives
         $response = jaxon()->newResponse();
 
         $response->assign('street_' . $meter_key, 'value', $_SESSION['generic_information']['street']['value']);
-        $_SESSION['meters']["$meter_key"]['street'] = $_SESSION['generic_information']['street']['value'];
+        $_SESSION['meters']["$meter_key"]['street']['value'] = $_SESSION['generic_information']['street']['value'];
+
+        $response->assign('number_' . $meter_key, 'value', $_SESSION['generic_information']['number']['value']);
+        $_SESSION['meters']["$meter_key"]['number']['value'] = $_SESSION['generic_information']['number']['value'];
 
         $response->assign('zip_' . $meter_key, 'value', $_SESSION['generic_information']['zip']['value']);
-        $_SESSION['meters']["$meter_key"]['zip'] = $_SESSION['generic_information']['zip']['value'];
+        $_SESSION['meters']["$meter_key"]['zip']['value'] = $_SESSION['generic_information']['zip']['value'];
 
         $response->assign('city_' . $meter_key, 'value', $_SESSION['generic_information']['city']['value']);
-        $_SESSION['meters']["$meter_key"]['city'] = $_SESSION['generic_information']['city']['value'];
+        $_SESSION['meters']["$meter_key"]['city']['value'] = $_SESSION['generic_information']['city']['value'];
 
         return $response;
 
