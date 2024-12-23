@@ -115,7 +115,7 @@ body {
 
 }
 
-.input-box input {
+.input-box input[type="text"] {
     border: none;
     outline: none;
     margin-left: 1px;
@@ -127,4 +127,11 @@ body {
 
 .input-box:focus-within {
     border-color: #4f7df3;
+}
+
+input[type="checkbox"] {
+    width: 40px;
+    height: 40px;
+    background: white;
+    color: black;
 }

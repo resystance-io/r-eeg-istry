@@ -141,6 +141,8 @@ class Interactives
     public function update_session_bucket($record, $value, $session_bucket)
     {
         $_SESSION["$session_bucket"]["$record"]["value"] = $value;
+        $response = jaxon()->newResponse();
+        return $response;
     }
 
     public function update_meter_detail($meter_key, $record, $value)
@@ -421,6 +423,12 @@ class Interactives
             $focustarget = 'bankingiban';
         }
 
+        if($this->validate_record($_SESSION['generic_information']['bankingauthorization']['value'], $_SESSION['generic_information']['bankingauthorization']['integrity']) === false)
+        {
+            $failmsg = "Bitte bestätigen Sie die Autorisierung zum Bankeinzug";
+            $focustarget = 'bankingauthorization';
+        }
+
         if($failmsg)
         {
             $response = jaxon()->newResponse();
@@ -483,6 +491,15 @@ class Interactives
                         }
                     }
                     break;
+
+                case 'booltrue':
+                    if(isset($value))
+                    {
+                        if($value == 'true' || $value == '1' || $value == 'yes' || $value === true)
+                        {
+                            return true;
+                        }
+                    }
                     
                 case 'iban':
                     if(isset($value))

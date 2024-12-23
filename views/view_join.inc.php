@@ -267,6 +267,7 @@ class VIEW_JOIN
 
         $this->view_render_part_captioned_inputfield("Name d. Kontoinhabers", "bankingname", "generic_information", "required");
         $this->view_render_part_captioned_inputfield("IBAN", "bankingiban", "generic_information", "iban");
+        $this->view_render_part_annotated_checkbox("Hiermit best&auml;tige ich die Richtigkeit der angegebenen Kontoinformationen<br />und erm&auml;chtige VIERE zum Bankeinzug im Rahmen der Leistungsabrechnung", "bankingauthorization", "generic_information", "booltrue");
 
         print "</div><br />";
 
@@ -282,7 +283,7 @@ class VIEW_JOIN
 
         print "&nbsp;<br />&nbsp;<br />";
         print "<h2>Vielen Dank f&uuml;r deine Anmeldung</h2>";
-        print "&nbsp;<br>Deine Daten werden schnellstm&ouml;glich &uuml;berpr&uuml;ft und in unser System &uuml;bernommen.<br />Sobald das Datum feststeht ab dem du eneuerbare Energie aus unserer Gemeinschaft beziehen wirst, kontaktieren wir dich umgehend. <br /><br />Solltest du Fragen haben, z&ouml;gere nicht, uns zu kontaktieren.";
+        print "&nbsp;<br>Deine Daten werden schnellstm&ouml;glich &uuml;berpr&uuml;ft und in unser System &uuml;bernommen.<br />Sobald das Datum feststeht ab dem du eneuerbare Energie aus unserer Gemeinschaft beziehen wirst, kontaktieren wir dich umgehend. <br /><br />Solltest du Fragen haben, stehen wir dir selbstverst&auml;ndlich gerne zur Verf&uuml;gung.<br />";
 
         print "<br />&nbsp;<br />&nbsp;<br />";
         print "<h3>SESSION DUMP:</h3>";
@@ -388,13 +389,29 @@ class VIEW_JOIN
                 $prefill = '';
             }
 
-            print $caption . '<br><input type="text" onfocus="this.select()" name="id" id="' . $id . '" value="' . $prefill . '" onfocusout="JaxonInteractives.update_session_bucket(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value, ' . "'" .  $session_bucket . "'" . ');" />';
+            print $caption . '<br><input type="text" onfocus="this.select()" name="'. $id . '" id="' . $id . '" value="' . $prefill . '" onfocusout="JaxonInteractives.update_session_bucket(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value, ' . "'" .  $session_bucket . "'" . ');" />';
         }
         else
         {
-            print $caption . '<br><input type="text" onfocus="this.select()" name="id" id="' . $id . '" />';
+            print $caption . '<br><input type="text" onfocus="this.select()" name="' . $id . '" id="' . $id . '" />';
         }
 
+        print '<br />';
+    }
+
+    private function view_render_part_annotated_checkbox($annotation, $id, $session_bucket=null, $integrity=null)
+    {
+            $checked = '';
+            if(isset($_SESSION["$session_bucket"]["$id"]))
+            {
+                if($_SESSION["$session_bucket"]["$id"]['value'] == '1')
+                {
+                    $checked = 'checked';
+                }
+            }
+
+            print '<div style="display: flex; align-items: center;"><input ' . $checked . ' type="checkbox" name="' . $id . '" id="' . $id . '" onchange="JaxonInteractives.update_session_bucket(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').checked, ' . "'" .  $session_bucket . "'" . ');" /><label for="' . $id . '" style="margin-top:16px;margin-left:12px;line-height: 24px;">' . $annotation . '</label>';
+            
         print '<br />';
     }
 
