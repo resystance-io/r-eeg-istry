@@ -372,12 +372,6 @@ class Interactives
                     $focustarget = 'street_' . $meter_key;
                 }
 
-                if ($this->validate_record($meter_object['zip']['value'], $meter_object['zip']['integrity']) === false)
-                {
-                    $failmsg = "Bitte überprüfen Sie die angegebene Postleitzahl";
-                    $focustarget = 'zip_' . $meter_key;
-                }
-
                 if ($this->validate_record($meter_object['number']['value'], $meter_object['number']['integrity']) === false)
                 {
                     $failmsg = "Bitte überprüfen Sie die angegebene Hausnummer";
@@ -388,6 +382,21 @@ class Interactives
                 {
                     $failmsg = "Bitte überprüfen Sie den angegebenen Ort";
                     $focustarget = 'city_' . $meter_key;
+                }
+
+                if ($this->validate_record($meter_object['zip']['value'], $meter_object['zip']['integrity']) === false)
+                {
+                    $failmsg = "Bitte überprüfen Sie die angegebene Postleitzahl";
+                    $focustarget = 'zip_' . $meter_key;
+                }
+
+                if($meter_object['type'] == 'suppliers')
+                {
+                    if ($this->validate_record($meter_object['power']['value'], $meter_object['power']['integrity']) === false)
+                    {
+                        $failmsg = "Bitte überprüfen Sie die angegebene Leistung des Einspeisezählpunktes";
+                        $focustarget = 'power_' . $meter_key;
+                    }
                 }
             }
         }
@@ -469,6 +478,20 @@ class Interactives
 
                 case 'numbers>0':
                     if(is_numeric($value) && $value > 0)
+                    {
+                        return true;
+                    }
+                    break;
+                    
+                case 'decimal':
+                    if(is_numeric(str_replace(',', '.', $value)))
+                    {
+                        return true;
+                    }
+                    break;
+
+                case 'decimal>0':
+                    if(is_numeric(str_replace(',', '.', $value)) && $value > 0)
                     {
                         return true;
                     }

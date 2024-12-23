@@ -240,7 +240,7 @@ class VIEW_JOIN
                 {
                     print "<h3>Einspeiseleistung</h3>";
 
-                    $this->view_render_meter_detail_inputfield($meter_key, "Leistung (kWp)", 'power', 'numbers');
+                    $this->view_render_meter_detail_inputfield($meter_key, "Leistung (kWp)", 'power', 'decimal');
                 }
 
                 print "</div>";
@@ -297,7 +297,8 @@ class VIEW_JOIN
 
     private function view_render_consumption_meters()
     {
-        print "<h3>Z&auml;hlpunkte (Bezug)</h3>";
+        print "<br /><h3 style=\"margin:0px;\">Z&auml;hlpunkte (Bezug)</h3>";
+        print "<span style=\"font-size:16px;\">Mit welchen Z&auml;hlpunkten m&ouml;chtest du Energie von uns beziehen?</span>";
         print "<div class=\"form-container\">";
 
         if(isset($_SESSION['meters']))
@@ -329,7 +330,8 @@ class VIEW_JOIN
 
     private function view_render_supply_meters()
     {
-        print "<h3>Z&auml;hlpunkte (Einspeisung)</h3>";
+        print "<br /><h3 style=\"margin:0px;\">Z&auml;hlpunkte (Einspeisung)</h3>";
+        print "<span style=\"font-size:16px;\">Erzeugst du selbst erneuerbare Energie und m&ouml;chtest in unsere EEG einspeisen?</span>";
         print "<div class=\"form-container\">";
 
         if(isset($_SESSION['meters']))
@@ -350,7 +352,8 @@ class VIEW_JOIN
 
     private function view_render_energy_storage()
     {
-        print "<h3>Vorhandene Energiespeicher</h3>";
+        print "<br /><h3 style=\"margin:0px;\">Vorhandene Energiespeicher</h3>";
+        print "<span style=\"font-size:16px;\">Freiwillige Angabe / Erhebung zu statistischen Zwecken.</span>";
         print "<div class=\"form-container\">";
 
         if(isset($_SESSION['storages']))
@@ -447,7 +450,7 @@ class VIEW_JOIN
 
     private function view_render_navigation()
     {
-        print "<br />";
+        print "<br />&nbsp;<br />";
 
         switch($_REQUEST['join'])
         {
@@ -468,6 +471,8 @@ class VIEW_JOIN
             default:
                 break;
         }
+
+        print "<br />";
 
     }
 
