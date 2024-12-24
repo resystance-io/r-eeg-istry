@@ -286,6 +286,13 @@ class VIEW_JOIN
         print "&nbsp;<br>Deine Daten werden schnellstm&ouml;glich &uuml;berpr&uuml;ft und in unser System &uuml;bernommen.<br />Sobald das Datum feststeht ab dem du eneuerbare Energie aus unserer Gemeinschaft beziehen wirst, kontaktieren wir dich umgehend. <br /><br />Solltest du Fragen haben, stehen wir dir selbstverst&auml;ndlich gerne zur Verf&uuml;gung.<br />";
 
         print "<br />&nbsp;<br />&nbsp;<br />";
+        print "<h3>Dein Passwort:</h3>";
+        print "<div class=\"form-container\">";
+        print "<h2>" . $_SESSION['mnemonic'] . "</h2>";
+        print "Du kannst dieses Passwort nutzen um jederzeit den Bearbeitungsfortschritt deines Antrages einzusehen und um deine Daten zu &auml;ndern.<br />Bitte bewahre es gut auf!";
+        print "</div>";
+
+        print "<br />&nbsp;<br />&nbsp;<br />";
         print "<h3>SESSION DUMP:</h3>";
         print "<div class=\"form-container\">";
         print "<pre>";

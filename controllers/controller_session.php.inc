@@ -48,13 +48,47 @@ class CONTROLLER_SESSION
             $_SESSION['authenticated'] = false;
 
             // registration mnemonic
-            $_SESSION['mnemonic'] = false;
+            $_SESSION['mnemonic'] = $this->generate_session_mnemonic();
 
             // consumption meters
             $_SESSION['consumers'][0] = '000000000';
 
             // supply meters
             $_SESSION['suppliers'][0] = '000000000';
+
+            // if the user hit a deep link by accident, do a throwback to the start page
+            header("Location: /");
+        }
+    }
+
+    private function generate_session_mnemonic()
+    {
+
+        if (file_exists('assets/wordlists/mnemonics.txt'))
+        {
+            // Read the file into an array, one word per line
+            $words = file('assets/wordlists/mnemonics.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
+            if ($words && count($words) >= 5)
+            {
+                // Shuffle the array and pick the first 4 words
+                shuffle($words);
+                $selectedWords = array_slice($words, 0, 5);
+
+                // Join the selected words with "-"
+                $mnemonic = implode('-', $selectedWords);
+
+                return $mnemonic;
+
+            }
+            else
+            {
+                throw new Exception('The wordlist file does not contain enough words.');
+            }
+        }
+        else
+        {
+            throw new Exception('Wordlist file not found.');
         }
     }
 
