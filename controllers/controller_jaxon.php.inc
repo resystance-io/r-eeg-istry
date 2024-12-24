@@ -518,7 +518,7 @@ class Interactives
                 case 'booltrue':
                     if(isset($value))
                     {
-                        if($value == 'true' || $value == '1' || $value == 'yes' || $value === true)
+                        if($value == 'true' || $value == '1' || $value == 'yes')
                         {
                             return true;
                         }
