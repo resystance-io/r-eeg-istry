@@ -47,17 +47,37 @@ class CONTROLLER_SESSION
             // store additional metadata
             $_SESSION['authenticated'] = false;
 
+            // finished flag
+            $_SESSION['finished'] = false;
+
             // registration mnemonic
             $_SESSION['mnemonic'] = $this->generate_session_mnemonic();
 
             // consumption meters
             $_SESSION['consumers'][0] = '000000000';
 
-            // supply meters
-            $_SESSION['suppliers'][0] = '000000000';
-
             // if the user hit a deep link by accident, do a throwback to the start page
             header("Location: /");
+        }
+        else
+        {
+            if($_SESSION['finished'] === true)
+            {
+                // this registration was already finished.
+                // delete all session data and start over
+
+                session_regenerate_id();
+
+                unset($_SESSION['generic_information']);
+                unset($_SESSION['meters']);
+                unset($_SESSION['storages']);
+
+                $_SESSION['created'] = time();
+                $_SESSION['authenticated'] = false;
+
+                // we finished this session and created a new one. Do a throwback.
+                header("Location: /");
+            }
         }
     }
 
@@ -71,12 +91,27 @@ class CONTROLLER_SESSION
 
             if ($words && count($words) >= 5)
             {
-                // Shuffle the array and pick the first 4 words
+                // Shuffle the array and pick the first 5 words
                 shuffle($words);
                 $selectedWords = array_slice($words, 0, 5);
 
                 // Join the selected words with "-"
                 $mnemonic = implode('-', $selectedWords);
+
+                // check if we used this mnemonic earlier. if yes, reshuffle and try again
+                $hashed_mnemonic = hash('sha256', $mnemonic);
+                while($this->object_broker->instance['db']->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_REGISTRATIONS'],'mnemonic',$hashed_mnemonic) > 0)
+                {
+                    // Shuffle the array and pick the first 5 words
+                    shuffle($words);
+                    $selectedWords = array_slice($words, 0, 5);
+
+                    // Join the selected words with "-"
+                    $mnemonic = implode('-', $selectedWords);
+
+                    // check if we used this mnemonic earlier. if yes, reshuffle and try again
+                    $hashed_mnemonic = hash('sha256', $mnemonic);
+                }
 
                 return $mnemonic;
 

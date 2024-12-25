@@ -265,9 +265,9 @@ class VIEW_JOIN
         print "<h3>Kontoinformationen</h3>";
         print "<div class=\"form-container\">";
 
-        $this->view_render_part_captioned_inputfield("Name d. Kontoinhabers", "bankingname", "generic_information", "required");
-        $this->view_render_part_captioned_inputfield("IBAN", "bankingiban", "generic_information", "iban");
-        $this->view_render_part_annotated_checkbox("Hiermit best&auml;tige ich die Richtigkeit der angegebenen Kontoinformationen<br />und erm&auml;chtige VIERE zum Bankeinzug im Rahmen der Leistungsabrechnung", "bankingauthorization", "generic_information", "booltrue");
+        $this->view_render_part_captioned_inputfield("Name d. Kontoinhabers", "banking_name", "generic_information", "required");
+        $this->view_render_part_captioned_inputfield("IBAN", "banking_iban", "generic_information", "iban");
+        $this->view_render_part_annotated_checkbox("Hiermit best&auml;tige ich die Richtigkeit der angegebenen Kontoinformationen<br />und erm&auml;chtige VIERE zum Bankeinzug im Rahmen der Leistungsabrechnung", "banking_consent", "generic_information", "booltrue");
 
         print "</div><br />";
 
@@ -275,6 +275,9 @@ class VIEW_JOIN
 
     private function view_render_finished()
     {
+
+        $_SESSION['finished'] = true;
+
         print '
                     <header id="header">
                         <h1>Erneuerbare Energiegemeinschaft VIERE</h1>
@@ -300,6 +303,38 @@ class VIEW_JOIN
         print "</pre>";
         print "</div>";
 
+        // check if this mnemonic was already stored
+        $hashed_mnemonic = hash('sha256', $_SESSION['mnemonic']);
+        $mnemonic_count = $this->object_broker->instance['db']->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_REGISTRATIONS'],'mnemonic',$hashed_mnemonic);
+
+        if($mnemonic_count > 0)
+        {
+            $registration_array['registration_date'] = time();
+            $registration_array['structure_version'] = 1;
+            $registration_array['mnemonic'] = $hashed_mnemonic;
+            $registration_array['type'] = $_SESSION['generic_information']['join_type'];
+
+            if (isset($_SESSION['generic_information']['company']['value'])) $registration_array['company_name'] = $_SESSION['generic_information']['company']['value'];
+            if (isset($_SESSION['generic_information']['uid']['value'])) $registration_array['uid'] = $_SESSION['generic_information']['uid']['value'];
+            if (isset($_SESSION['generic_information']['firstname']['value'])) $registration_array['firstname'] = $_SESSION['generic_information']['firstname']['value'];
+            if (isset($_SESSION['generic_information']['lastname']['value'])) $registration_array['lastname'] = $_SESSION['generic_information']['lastname']['value'];
+            if (isset($_SESSION['generic_information']['street']['value'])) $registration_array['street'] = $_SESSION['generic_information']['street']['value'];
+            if (isset($_SESSION['generic_information']['number']['value'])) $registration_array['number'] = $_SESSION['generic_information']['number']['value'];
+            if (isset($_SESSION['generic_information']['zip']['value'])) $registration_array['zip'] = $_SESSION['generic_information']['zip']['value'];
+            if (isset($_SESSION['generic_information']['city']['value'])) $registration_array['city'] = $_SESSION['generic_information']['city']['value'];
+            if (isset($_SESSION['generic_information']['phone']['value'])) $registration_array['phone'] = $_SESSION['generic_information']['phone']['value'];
+            if (isset($_SESSION['generic_information']['email']['value'])) $registration_array['email'] = $_SESSION['generic_information']['email']['value'];
+            if (isset($_SESSION['generic_information']['birthdate']['value'])) $registration_array['birthdate'] = $_SESSION['generic_information']['birthdate']['value'];
+
+            if (isset($_SESSION['generic_information']['banking_name']['value'])) $registration_array['banking_name'] = $_SESSION['generic_information']['banking_name']['value'];
+            if (isset($_SESSION['generic_information']['banking_iban']['value'])) $registration_array['banking_iban'] = $_SESSION['generic_information']['banking_iban']['value'];
+            if (isset($_SESSION['generic_information']['banking_consent']['value']) && $_SESSION['generic_information']['banking_consent']['value'] == '1') $registration_array['banking_consent'] = time();
+
+            if (isset($_SESSION['meters'])) $registration_array['meters'] = json_encode($_SESSION['meters']);
+            if (isset($_SESSION['storages'])) $registration_array['storages'] = json_encode($_SESSION['storages']);
+
+            $this->object_broker->instance['db']->insert_row_with_array($this->config->user['DBTABLE_REGISTRATIONS'], $registration_array);
+        }
     }
 
     private function view_render_consumption_meters()

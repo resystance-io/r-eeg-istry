@@ -420,22 +420,22 @@ class Interactives
         $failmsg = null;
         $focustarget = null;
 
-        if($this->validate_record($_SESSION['generic_information']['bankingname']['value'], $_SESSION['generic_information']['bankingname']['integrity']) === false)
+        if($this->validate_record($_SESSION['generic_information']['banking_name']['value'], $_SESSION['generic_information']['banking_name']['integrity']) === false)
         {
             $failmsg = "Bitte überprüfen Sie den Namen d. Kontoinhabers";
-            $focustarget = 'bankingname';
+            $focustarget = 'banking_name';
         }
 
-        if($this->validate_record($_SESSION['generic_information']['bankingiban']['value'], $_SESSION['generic_information']['bankingiban']['integrity']) === false)
+        if($this->validate_record($_SESSION['generic_information']['banking_iban']['value'], $_SESSION['generic_information']['banking_iban']['integrity']) === false)
         {
             $failmsg = "Bitte überprüfen Sie die IBAN";
-            $focustarget = 'bankingiban';
+            $focustarget = 'banking_iban';
         }
 
-        if($this->validate_record($_SESSION['generic_information']['bankingauthorization']['value'], $_SESSION['generic_information']['bankingauthorization']['integrity']) === false)
+        if($this->validate_record($_SESSION['generic_information']['banking_consent']['value'], $_SESSION['generic_information']['banking_consent']['integrity']) === false)
         {
             $failmsg = "Bitte bestätigen Sie die Autorisierung zum Bankeinzug";
-            $focustarget = 'bankingauthorization';
+            $focustarget = 'banking_consent';
         }
 
         if($failmsg)
