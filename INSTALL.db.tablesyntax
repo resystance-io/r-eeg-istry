@@ -24,3 +24,19 @@ CREATE TABLE `registrations` (
   `delivery_date` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `meters` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `registration_id` int(11) DEFAULT NULL,
+  `meter_id` varchar(40) DEFAULT NULL,
+  `meter_uuid` varchar(40) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `storages` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `registration_id` int(11) DEFAULT NULL,
+  `storage_uuid` varchar(40) DEFAULT NULL,
+  `storage_capacity` varchar(6) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

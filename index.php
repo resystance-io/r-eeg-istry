@@ -20,6 +20,9 @@
     include_once('controllers/controller_session.php.inc');
     $session = $object_broker->instance['session'] = new CONTROLLER_SESSION($object_broker);
 
+    // that's probably a bad idea, .. but it's a workaround I need for now
+    $_SESSION['object_broker'] = $object_broker;
+
     require('./vendor/autoload.php');
 
     use Jaxon\Jaxon;
@@ -61,7 +64,14 @@
             elseif(isset($_REQUEST['lookup']))
             {
                 include_once('views/view_lookup.inc.php');
-                view_render();
+                $view_lookup = new VIEW_LOOKUP($object_broker);
+                $view_lookup->view_render();
+            }
+            elseif(isset($_REQUEST['debug']))
+            {
+                include_once('views/view_debug.inc.php');
+                $view_debug = new VIEW_DEBUG();
+                $view_debug->view_render();
             }
             else
             {

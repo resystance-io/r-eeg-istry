@@ -4,7 +4,6 @@
     {
 ?>
 
-        <!--<input type="button" value="JAXON FOO TEST" onclick="jaxon_foo()" /><br />-->
         <header id="header">
             <h1>Erneuerbare Energiegemeinschaft VIERE</h1>
             <p>Wir sind die erste solidarische Energiegemeinschaft<br />f&uuml;r Waizenkirchen und Umgebung.<br /></p>

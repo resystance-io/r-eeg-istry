@@ -100,7 +100,6 @@ class VIEW_JOIN
         $this->view_render_part_captioned_inputfield("Telefonnummer", "phone", "generic_information", "phone");
         $this->view_render_part_captioned_inputfield("E-Mail Adresse", "email", "generic_information", "email");
 
-
         print "</div><br />";
 
         $this->view_render_consumption_meters();
@@ -112,6 +111,7 @@ class VIEW_JOIN
         print "<br />";
 
         $this->view_render_energy_storage();
+
     }
 
     private function view_render_individual()
@@ -292,22 +292,14 @@ class VIEW_JOIN
         print "<h3>Dein Passwort:</h3>";
         print "<div class=\"form-container\">";
         print "<h2>" . $_SESSION['mnemonic'] . "</h2>";
-        print "Du kannst dieses Passwort nutzen um jederzeit den Bearbeitungsfortschritt deines Antrages einzusehen und um deine Daten zu &auml;ndern.<br />Bitte bewahre es gut auf!";
-        print "</div>";
-
-        print "<br />&nbsp;<br />&nbsp;<br />";
-        print "<h3>SESSION DUMP:</h3>";
-        print "<div class=\"form-container\">";
-        print "<pre>";
-        print_r($_SESSION);
-        print "</pre>";
+        print "Du kannst dieses Passwort nutzen um jederzeit den Bearbeitungsfortschritt deines Antrages einzusehen - und natürlich um deine Daten zu &auml;ndern.<br />Bitte bewahre es gut auf!";
         print "</div>";
 
         // check if this mnemonic was already stored
         $hashed_mnemonic = hash('sha256', $_SESSION['mnemonic']);
         $mnemonic_count = $this->object_broker->instance['db']->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_REGISTRATIONS'],'mnemonic',$hashed_mnemonic);
 
-        if($mnemonic_count > 0)
+        if($mnemonic_count == 0)
         {
             $registration_array['registration_date'] = time();
             $registration_array['structure_version'] = 1;
@@ -333,7 +325,41 @@ class VIEW_JOIN
             if (isset($_SESSION['meters'])) $registration_array['meters'] = json_encode($_SESSION['meters']);
             if (isset($_SESSION['storages'])) $registration_array['storages'] = json_encode($_SESSION['storages']);
 
-            $this->object_broker->instance['db']->insert_row_with_array($this->config->user['DBTABLE_REGISTRATIONS'], $registration_array);
+            $registration_autoinc_id = $this->object_broker->instance['db']->insert_row_with_array($this->config->user['DBTABLE_REGISTRATIONS'], $registration_array);
+
+            if(isset($_SESSION['meters']))
+            {
+                foreach($_SESSION['meters'] as $meter_key => $meter_object)
+                {
+                    if($meter_object['type'] == "suppliers")
+                    {
+                        $meter_type = 'supplier';
+                    }
+                    elseif($meter_object['type'] == "consumers")
+                    {
+                        $meter_type = 'consumer';
+                    }
+
+                    $meter_array['registration_id'] = $registration_autoinc_id;
+                    $meter_array['meter_id'] = $meter_object['prefix'] . $meter_object['value'];
+                    $meter_array['meter_uuid'] = $meter_key;
+                    $meter_array['meter_type'] = $meter_type;
+
+                    $meter_autoinc_id = $this->object_broker->instance['db']->insert_row_with_array($this->config->user['DBTABLE_METERS'], $meter_array);
+                }
+            }
+
+            if(isset($_SESSION['storages']))
+            {
+                foreach($_SESSION['storages'] as $storage_key => $storage_object)
+                {
+                    $storage_array['registration_id'] = $registration_autoinc_id;
+                    $storage_array['storage_uuid'] = $storage_key;
+                    $storage_array['storage_capacity'] = $storage_object['value'];
+
+                    $storage_autoinc_id = $this->object_broker->instance['db']->insert_row_with_array($this->config->user['DBTABLE_STORAGES'], $storage_array);
+                }
+            }
         }
     }
 
@@ -509,6 +535,24 @@ class VIEW_JOIN
 
             case 'banking':
                 print '<button type="button" class="defaultbtn" id="btn_step_finish" onClick="JaxonInteractives.step_finish();">Anmeldung abschlie&szlig;en</button>';
+                break;
+
+            case 'finished':
+
+                print '
+    <script>
+        function confirmStartover()
+        {
+          if (confirm("Ja, ich habe das Passwort notiert oder gespeichert"))
+          {
+                window.location.href="/";
+          }
+        }
+    </script>
+';
+
+
+                print '<button type="button" class="defaultbtn" id="btn_step_startover" onClick="confirmStartover();">Zur&uuml;ck zur Hauptseite</button>';
                 break;
 
             default:

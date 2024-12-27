@@ -15,6 +15,8 @@ class CONTROLLER_SESSION
     public function __construct($object_broker)
     {
         $this->object_broker = $object_broker;
+        $this->db = $this->object_broker->instance['db'];
+        $this->config = $this->object_broker->instance['config'];
         $this->dispatcher();
     }
 
@@ -53,9 +55,6 @@ class CONTROLLER_SESSION
             // registration mnemonic
             $_SESSION['mnemonic'] = $this->generate_session_mnemonic();
 
-            // consumption meters
-            $_SESSION['consumers'][0] = '000000000';
-
             // if the user hit a deep link by accident, do a throwback to the start page
             header("Location: /");
         }
@@ -66,14 +65,8 @@ class CONTROLLER_SESSION
                 // this registration was already finished.
                 // delete all session data and start over
 
+                session_unset();
                 session_regenerate_id();
-
-                unset($_SESSION['generic_information']);
-                unset($_SESSION['meters']);
-                unset($_SESSION['storages']);
-
-                $_SESSION['created'] = time();
-                $_SESSION['authenticated'] = false;
 
                 // we finished this session and created a new one. Do a throwback.
                 header("Location: /");

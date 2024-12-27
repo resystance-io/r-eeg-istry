@@ -10,6 +10,8 @@ $DBLOGON_DB             =   '';
 /////////* DATABASE TABLE MAPPINGS *///////////
 
 $DBTABLE_REGISTRATIONS		= 	'registrations';
+$DBTABLE_METERS             =   'meters';
+$DBTABLE_STORAGES           =   'storages';
 
 /////////* EEG SPECIFIC DATA *///////////////
 

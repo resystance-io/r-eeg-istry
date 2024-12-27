@@ -5,8 +5,6 @@ use function Jaxon\jaxon;
 class Interactives
 {
 
-    private $object_broker;
-    private $session;
     private $config;
 
     public function __construct()
@@ -18,6 +16,14 @@ class Interactives
     {
 
     }
+
+    public function authenticate($username, $password, $dbobject)
+    {
+        $response = jaxon()->newResponse();
+        $response->script("window.location.href='/?lookup=profile';");
+        return $response;
+    }
+
     public function add_meter($meter_type, $prefix)
     {
         $response = jaxon()->newResponse();
@@ -330,9 +336,11 @@ class Interactives
         {
             if($this->validate_record($meter_object['value'], 'meter_shortid') === false)
             {
-                $failmsg = "Bitte überprüfen Sie die Zählpunktnummer";
+                $failmsg = "Fehlerhaftes Format: Bitte überprüfen Sie die Zählpunktnummer";
                 $focustarget = $meter_key;
             }
+
+
         }
 
         foreach($_SESSION['storages'] as $storage_key => $storage_object)
