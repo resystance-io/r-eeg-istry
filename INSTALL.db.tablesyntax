@@ -17,8 +17,6 @@ CREATE TABLE `registrations` (
   `banking_name` varchar(128) DEFAULT NULL,
   `banking_iban` varchar(34) DEFAULT NULL,
   `banking_consent` int(11) unsigned DEFAULT NULL COMMENT 'good until March 7, 2106',
-  `meters` text DEFAULT NULL,
-  `storages` text DEFAULT NULL,
   `registration_date` int(11) unsigned DEFAULT NULL,
   `migration_date` int(11) unsigned DEFAULT NULL,
   `delivery_date` int(11) unsigned DEFAULT NULL,
@@ -31,8 +29,14 @@ CREATE TABLE `meters` (
   `registration_id` int(11) DEFAULT NULL,
   `meter_id` varchar(40) DEFAULT NULL,
   `meter_uuid` varchar(40) DEFAULT NULL,
+  `meter_type` enum('supplier','consumer') DEFAULT NULL,
+  `meter_power` varchar(6) DEFAULT NULL,
+  `meter_addr_street` varchar(64) DEFAULT NULL,
+  `meter_addr_number` varchar(16) DEFAULT NULL,
+  `meter_addr_zip` smallint(5) unsigned DEFAULT NULL,
+  `meter_addr_city` varchar(32) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE `storages` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,

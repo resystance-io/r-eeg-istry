@@ -322,9 +322,6 @@ class VIEW_JOIN
             if (isset($_SESSION['generic_information']['banking_iban']['value'])) $registration_array['banking_iban'] = $_SESSION['generic_information']['banking_iban']['value'];
             if (isset($_SESSION['generic_information']['banking_consent']['value']) && $_SESSION['generic_information']['banking_consent']['value'] == '1') $registration_array['banking_consent'] = time();
 
-            if (isset($_SESSION['meters'])) $registration_array['meters'] = json_encode($_SESSION['meters']);
-            if (isset($_SESSION['storages'])) $registration_array['storages'] = json_encode($_SESSION['storages']);
-
             $registration_autoinc_id = $this->object_broker->instance['db']->insert_row_with_array($this->config->user['DBTABLE_REGISTRATIONS'], $registration_array);
 
             if(isset($_SESSION['meters']))
@@ -334,6 +331,7 @@ class VIEW_JOIN
                     if($meter_object['type'] == "suppliers")
                     {
                         $meter_type = 'supplier';
+                        $meter_array['meter_power'] = $meter_object['power']['value'];
                     }
                     elseif($meter_object['type'] == "consumers")
                     {
@@ -344,6 +342,10 @@ class VIEW_JOIN
                     $meter_array['meter_id'] = $meter_object['prefix'] . $meter_object['value'];
                     $meter_array['meter_uuid'] = $meter_key;
                     $meter_array['meter_type'] = $meter_type;
+                    $meter_array['meter_addr_street'] = $meter_object['street']['value'];
+                    $meter_array['meter_addr_number'] = $meter_object['number']['value'];
+                    $meter_array['meter_addr_city'] = $meter_object['city']['value'];
+                    $meter_array['meter_addr_zip'] = $meter_object['zip']['value'];
 
                     $meter_autoinc_id = $this->object_broker->instance['db']->insert_row_with_array($this->config->user['DBTABLE_METERS'], $meter_array);
                 }

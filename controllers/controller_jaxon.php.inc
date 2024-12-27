@@ -214,6 +214,22 @@ class Interactives
     {
         $failmsg = null;
         $focustarget = null;
+
+        include_once('object_broker.php.inc');
+        $object_broker = new OBJECT_BROKER();
+        $object_broker->instance['config'] = $this->config;
+        include_once('controllers/controller_db.php.inc');
+        $db = new CONTROLLER_DB($object_broker);
+
+        $email_already_used = $db->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_REGISTRATIONS'],'email',$_SESSION['generic_information']['email']['value']);
+        if($email_already_used > 0)
+        {
+            $response = jaxon()->newResponse();
+            $response->alert("Diese E-Mail-Adresse ist bereits einem Benutzer dieser EEG zugeordnet");
+            $response->script("document.getElementById('email').focus();");
+            return $response;
+        }
+
         switch($_SESSION['generic_information']['join_type'])
         {
             case 'company':
@@ -393,8 +409,17 @@ class Interactives
                 $failmsg = "Fehlerhaftes Format: Bitte überprüfen Sie die Zählpunktnummer";
                 $focustarget = $meter_key;
             }
-
-
+            else
+            {
+                $meter_id_count = $db->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_METERS'],'meter_id', $meter_object['prefix'] . $meter_object['value']);
+                if($meter_id_count > 0)
+                {
+                    $response = jaxon()->newResponse();
+                    $response->alert("Dieser Zählpunkt ist bereits einem Mitglied dieser EEG zugeordnet");
+                    $response->script("document.getElementById('" . $meter_key . "').focus();");
+                    return $response;
+                }
+            }
         }
 
         foreach($_SESSION['storages'] as $storage_key => $storage_object)
