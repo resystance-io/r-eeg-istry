@@ -22,6 +22,7 @@ CREATE TABLE `registrations` (
   `registration_date` int(11) unsigned DEFAULT NULL,
   `migration_date` int(11) unsigned DEFAULT NULL,
   `delivery_date` int(11) unsigned DEFAULT NULL,
+  `ip_address` varchar(128) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
