@@ -17,11 +17,51 @@ class Interactives
 
     }
 
-    public function authenticate($username, $password, $dbobject)
+    public function deauthenticate()
     {
+        session_unset();
+
         $response = jaxon()->newResponse();
-        $response->script("window.location.href='/?lookup=profile';");
+        $response->script("window.location.href='/';");
         return $response;
+    }
+
+    public function authenticate()
+    {
+        if(isset($_SESSION['auth_email']) && !filter_var($_SESSION['auth_email'], FILTER_VALIDATE_EMAIL))
+        {
+            $response = jaxon()->newResponse();
+            $response->alert("Das Format der eMail Adresse ist nicht korrekt.");
+            return $response;
+        }
+
+        $username = $_SESSION['auth_email'];
+        $password = $_SESSION['auth_mnemonic'];
+
+        if(isset($_SESSION['auth_mnemonic'])) unset($_SESSION['auth_mnemonic']);
+
+        include_once('object_broker.php.inc');
+        $object_broker = new OBJECT_BROKER();
+        $object_broker->instance['config'] = $this->config;
+        include_once('controllers/controller_db.php.inc');
+        $db = new CONTROLLER_DB($object_broker);
+
+        $hashed_mnemonic_provided = hash('sha256', $password);
+        $hashed_mnemonic_stored = $db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'mnemonic', 'email', $username);
+
+        if($hashed_mnemonic_provided == $hashed_mnemonic_stored)
+        {
+            $_SESSION['authenticated'] = $username;
+            $response = jaxon()->newResponse();
+            $response->script("window.location.href='/?lookup=profile';");
+            return $response;
+        }
+        else
+        {
+            $response = jaxon()->newResponse();
+            $response->alert("Die Zugangsdaten sind leider nicht korrekt:\n1: $hashed_mnemonic_provided\n2: $hashed_mnemonic_stored");
+            return $response;
+        }
     }
 
     public function add_meter($meter_type, $prefix)
@@ -149,6 +189,20 @@ class Interactives
         $_SESSION["$session_bucket"]["$record"]["value"] = $value;
         $response = jaxon()->newResponse();
         return $response;
+    }
+
+    public function update_credential_cache($record, $value)
+    {
+        switch ($record)
+        {
+            case 'auth_email':
+                $_SESSION['auth_email'] = $value;
+                break;
+
+            case 'auth_mnemonic':
+                $_SESSION['auth_mnemonic'] = $value;
+                break;
+        }
     }
 
     public function update_meter_detail($meter_key, $record, $value)

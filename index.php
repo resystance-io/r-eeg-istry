@@ -20,9 +20,6 @@
     include_once('controllers/controller_session.php.inc');
     $session = $object_broker->instance['session'] = new CONTROLLER_SESSION($object_broker);
 
-    // that's probably a bad idea, .. but it's a workaround I need for now
-    $_SESSION['object_broker'] = $object_broker;
-
     require('./vendor/autoload.php');
 
     use Jaxon\Jaxon;
