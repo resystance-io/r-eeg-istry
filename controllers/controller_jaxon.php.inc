@@ -31,7 +31,7 @@ class Interactives
         if(isset($_SESSION['auth_email']) && !filter_var($_SESSION['auth_email'], FILTER_VALIDATE_EMAIL))
         {
             $response = jaxon()->newResponse();
-            $response->alert("Das Format der eMail Adresse ist nicht korrekt.");
+            $response->alert("Das Format der eMail Adresse ist nicht korrekt");
             return $response;
         }
 
@@ -59,7 +59,7 @@ class Interactives
         else
         {
             $response = jaxon()->newResponse();
-            $response->alert("Die Zugangsdaten sind leider nicht korrekt:\n1: $hashed_mnemonic_provided\n2: $hashed_mnemonic_stored");
+            $response->alert("Bitte überprüfe die angegebenen Anmeldedaten");
             return $response;
         }
     }
