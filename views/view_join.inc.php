@@ -337,6 +337,15 @@ class VIEW_JOIN
             if (isset($_SESSION['generic_information']['banking_iban']['value'])) $registration_array['banking_iban'] = $_SESSION['generic_information']['banking_iban']['value'];
             if (isset($_SESSION['generic_information']['banking_consent']['value']) && $_SESSION['generic_information']['banking_consent']['value'] == '1') $registration_array['banking_consent'] = time();
 
+            if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
+            {
+                $registration_array['ip_address'] = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0];
+            }
+            else
+            {
+                $registration_array['ip_address'] = $_SERVER['REMOTE_ADDR'];
+            }
+
             $registration_autoinc_id = $this->object_broker->instance['db']->insert_row_with_array($this->config->user['DBTABLE_REGISTRATIONS'], $registration_array);
 
             if(isset($_SESSION['meters']))
