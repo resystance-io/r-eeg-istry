@@ -18,6 +18,17 @@ $DBTABLE_STORAGES           =   'storages';
 $EEG_CONSUMERS_PREFIX = 'AT000000000000000000000000';
 $EEG_SUPPLIERS_PREFIX = 'AT000000000000000000000000';
 
+/////* LAYOUT SPECIFIC CONFIGURATION *///////////
+
+$JOIN_LAYOUT = [
+    ['generic'],
+    ['consumption'],
+    ['supply'],
+    ['storage'],
+    ['meters'],
+    ['banking']
+];
+
 // shall we print debug messages?
 // (enabling this in production is a hell of a bad idea)
 $debug                  =   false;

@@ -5,13 +5,22 @@ use function Jaxon\jaxon;
 class Interactives
 {
 
+    private $object_broker;
     private $config;
+    private $db;
 
     public function __construct()
     {
+        include_once('object_broker.php.inc');
+        $this->object_broker = new OBJECT_BROKER();
+
         include_once('controllers/controller_config.php.inc');
-        $this->config = new CONTROLLER_CONFIG();
+        $this->config = $this->object_broker->instance['config'] = new CONTROLLER_CONFIG();
+
+        include_once('controllers/controller_db.php.inc');
+        $this->db = $this->object_broker->instance['db'] = new CONTROLLER_DB($this->object_broker);
     }
+
     public function __destruct()
     {
 
@@ -40,14 +49,8 @@ class Interactives
 
         if(isset($_SESSION['auth_mnemonic'])) unset($_SESSION['auth_mnemonic']);
 
-        include_once('object_broker.php.inc');
-        $object_broker = new OBJECT_BROKER();
-        $object_broker->instance['config'] = $this->config;
-        include_once('controllers/controller_db.php.inc');
-        $db = new CONTROLLER_DB($object_broker);
-
         $hashed_mnemonic_provided = hash('sha256', $password);
-        $hashed_mnemonic_stored = $db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'mnemonic', 'email', $username);
+        $hashed_mnemonic_stored = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'mnemonic', 'email', $username);
 
         if($hashed_mnemonic_provided == $hashed_mnemonic_stored)
         {
@@ -210,18 +213,89 @@ class Interactives
         $_SESSION['meters']["$meter_key"]["$record"]['value'] = $value;
     }
 
-    public function step_generic_to_meters()
+    public function next_step($current_step)
+    {
+        $response = jaxon()->newResponse();
+
+        if(isset($this->config->user['JOIN_LAYOUT'][$current_step]))
+        {
+            foreach($this->config->user['JOIN_LAYOUT'][$current_step] as $panel)
+            {
+                switch($panel)
+                {
+                    case 'generic':
+                        if($_SESSION['generic_information']['join_type'] == 'company')
+                        {
+                            if($this->check_step_integrity_company($response) === false)
+                            {
+                                return $response;
+                            }
+                        }
+                        elseif($_SESSION['generic_information']['join_type'] == 'individual')
+                        {
+                            if($this->check_step_integrity_individual($response) === false)
+                            {
+                                return $response;
+                            }
+                        }
+                        elseif($_SESSION['generic_information']['join_type'] == 'agriculture')
+                        {
+                            if($this->check_step_integrity_agriculture($response) === false)
+                            {
+                                return $response;
+                            }
+                        }
+                        break;
+
+                    case 'consumption':
+                        if($this->check_step_integrity_meters($response) === false)
+                        {
+                            return $response;
+                        }
+                        break;
+
+                    case 'supply':
+                        if($this->check_step_integrity_meters($response) === false)
+                        {
+                            return $response;
+                        }
+                        break;
+
+                    case 'storage':
+                        if($this->check_step_integrity_storages($response) === false)
+                        {
+                            return $response;
+                        }
+                        break;
+
+                    case 'banking':
+                        if($this->check_step_integrity_banking($response) === false)
+                        {
+                            return $response;
+                        }
+                        break;
+
+                    case 'meters':
+                        if($this->check_step_meter_details($response) === false)
+                        {
+                            return $response;
+                        }
+                        break;
+                }
+            }
+
+            $next_step = $current_step + 1;
+            $response->script("window.location.href='/?join=" . $_SESSION['generic_information']['join_type'] .  "&step=" . $next_step . "';");
+            return $response;
+        }
+    }
+
+    public function check_step_integrity_company(&$jaxon_response_object)
     {
         $failmsg = null;
         $focustarget = null;
 
-        include_once('object_broker.php.inc');
-        $object_broker = new OBJECT_BROKER();
-        $object_broker->instance['config'] = $this->config;
-        include_once('controllers/controller_db.php.inc');
-        $db = new CONTROLLER_DB($object_broker);
-
-        $email_already_used = $db->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_REGISTRATIONS'],'email',$_SESSION['generic_information']['email']['value']);
+        $email_already_used = $this->db->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_REGISTRATIONS'],'email',$_SESSION['generic_information']['email']['value']);
         if($email_already_used > 0)
         {
             $response = jaxon()->newResponse();
@@ -230,177 +304,225 @@ class Interactives
             return $response;
         }
 
-        switch($_SESSION['generic_information']['join_type'])
+        if($this->validate_record($_SESSION['generic_information']['company']['value'], $_SESSION['generic_information']['company']['integrity']) === false)
         {
-            case 'company':
-
-                if($this->validate_record($_SESSION['generic_information']['company']['value'], $_SESSION['generic_information']['company']['integrity']) === false)
-                {
-                    $failmsg = "Bitte überprüfen Sie den Firmenwortlaut";
-                    $focustarget = 'company';
-                }
-
-                if($this->validate_record($_SESSION['generic_information']['street']['value'], $_SESSION['generic_information']['street']['integrity']) === false)
-                {
-                    $failmsg = "Bitte überprüfen Sie die Straße";
-                    $focustarget = 'street';
-                }
-
-                if($this->validate_record($_SESSION['generic_information']['zip']['value'], $_SESSION['generic_information']['zip']['integrity']) === false)
-                {
-                    $failmsg = "Bitte überprüfen Sie die Postleitzahl";
-                    $focustarget = 'zip';
-                }
-
-                if($this->validate_record($_SESSION['generic_information']['city']['value'], $_SESSION['generic_information']['city']['integrity']) === false)
-                {
-                    $failmsg = "Bitte überprüfen Sie den Ort";
-                    $focustarget = 'city';
-                }
-
-                if($this->validate_record($_SESSION['generic_information']['number']['value'], $_SESSION['generic_information']['number']['integrity']) === false)
-                {
-                    $failmsg = "Bitte überprüfen Sie die Hausnummer";
-                    $focustarget = 'number';
-                }
-
-                if($this->validate_record($_SESSION['generic_information']['phone']['value'], $_SESSION['generic_information']['phone']['integrity']) === false)
-                {
-                    $failmsg = "Bitte überprüfen Sie die Telefonnummer";
-                    $focustarget = 'phone';
-                }
-
-                if($this->validate_record($_SESSION['generic_information']['email']['value'], $_SESSION['generic_information']['email']['integrity']) === false)
-                {
-                    $failmsg = "Bitte überprüfen Sie die eMail Adresse";
-                    $focustarget = 'email';
-                }
-
-                if($this->validate_record($_SESSION['generic_information']['uid']['value'], $_SESSION['generic_information']['uid']['integrity']) === false)
-                {
-                    $failmsg = "Bitte überprüfen Sie die UID";
-                    $focustarget = 'uid';
-                }
-
-                break;
-
-            case 'individual':
-
-                if($this->validate_record($_SESSION['generic_information']['firstname']['value'], $_SESSION['generic_information']['firstname']['integrity']) === false)
-                {
-                    $failmsg = "Bitte überprüfen Sie den Vornamen";
-                    $focustarget = 'firstname';
-                }
-
-                if($this->validate_record($_SESSION['generic_information']['lastname']['value'], $_SESSION['generic_information']['lastname']['integrity']) === false)
-                {
-                    $failmsg = "Bitte überprüfen Sie den Nachnamen";
-                    $focustarget = 'lastname';
-                }
-
-                if($this->validate_record($_SESSION['generic_information']['street']['value'], $_SESSION['generic_information']['street']['integrity']) === false)
-                {
-                    $failmsg = "Bitte überprüfen Sie die Straße";
-                    $focustarget = 'street';
-                }
-
-                if($this->validate_record($_SESSION['generic_information']['zip']['value'], $_SESSION['generic_information']['zip']['integrity']) === false)
-                {
-                    $failmsg = "Bitte überprüfen Sie die Postleitzahl";
-                    $focustarget = 'zip';
-                }
-
-                if($this->validate_record($_SESSION['generic_information']['city']['value'], $_SESSION['generic_information']['city']['integrity']) === false)
-                {
-                    $failmsg = "Bitte überprüfen Sie den Ort";
-                    $focustarget = 'city';
-                }
-
-                if($this->validate_record($_SESSION['generic_information']['number']['value'], $_SESSION['generic_information']['number']['integrity']) === false)
-                {
-                    $failmsg = "Bitte überprüfen Sie die Hausnummer";
-                    $focustarget = 'number';
-                }
-
-                if($this->validate_record($_SESSION['generic_information']['phone']['value'], $_SESSION['generic_information']['phone']['integrity']) === false)
-                {
-                    $failmsg = "Bitte überprüfen Sie die Telefonnummer";
-                    $focustarget = 'phone';
-                }
-
-                if($this->validate_record($_SESSION['generic_information']['email']['value'], $_SESSION['generic_information']['email']['integrity']) === false)
-                {
-                    $failmsg = "Bitte überprüfen Sie die eMail Adresse";
-                    $focustarget = 'email';
-                }
-
-                if($this->validate_record($_SESSION['generic_information']['birthdate']['value'], $_SESSION['generic_information']['birthdate']['integrity']) === false)
-                {
-                    $failmsg = "Bitte überprüfen Sie das Geburtsdatum";
-                    $focustarget = 'birthdate';
-                }
-
-                break;
-
-            case 'agriculture':
-
-                if($this->validate_record($_SESSION['generic_information']['firstname']['value'], $_SESSION['generic_information']['firstname']['integrity']) === false)
-                {
-                    $failmsg = "Bitte überprüfen Sie den Vornamen";
-                    $focustarget = 'firstname';
-                }
-
-                if($this->validate_record($_SESSION['generic_information']['lastname']['value'], $_SESSION['generic_information']['lastname']['integrity']) === false)
-                {
-                    $failmsg = "Bitte überprüfen Sie den Nachnamen";
-                    $focustarget = 'lastname';
-                }
-
-                if($this->validate_record($_SESSION['generic_information']['street']['value'], $_SESSION['generic_information']['street']['integrity']) === false)
-                {
-                    $failmsg = "Bitte überprüfen Sie die Straße";
-                    $focustarget = 'street';
-                }
-
-                if($this->validate_record($_SESSION['generic_information']['zip']['value'], $_SESSION['generic_information']['zip']['integrity']) === false)
-                {
-                    $failmsg = "Bitte überprüfen Sie die Postleitzahl";
-                    $focustarget = 'zip';
-                }
-
-                if($this->validate_record($_SESSION['generic_information']['city']['value'], $_SESSION['generic_information']['city']['integrity']) === false)
-                {
-                    $failmsg = "Bitte überprüfen Sie den Ort";
-                    $focustarget = 'city';
-                }
-
-                if($this->validate_record($_SESSION['generic_information']['number']['value'], $_SESSION['generic_information']['number']['integrity']) === false)
-                {
-                    $failmsg = "Bitte überprüfen Sie die Hausnummer";
-                    $focustarget = 'number';
-                }
-
-                if($this->validate_record($_SESSION['generic_information']['phone']['value'], $_SESSION['generic_information']['phone']['integrity']) === false)
-                {
-                    $failmsg = "Bitte überprüfen Sie die Telefonnummer";
-                    $focustarget = 'phone';
-                }
-
-                if($this->validate_record($_SESSION['generic_information']['email']['value'], $_SESSION['generic_information']['email']['integrity']) === false)
-                {
-                    $failmsg = "Bitte überprüfen Sie die eMail Adresse";
-                    $focustarget = 'email';
-                }
-
-                if($this->validate_record($_SESSION['generic_information']['birthdate']['value'], $_SESSION['generic_information']['birthdate']['integrity']) === false)
-                {
-                    $failmsg = "Bitte überprüfen Sie das Geburtsdatum";
-                    $focustarget = 'birthdate';
-                }
-
-                break;
-
+            $failmsg = "Bitte überprüfen Sie den Firmenwortlaut";
+            $focustarget = 'company';
         }
+
+        if($this->validate_record($_SESSION['generic_information']['street']['value'], $_SESSION['generic_information']['street']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie die Straße";
+            $focustarget = 'street';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['zip']['value'], $_SESSION['generic_information']['zip']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie die Postleitzahl";
+            $focustarget = 'zip';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['city']['value'], $_SESSION['generic_information']['city']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie den Ort";
+            $focustarget = 'city';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['number']['value'], $_SESSION['generic_information']['number']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie die Hausnummer";
+            $focustarget = 'number';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['phone']['value'], $_SESSION['generic_information']['phone']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie die Telefonnummer";
+            $focustarget = 'phone';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['email']['value'], $_SESSION['generic_information']['email']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie die eMail Adresse";
+            $focustarget = 'email';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['uid']['value'], $_SESSION['generic_information']['uid']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie die UID";
+            $focustarget = 'uid';
+        }
+
+        if($failmsg)
+        {
+            $jaxon_response_object->alert($failmsg);
+            $jaxon_response_object->script("document.getElementById('" . $focustarget . "').focus();");
+            return false;
+        }
+
+        return true;
+    }
+
+    public function check_step_integrity_individual(&$jaxon_response_object)
+    {
+        $failmsg = null;
+        $focustarget = null;
+
+        $email_already_used = $this->db->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_REGISTRATIONS'],'email',$_SESSION['generic_information']['email']['value']);
+        if($email_already_used > 0)
+        {
+            $response = jaxon()->newResponse();
+            $response->alert("Diese E-Mail-Adresse ist bereits einem Benutzer dieser EEG zugeordnet");
+            $response->script("document.getElementById('email').focus();");
+            return $response;
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['firstname']['value'], $_SESSION['generic_information']['firstname']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie den Vornamen";
+            $focustarget = 'firstname';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['lastname']['value'], $_SESSION['generic_information']['lastname']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie den Nachnamen";
+            $focustarget = 'lastname';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['street']['value'], $_SESSION['generic_information']['street']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie die Straße";
+            $focustarget = 'street';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['zip']['value'], $_SESSION['generic_information']['zip']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie die Postleitzahl";
+            $focustarget = 'zip';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['city']['value'], $_SESSION['generic_information']['city']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie den Ort";
+            $focustarget = 'city';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['number']['value'], $_SESSION['generic_information']['number']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie die Hausnummer";
+            $focustarget = 'number';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['phone']['value'], $_SESSION['generic_information']['phone']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie die Telefonnummer";
+            $focustarget = 'phone';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['email']['value'], $_SESSION['generic_information']['email']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie die eMail Adresse";
+            $focustarget = 'email';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['birthdate']['value'], $_SESSION['generic_information']['birthdate']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie das Geburtsdatum";
+            $focustarget = 'birthdate';
+        }
+
+        if($failmsg)
+        {
+            $jaxon_response_object->alert($failmsg);
+            $jaxon_response_object->script("document.getElementById('" . $focustarget . "').focus();");
+            return false;
+        }
+
+        return true;
+    }
+
+
+    public function check_step_integrity_agriculture(&$jaxon_response_object)
+    {
+        $failmsg = null;
+        $focustarget = null;
+
+        $email_already_used = $this->db->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_REGISTRATIONS'],'email',$_SESSION['generic_information']['email']['value']);
+        if($email_already_used > 0)
+        {
+            $response = jaxon()->newResponse();
+            $response->alert("Diese E-Mail-Adresse ist bereits einem Benutzer dieser EEG zugeordnet");
+            $response->script("document.getElementById('email').focus();");
+            return $response;
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['firstname']['value'], $_SESSION['generic_information']['firstname']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie den Vornamen";
+            $focustarget = 'firstname';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['lastname']['value'], $_SESSION['generic_information']['lastname']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie den Nachnamen";
+            $focustarget = 'lastname';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['street']['value'], $_SESSION['generic_information']['street']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie die Straße";
+            $focustarget = 'street';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['zip']['value'], $_SESSION['generic_information']['zip']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie die Postleitzahl";
+            $focustarget = 'zip';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['city']['value'], $_SESSION['generic_information']['city']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie den Ort";
+            $focustarget = 'city';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['number']['value'], $_SESSION['generic_information']['number']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie die Hausnummer";
+            $focustarget = 'number';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['phone']['value'], $_SESSION['generic_information']['phone']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie die Telefonnummer";
+            $focustarget = 'phone';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['email']['value'], $_SESSION['generic_information']['email']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie die eMail Adresse";
+            $focustarget = 'email';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['birthdate']['value'], $_SESSION['generic_information']['birthdate']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie das Geburtsdatum";
+            $focustarget = 'birthdate';
+        }
+
+        if($failmsg)
+        {
+            $jaxon_response_object->alert($failmsg);
+            $jaxon_response_object->script("document.getElementById('" . $focustarget . "').focus();");
+            return false;
+        }
+
+        return true;
+    }
+
+    public function check_step_integrity_meters(&$jaxon_response_object)
+    {
+        $failmsg = null;
+        $focustarget = null;
 
         foreach($_SESSION['meters'] as $meter_key => $meter_object)
         {
@@ -411,40 +533,27 @@ class Interactives
             }
             else
             {
-                $meter_id_count = $db->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_METERS'],'meter_id', $meter_object['prefix'] . $meter_object['value']);
+                $meter_id_count = $this->db->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_METERS'],'meter_id', $meter_object['prefix'] . $meter_object['value']);
                 if($meter_id_count > 0)
                 {
-                    $response = jaxon()->newResponse();
-                    $response->alert("Dieser Zählpunkt ist bereits einem Mitglied dieser EEG zugeordnet");
-                    $response->script("document.getElementById('" . $meter_key . "').focus();");
-                    return $response;
+                    $jaxon_response_object->alert("Dieser Zählpunkt ist bereits einem Mitglied dieser EEG zugeordnet");
+                    $jaxon_response_object->script("document.getElementById('" . $meter_key . "').focus();");
+                    return false;
                 }
-            }
-        }
-
-        foreach($_SESSION['storages'] as $storage_key => $storage_object)
-        {
-            if($this->validate_record($storage_object['value'], 'numbers>0') === false)
-            {
-                $failmsg = "Bitte überprüfen Sie die angegebene Speicherkapazität";
-                $focustarget = $storage_key;
             }
         }
 
         if($failmsg)
         {
-            $response = jaxon()->newResponse();
-            $response->alert($failmsg);
-            $response->script("document.getElementById('" . $focustarget . "').focus();");
-            return $response;
+            $jaxon_response_object->alert($failmsg);
+            $jaxon_response_object->script("document.getElementById('" . $focustarget . "').focus();");
+            return false;
         }
 
-        $response = jaxon()->newResponse();
-        $response->script("window.location.href='/?join=meters';");
-        return $response;
+        return true;
     }
 
-    public function step_banking()
+    public function check_step_meter_details(&$jaxon_response_object)
     {
         $failmsg = null;
         $focustarget = null;
@@ -490,19 +599,40 @@ class Interactives
 
         if($failmsg)
         {
-            $response = jaxon()->newResponse();
-            $response->alert($failmsg);
-            $response->script("document.getElementById('" . $focustarget . "').focus();");
-            return $response;
+            $jaxon_response_object->alert($failmsg);
+            $jaxon_response_object->script("document.getElementById('" . $focustarget . "').focus();");
+            return false;
         }
 
-        $response = jaxon()->newResponse();
-        $response->script("window.location.href='/?join=banking';");
-        return $response;
-
+        return true;
     }
 
-    public function step_finish()
+    public function check_step_integrity_storages(&$jaxon_response_object)
+    {
+        $failmsg = null;
+        $focustarget = null;
+
+        foreach($_SESSION['storages'] as $storage_key => $storage_object)
+        {
+            if($this->validate_record($storage_object['value'], 'numbers>0') === false)
+            {
+                $failmsg = "Bitte überprüfen Sie die angegebene Speicherkapazität";
+                $focustarget = $storage_key;
+            }
+        }
+
+        if($failmsg)
+        {
+            $jaxon_response_object->alert($failmsg);
+            $jaxon_response_object->script("document.getElementById('" . $focustarget . "').focus();");
+            return false;
+        }
+
+        return true;
+    }
+
+
+    public function check_step_integrity_banking(&$jaxon_response_object)
     {
         $failmsg = null;
         $focustarget = null;
@@ -527,16 +657,12 @@ class Interactives
 
         if($failmsg)
         {
-            $response = jaxon()->newResponse();
-            $response->alert($failmsg);
-            $response->script("document.getElementById('" . $focustarget . "').focus();");
-            return $response;
+            $jaxon_response_object->alert($failmsg);
+            $jaxon_response_object->script("document.getElementById('" . $focustarget . "').focus();");
+            return false;
         }
 
-        $response = jaxon()->newResponse();
-        $response->script("window.location.href='/?join=finished';");
-        return $response;
-
+        return true;
     }
 
     private function validate_record($value, $integrity=null)

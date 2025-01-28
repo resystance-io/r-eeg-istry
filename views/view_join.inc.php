@@ -15,53 +15,67 @@ class VIEW_JOIN
     public function view_render()
     {
 
-        switch($_REQUEST['join'])
-        {
-            case "individual":
-                $_SESSION['generic_information']['join_type'] = "individual";
-                $this->view_render_individual();
-                $this->view_render_navigation();
-                break;
-
-            case "agriculture":
-                $_SESSION['generic_information']['join_type'] = "agriculture";
-                $this->view_render_agriculture();
-                $this->view_render_navigation();
-                break;
-
-            case "company":
-                $_SESSION['generic_information']['join_type'] = "company";
-                $this->view_render_company();
-                $this->view_render_navigation();
-                break;
-
-            case "meters":
-                $this->view_render_meter_details();
-                $this->view_render_navigation();
-                break;
-
-            case "banking":
-                $this->view_render_banking_details();
-                $this->view_render_navigation();
-                break;
-
-            case "finished":
-                $this->view_render_finished();
-                $this->view_render_navigation();
-                break;
-
-            default:
-                print '
+        print '
                     <header id="header">
                         <h1>Erneuerbare Energiegemeinschaft VIERE</h1>
-                        <p>Sch&ouml;n dass du dich f&uuml;r die Mitgliedschaft in unserer EEG interessierst.<br />Wir freuen uns &uuml;ber jedes neue Mitglied.<br /></p>
-        
-                        <p style="color:white">Bitte w&auml;hle die passende Beitrittsform:</p>
                     </header>
-                ';
+        ';
 
-                $this->view_render_switch_dialogue();
-                break;
+        if(isset($_REQUEST['join']))
+        {
+            switch ($_REQUEST['join'])
+            {
+                case "individual":
+                    $_SESSION['generic_information']['join_type'] = "individual";
+                    if(isset($_REQUEST['step']))
+                    {
+                        $this->view_render_step();
+                    }
+                    break;
+
+                case "agriculture":
+                    $_SESSION['generic_information']['join_type'] = "agriculture";
+                    if(isset($_REQUEST['step']))
+                    {
+                        $this->view_render_step();
+                    }
+                    break;
+
+                case "company":
+                    $_SESSION['generic_information']['join_type'] = "company";
+                    if(isset($_REQUEST['step']))
+                    {
+                        $this->view_render_step();
+                    }
+                    break;
+
+                case "meters":
+                    $this->view_render_meter_details();
+                    $this->view_render_navigation();
+                    break;
+
+                case "banking":
+                    $this->view_render_banking_details();
+                    $this->view_render_navigation();
+                    break;
+
+                case "finished":
+                    $this->view_render_finished();
+                    $this->view_render_navigation();
+                    break;
+
+                default:
+                    print '
+                        <header id="header">
+                            <p>Sch&ouml;n dass du dich f&uuml;r die Mitgliedschaft in unserer EEG interessierst.<br />Wir freuen uns &uuml;ber jedes neue Mitglied.<br /></p>
+            
+                            <p style="color:white">Bitte w&auml;hle die passende Beitrittsform:</p>
+                        </header>
+                    ';
+
+                    $this->view_render_switch_dialogue();
+                    break;
+            }
         }
     }
 
@@ -70,47 +84,100 @@ class VIEW_JOIN
     {
         print '
             <div class="button_container">
-                <button type="button" class="mainbtn" style="" id="btn_enroll_company" onClick="location.href=' . "'" . "?join=company" . "'" . '"><img src="images/noun_company.png" alt="Join as Company" id="join_eeg" style="height: 60px; margin-left: 30px;"><br />Als Unternehmen beitreten</button>
-                <button type="button" class="mainbtn" style="" id="btn_enroll_individual" onClick="location.href=' . "'" . "?join=individual" . "'" . '"><img src="images/noun_individual.png" alt="Join as Individual" id="lookup_eeg" style="height: 60px; margin-left: 30px;"><br />Als Privatperson beitreten</button>
-                <button type="button" class="mainbtn" style="" id="btn_enroll_agriculture" onClick="location.href=' . "'" . "?join=agriculture" . "'" . '"><img src="images/noun_agriculture.png" alt="Join as Agriculture" id="lookup_eeg" style="height: 60px; margin-left: 30px;"><br />Als Landwirtschaft beitreten</button>
+                <button type="button" class="mainbtn" style="" id="btn_enroll_company" onClick="location.href=' . "'" . "?join=company&step=0" . "'" . '"><img src="images/noun_company.png" alt="Join as Company" id="join_eeg" style="height: 60px; margin-left: 30px;"><br />Als Unternehmen beitreten</button>
+                <button type="button" class="mainbtn" style="" id="btn_enroll_individual" onClick="location.href=' . "'" . "?join=individual&step=0" . "'" . '"><img src="images/noun_individual.png" alt="Join as Individual" id="lookup_eeg" style="height: 60px; margin-left: 30px;"><br />Als Privatperson beitreten</button>
+                <button type="button" class="mainbtn" style="" id="btn_enroll_agriculture" onClick="location.href=' . "'" . "?join=agriculture&step=0" . "'" . '"><img src="images/noun_agriculture.png" alt="Join as Agriculture" id="lookup_eeg" style="height: 60px; margin-left: 30px;"><br />Als Landwirtschaft beitreten</button>
             </div>
         ';
     }
 
+    private function view_render_step()
+    {
+        if(isset($_REQUEST['step']))
+        {
+            if(isset($this->config->user['JOIN_LAYOUT'][$_REQUEST['step']]))
+            {
+                foreach ($this->config->user['JOIN_LAYOUT'][$_REQUEST['step']] as $panel)
+                {
+                    switch ($panel)
+                    {
+                        case 'generic':
+                            if($_SESSION['generic_information']['join_type'] == 'company')
+                            {
+                                $this->view_render_company();
+                            }
+                            elseif($_SESSION['generic_information']['join_type'] == 'individual')
+                            {
+                                $this->view_render_individual();
+
+                            }
+                            elseif($_SESSION['generic_information']['join_type'] == 'agriculture')
+                            {
+                                $this->view_render_agriculture();
+                            }
+                            break;
+
+                        case 'consumption':
+                            $this->view_render_consumption_meters();
+                            break;
+
+                        case 'supply':
+                            $this->view_render_supply_meters();
+                            break;
+
+                        case 'meters':
+                            $this->view_render_meter_details();
+                            break;
+
+                        case 'storage':
+                            $this->view_render_energy_storage();
+                            break;
+
+                        case 'banking':
+                            $this->view_render_banking_details();
+                            break;
+                    }
+                }
+
+                print '<br />';
+                print '<div style="width:100%">';
+                print '<div style="float:left;"><button type="button" class="defaultbtn" style="float:left" onClick="JaxonInteractives.next_step(\'' . $_REQUEST['step'] . '\');">Weiter zum n&auml;chsten Schritt</button></div>';
+                print '<div style="clear:both"></div>';
+                print '</div>';
+            }
+            else
+            {
+                if($_REQUEST['step'] == count($this->config->user['JOIN_LAYOUT']))
+                {
+                    $this->view_render_finished();
+                }
+            }
+        }
+    }
     private function view_render_company()
     {
         print '
                     <header id="header">
-                        <h1>Erneuerbare Energiegemeinschaft VIERE</h1>
                         <h2>Als Unternehmen beitreten</h2>
                         <p>F&uuml;r die Anmeldung als Unternehmen ben&ouml;tigen wir ein paar Daten.</p>
-                        
                     </header>
         ';
 
         print "<h3>Allgemeine Daten</h3>";
-        print "<div class=\"form-container\">";
+        print "<div class=\"form-container\" style=\"min-width:800px; width:800px;\">";
 
-        $this->view_render_part_captioned_inputfield("Firmenwortlaut", "company", "generic_information", "required");
-        $this->view_render_part_captioned_inputfield("UID", "uid", "generic_information");
-        $this->view_render_part_captioned_inputfield("Postleitzahl", "zip", "generic_information", "numbers");
-        $this->view_render_part_captioned_inputfield("Ort", "city", "generic_information", "required");
-        $this->view_render_part_captioned_inputfield("Stra&szlig;e", "street", "generic_information", "required");
-        $this->view_render_part_captioned_inputfield("Hausnummer", "number", "generic_information", "required");
-        $this->view_render_part_captioned_inputfield("Telefonnummer", "phone", "generic_information", "phone");
-        $this->view_render_part_captioned_inputfield("E-Mail Adresse", "email", "generic_information", "email");
+        $this->view_render_part_captioned_inputfield("Firmenwortlaut", "company", "generic_information", "required", "width:720px;");
+        $this->view_render_part_captioned_inputfield("UID", "uid", "generic_information", null, "width:720px;");
+        $this->view_render_part_captioned_inputfield("Stra&szlig;e", "street", "generic_information", "required", "width:600px;float:left;");
+        $this->view_render_part_captioned_inputfield("Nr.", "number", "generic_information", "required", "width:120px;float:left;");
+        print "<div style=\"clear:both\"></div>";
+        $this->view_render_part_captioned_inputfield("Postleitzahl", "zip", "generic_information", "numbers", "width:120px;float:left;");
+        $this->view_render_part_captioned_inputfield("Ort", "city", "generic_information", "required", "width:600px;float:left;");
+        print "<div style=\"clear:both\"></div>";
+        $this->view_render_part_captioned_inputfield("Telefonnummer", "phone", "generic_information", "phone", "width:720px");
+        $this->view_render_part_captioned_inputfield("E-Mail Adresse", "email", "generic_information", "email", "width:720px");
 
-        print "</div><br />";
-
-        $this->view_render_consumption_meters();
-
-        print "<br />";
-
-        $this->view_render_supply_meters();
-
-        print "<br />";
-
-        $this->view_render_energy_storage();
+        print "</div>";
 
     }
 
@@ -119,37 +186,28 @@ class VIEW_JOIN
 
         print '
                     <header id="header">
-                        <h1>Erneuerbare Energiegemeinschaft VIERE</h1>
                         <h2>Als Privatperson beitreten</h2>
                         <p>F&uuml;r die Anmeldung als Privatperson ben&ouml;tigen wir ein paar Daten.</p>
-                        
                     </header>
         ';
 
         print "<h3>Allgemeine Daten</h3>";
-        print "<div class=\"form-container\">";
+        print "<div class=\"form-container\" style=\"min-width:800px; width:800px;\">";
 
-        $this->view_render_part_captioned_inputfield("Vorname", "firstname", "generic_information", "required");
-        $this->view_render_part_captioned_inputfield("Nachname", "lastname", "generic_information", "required");
-        $this->view_render_part_captioned_inputfield("Stra&szlig;e", "street", "generic_information", "required");
-        $this->view_render_part_captioned_inputfield("Hausnummer", "number", "generic_information", "required");
-        $this->view_render_part_captioned_inputfield("Postleitzahl", "zip", "generic_information", "numbers");
-        $this->view_render_part_captioned_inputfield("Ort", "city", "generic_information", "required");
+        $this->view_render_part_captioned_inputfield("Vorname", "firstname", "generic_information", "required", "width:360px;float:left;");
+        $this->view_render_part_captioned_inputfield("Nachname", "lastname", "generic_information", "required", "width:360px;float:left;");
+        print "<div style=\"clear:both\"></div>";
+        $this->view_render_part_captioned_inputfield("Stra&szlig;e", "street", "generic_information", "required", "width:600px;float:left;");
+        $this->view_render_part_captioned_inputfield("Nr.", "number", "generic_information", "required", "width:120px;float:left;");
+        print "<div style=\"clear:both\"></div>";
+        $this->view_render_part_captioned_inputfield("Postleitzahl", "zip", "generic_information", "numbers", "width:120px;float:left;");
+        $this->view_render_part_captioned_inputfield("Ort", "city", "generic_information", "required", "width:600px;float:left;");
+        print "<div style=\"clear:both\"></div>";
         $this->view_render_part_captioned_inputfield("Geburtsdatum", "birthdate", "generic_information");
         $this->view_render_part_captioned_inputfield("Telefonnummer", "phone", "generic_information", "phone");
         $this->view_render_part_captioned_inputfield("E-Mail Adresse", "email", "generic_information", "email");
 
-        print "</div><br />";
-
-        $this->view_render_consumption_meters();
-
-        print "<br />";
-
-        $this->view_render_supply_meters();
-
-        print "<br />";
-
-        $this->view_render_energy_storage();
+        print "</div>";
 
     }
 
@@ -159,36 +217,28 @@ class VIEW_JOIN
 
         print '
                     <header id="header">
-                        <h1>Erneuerbare Energiegemeinschaft VIERE</h1>
                         <h2>Als Landwirtschaft beitreten</h2>
                         <p>F&uuml;r die Anmeldung als Landwirtschaft ben&ouml;tigen wir ein paar Informationen.</p>
                     </header>
         ';
 
         print "<h3>Allgemeine Daten</h3>";
-        print "<div class=\"form-container\">";
+        print "<div class=\"form-container\" style=\"min-width:800px; width:800px;\">";
 
-        $this->view_render_part_captioned_inputfield("Vorname", "firstname", "generic_information", "required");
-        $this->view_render_part_captioned_inputfield("Nachname", "lastname", "generic_information", "required");
-        $this->view_render_part_captioned_inputfield("Stra&szlig;e", "street", "generic_information", "required");
-        $this->view_render_part_captioned_inputfield("Hausnummer", "number", "generic_information", "required");
-        $this->view_render_part_captioned_inputfield("Postleitzahl", "zip", "generic_information", "numbers");
-        $this->view_render_part_captioned_inputfield("Ort", "city", "generic_information", "required");
+        $this->view_render_part_captioned_inputfield("Vorname", "firstname", "generic_information", "required", "width:360px;float:left;");
+        $this->view_render_part_captioned_inputfield("Nachname", "lastname", "generic_information", "required", "width:360px;float:left;");
+        print "<div style=\"clear:both\"></div>";
+        $this->view_render_part_captioned_inputfield("Stra&szlig;e", "street", "generic_information", "required", "width:600px;float:left;");
+        $this->view_render_part_captioned_inputfield("Nr.", "number", "generic_information", "required", "width:120px;float:left;");
+        print "<div style=\"clear:both\"></div>";
+        $this->view_render_part_captioned_inputfield("Postleitzahl", "zip", "generic_information", "numbers", "width:120px;float:left;");
+        $this->view_render_part_captioned_inputfield("Ort", "city", "generic_information", "required", "width:600px;float:left;");
+        print "<div style=\"clear:both\"></div>";
         $this->view_render_part_captioned_inputfield("Geburtsdatum", "birthdate", "generic_information");
         $this->view_render_part_captioned_inputfield("Telefonnummer", "phone", "generic_information", "phone");
         $this->view_render_part_captioned_inputfield("E-Mail Adresse", "email", "generic_information", "email");
 
-        print "</div><br />";
-
-        $this->view_render_consumption_meters();
-
-        print "<br />";
-
-        $this->view_render_supply_meters();
-
-        print "<br />";
-
-        $this->view_render_energy_storage();
+        print "</div>";
 
     }
 
@@ -197,7 +247,6 @@ class VIEW_JOIN
 
         print '
                     <header id="header">
-                        <h1>Erneuerbare Energiegemeinschaft VIERE</h1>
                         <h2>Erg&auml;nzende Angaben</h2>
                         <p>Bitte erg&auml;nze die Informationen zu den von dir angegebenen Z&auml;hlpunkten</p>
                     </header>
@@ -231,7 +280,7 @@ class VIEW_JOIN
 
                 $this->view_render_meter_detail_inputfield($meter_key, "PLZ", 'zip', 'numbers');
 
-                print '<button type="button" class="thinbtn" id="btn_prefill_' . $meter_key . '" onClick="JaxonInteractives.copy_address(' . "'" . $meter_key . "'" . ');">Hauptadresse &uuml;bernehmen</button>';
+                print '<br /><button type="button" class="thinbtn" id="btn_prefill_' . $meter_key . '" onClick="JaxonInteractives.copy_address(' . "'" . $meter_key . "'" . ');">Von Hauptadresse kopieren</button>';
                 print "</div>";
 
                 print "<div style='float:left;height:100%;valign:middle'>";
@@ -255,10 +304,8 @@ class VIEW_JOIN
     {
         print '
                     <header id="header">
-                        <h1>Erneuerbare Energiegemeinschaft VIERE</h1>
                         <h2>Zahlungsinformationen</h2>
                         <p>Noch ein paar Infos zum Konto, dann ist es geschafft...</p>
-                        
                     </header>
         ';
 
@@ -277,12 +324,6 @@ class VIEW_JOIN
     {
 
         $_SESSION['finished'] = true;
-
-        print '
-                    <header id="header">
-                        <h1>Erneuerbare Energiegemeinschaft VIERE</h1>
-                    </header>
-        ';
 
         print "&nbsp;<br />&nbsp;<br />";
         print "<h2>Vielen Dank f&uuml;r deine Anmeldung</h2>";
@@ -465,14 +506,14 @@ class VIEW_JOIN
 
 
 
-    private function view_render_meter_detail_inputfield($meter_key, $caption, $id, $integrity)
+    private function view_render_meter_detail_inputfield($meter_key, $caption, $id, $integrity, $style=null)
     {
         $prefill = (isset($_SESSION['meters']["$meter_key"]["$id"]['value'])) ? $_SESSION['meters']["$meter_key"]["$id"]['value'] : '';
         $_SESSION['meters']["$meter_key"]["$id"]['integrity'] = $integrity;
-        print $caption . '<br><input type="text" name="' . $id . '_' . $meter_key . '" value="' . $prefill . '" id="' . $id . '_' . $meter_key . '" onfocus="this.select()" onfocusout="JaxonInteractives.update_meter_detail(' . "'" . $meter_key . "'" . ', ' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . '_' . $meter_key . "'" . ').value);" /><br />';
+        print '<div style="padding:8px;' . $style . '">' . $caption . '<br><input type="text" name="' . $id . '_' . $meter_key . '" value="' . $prefill . '" id="' . $id . '_' . $meter_key . '" onfocus="this.select()" onfocusout="JaxonInteractives.update_meter_detail(' . "'" . $meter_key . "'" . ', ' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . '_' . $meter_key . "'" . ').value);" /></div>';
     }
 
-    private function view_render_part_captioned_inputfield($caption, $id, $session_bucket=null, $integrity=null)
+    private function view_render_part_captioned_inputfield($caption, $id, $session_bucket=null, $integrity=null, $style=null)
     {
         if($session_bucket != null)
         {
@@ -486,14 +527,12 @@ class VIEW_JOIN
                 $prefill = '';
             }
 
-            print $caption . '<br><input type="text" onfocus="this.select()" name="'. $id . '" id="' . $id . '" value="' . $prefill . '" onfocusout="JaxonInteractives.update_session_bucket(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value, ' . "'" .  $session_bucket . "'" . ');" />';
+            print '<div style="padding:8px;' . $style . '">' . $caption . '<input type="text" onfocus="this.select()" name="'. $id . '" id="' . $id . '" value="' . $prefill . '" onfocusout="JaxonInteractives.update_session_bucket(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value, ' . "'" .  $session_bucket . "'" . ');" /></div>';
         }
         else
         {
-            print $caption . '<br><input type="text" onfocus="this.select()" name="' . $id . '" id="' . $id . '" />';
+            print '<div style="' . $style . '">' . $caption . '<input type="text" onfocus="this.select()" name="' . $id . '" id="' . $id . '" /></div>';
         }
-
-        print '<br />';
     }
 
     private function view_render_part_annotated_checkbox($annotation, $id, $session_bucket=null, $integrity=null)
