@@ -21,6 +21,8 @@ class VIEW_JOIN
                     </header>
         ';
 
+        print "";
+
         if(isset($_REQUEST['join']))
         {
             switch ($_REQUEST['join'])
@@ -47,21 +49,6 @@ class VIEW_JOIN
                     {
                         $this->view_render_step();
                     }
-                    break;
-
-                case "meters":
-                    $this->view_render_meter_details();
-                    $this->view_render_navigation();
-                    break;
-
-                case "banking":
-                    $this->view_render_banking_details();
-                    $this->view_render_navigation();
-                    break;
-
-                case "finished":
-                    $this->view_render_finished();
-                    $this->view_render_navigation();
                     break;
 
                 default:
@@ -95,6 +82,31 @@ class VIEW_JOIN
     {
         if(isset($_REQUEST['step']))
         {
+            if($_REQUEST['step'] == count($this->config->user['JOIN_LAYOUT']))
+            {
+                $progress_bar_width = 640;
+                $previous_step = 0;
+            }
+            else
+            {
+                $progress_bar_width = 520;
+                $previous_step = $_REQUEST['step'] - 1;
+            }
+
+            $progress_fill_width = ceil(($progress_bar_width / count($this->config->user['JOIN_LAYOUT'])) * $_REQUEST['step']);
+            $progress_percent = ceil((100 / count($this->config->user['JOIN_LAYOUT'])) * $_REQUEST['step']);
+
+            if($progress_percent == 0)
+            {
+                $progress_bar_text = $progress_percent . '%';
+                $progress_text = '';
+            }
+            else
+            {
+                $progress_bar_text = '';
+                $progress_text = $progress_percent . '%';
+            }
+
             if(isset($this->config->user['JOIN_LAYOUT'][$_REQUEST['step']]))
             {
                 foreach ($this->config->user['JOIN_LAYOUT'][$_REQUEST['step']] as $panel)
@@ -140,8 +152,15 @@ class VIEW_JOIN
                 }
 
                 print '<br />';
+
                 print '<div style="width:100%">';
-                print '<div style="float:left;"><button type="button" class="defaultbtn" style="float:left" onClick="JaxonInteractives.next_step(\'' . $_REQUEST['step'] . '\');">Weiter zum n&auml;chsten Schritt</button></div>';
+                print '<div style="float:left;padding-right:20px;"><button type="button" class="defaultbtn" style="float:left;max-width:100px" onClick="JaxonInteractives.step_back(\'' . $_REQUEST['step'] . '\');"><i class="fa fa-arrow-left"></i></button></div>';
+                print '<div style="float:left;padding-right:20px;"><button type="button" class="defaultbtn" style="float:left" onClick="JaxonInteractives.next_step(\'' . $_REQUEST['step'] . '\');">Weiter zum n&auml;chsten Schritt</button></div>';
+                print '<div style="float:left;padding-top:20px;text-align:center">';
+                print '    <div style="width:' . $progress_bar_width . 'px;background-color:rgba(255, 255, 255, 0.4);">';
+                print '        <div style="width:' . $progress_fill_width . 'px;background-color:lightseagreen;text-align:center">' . $progress_text . '</div>' . $progress_bar_text;
+                print '    </div>';
+                print '</div>';
                 print '<div style="clear:both"></div>';
                 print '</div>';
             }
@@ -150,6 +169,31 @@ class VIEW_JOIN
                 if($_REQUEST['step'] == count($this->config->user['JOIN_LAYOUT']))
                 {
                     $this->view_render_finished();
+
+                    print '
+    <script>
+        function confirmStartover()
+        {
+          if (confirm("Ja, ich habe das Passwort notiert oder gespeichert"))
+          {
+                window.location.href="/";
+          }
+        }
+    </script>
+';
+
+                    print '<br />';
+                    print '<div style="clear:both"></div>';
+                    print '<div style="width:100%">';
+                    print '    <div style="float:left;padding-right:20px;"><button type="button" class="defaultbtn" id="btn_step_startover" onClick="confirmStartover();">Zur&uuml;ck zur Hauptseite</button></div>';
+                    print '    <div style="float:left;padding-top:20px;text-align:center">';
+                    print '        <div style="width:' . $progress_bar_width . 'px;background-color:rgba(255, 255, 255, 0.4);">';
+                    print '             <div style="width:' . $progress_fill_width . 'px;background-color:lightseagreen;text-align:center">' . $progress_text . '</div>' . $progress_bar_text;
+                    print '        </div>';
+                    print '    </div>';
+                    print '<div style="clear:both"></div>';
+                    print '</div>';
+
                 }
             }
         }
@@ -164,18 +208,18 @@ class VIEW_JOIN
         ';
 
         print "<h3>Allgemeine Daten</h3>";
-        print "<div class=\"form-container\" style=\"min-width:800px; width:800px;\">";
+        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
 
-        $this->view_render_part_captioned_inputfield("Firmenwortlaut", "company", "generic_information", "required", "width:720px;");
-        $this->view_render_part_captioned_inputfield("UID", "uid", "generic_information", null, "width:720px;");
-        $this->view_render_part_captioned_inputfield("Stra&szlig;e", "street", "generic_information", "required", "width:600px;float:left;");
+        $this->view_render_part_captioned_inputfield("Firmenwortlaut", "company", "generic_information", "required", "width:880px;");
+        $this->view_render_part_captioned_inputfield("UID", "uid", "generic_information", null, "width:880px;");
+        $this->view_render_part_captioned_inputfield("Stra&szlig;e", "street", "generic_information", "required", "width:760px;float:left;");
         $this->view_render_part_captioned_inputfield("Nr.", "number", "generic_information", "required", "width:120px;float:left;");
         print "<div style=\"clear:both\"></div>";
         $this->view_render_part_captioned_inputfield("Postleitzahl", "zip", "generic_information", "numbers", "width:120px;float:left;");
-        $this->view_render_part_captioned_inputfield("Ort", "city", "generic_information", "required", "width:600px;float:left;");
+        $this->view_render_part_captioned_inputfield("Ort", "city", "generic_information", "required", "width:760px;float:left;");
         print "<div style=\"clear:both\"></div>";
-        $this->view_render_part_captioned_inputfield("Telefonnummer", "phone", "generic_information", "phone", "width:720px");
-        $this->view_render_part_captioned_inputfield("E-Mail Adresse", "email", "generic_information", "email", "width:720px");
+        $this->view_render_part_captioned_inputfield("Telefonnummer", "phone", "generic_information", "phone", "width:880px");
+        $this->view_render_part_captioned_inputfield("E-Mail Adresse", "email", "generic_information", "email", "width:880px");
 
         print "</div>";
 
@@ -192,20 +236,22 @@ class VIEW_JOIN
         ';
 
         print "<h3>Allgemeine Daten</h3>";
-        print "<div class=\"form-container\" style=\"min-width:800px; width:800px;\">";
+        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
 
-        $this->view_render_part_captioned_inputfield("Vorname", "firstname", "generic_information", "required", "width:360px;float:left;");
-        $this->view_render_part_captioned_inputfield("Nachname", "lastname", "generic_information", "required", "width:360px;float:left;");
+        $this->view_render_part_captioned_select("Titel", "title", $this->config->user['preNameTitles'], "generic_information", null, "width:190px;float:left;");
+        $this->view_render_part_captioned_inputfield("Vorname", "firstname", "generic_information", "required", "width:210px;float:left;");
+        $this->view_render_part_captioned_inputfield("Nachname", "lastname", "generic_information", "required", "width:300px;float:left;");
+        $this->view_render_part_captioned_select("Postnomen", "postnomen", $this->config->user['postNameTitles'], "generic_information", null, "width:160px;float:left;");
         print "<div style=\"clear:both\"></div>";
-        $this->view_render_part_captioned_inputfield("Stra&szlig;e", "street", "generic_information", "required", "width:600px;float:left;");
-        $this->view_render_part_captioned_inputfield("Nr.", "number", "generic_information", "required", "width:120px;float:left;");
+        $this->view_render_part_captioned_inputfield("Stra&szlig;e", "street", "generic_information", "required", "width:700px;float:left;");
+        $this->view_render_part_captioned_inputfield("Nr.", "number", "generic_information", "required", "width:160px;float:left;");
         print "<div style=\"clear:both\"></div>";
         $this->view_render_part_captioned_inputfield("Postleitzahl", "zip", "generic_information", "numbers", "width:120px;float:left;");
-        $this->view_render_part_captioned_inputfield("Ort", "city", "generic_information", "required", "width:600px;float:left;");
+        $this->view_render_part_captioned_inputfield("Ort", "city", "generic_information", "required", "width:740px;float:left;");
         print "<div style=\"clear:both\"></div>";
-        $this->view_render_part_captioned_inputfield("Geburtsdatum", "birthdate", "generic_information");
-        $this->view_render_part_captioned_inputfield("Telefonnummer", "phone", "generic_information", "phone");
-        $this->view_render_part_captioned_inputfield("E-Mail Adresse", "email", "generic_information", "email");
+        $this->view_render_part_captioned_inputfield("Geburtsdatum", "birthdate", "generic_information", null, "width:860px;");
+        $this->view_render_part_captioned_inputfield("Telefonnummer", "phone", "generic_information", "phone", "width:860px;");
+        $this->view_render_part_captioned_inputfield("E-Mail Adresse", "email", "generic_information", "email", "width:860px;");
 
         print "</div>";
 
@@ -223,20 +269,22 @@ class VIEW_JOIN
         ';
 
         print "<h3>Allgemeine Daten</h3>";
-        print "<div class=\"form-container\" style=\"min-width:800px; width:800px;\">";
+        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
 
-        $this->view_render_part_captioned_inputfield("Vorname", "firstname", "generic_information", "required", "width:360px;float:left;");
-        $this->view_render_part_captioned_inputfield("Nachname", "lastname", "generic_information", "required", "width:360px;float:left;");
+        $this->view_render_part_captioned_select("Titel", "title", $this->config->user['preNameTitles'], "generic_information", null, "width:190px;float:left;");
+        $this->view_render_part_captioned_inputfield("Vorname", "firstname", "generic_information", "required", "width:210px;float:left;");
+        $this->view_render_part_captioned_inputfield("Nachname", "lastname", "generic_information", "required", "width:300px;float:left;");
+        $this->view_render_part_captioned_select("Postnomen", "postnomen", $this->config->user['postNameTitles'], "generic_information", null, "width:160px;float:left;");
         print "<div style=\"clear:both\"></div>";
-        $this->view_render_part_captioned_inputfield("Stra&szlig;e", "street", "generic_information", "required", "width:600px;float:left;");
-        $this->view_render_part_captioned_inputfield("Nr.", "number", "generic_information", "required", "width:120px;float:left;");
+        $this->view_render_part_captioned_inputfield("Stra&szlig;e", "street", "generic_information", "required", "width:700px;float:left;");
+        $this->view_render_part_captioned_inputfield("Nr", "number", "generic_information", "required", "width:160px;float:left;");
         print "<div style=\"clear:both\"></div>";
         $this->view_render_part_captioned_inputfield("Postleitzahl", "zip", "generic_information", "numbers", "width:120px;float:left;");
-        $this->view_render_part_captioned_inputfield("Ort", "city", "generic_information", "required", "width:600px;float:left;");
+        $this->view_render_part_captioned_inputfield("Ort", "city", "generic_information", "required", "width:740px;float:left;");
         print "<div style=\"clear:both\"></div>";
-        $this->view_render_part_captioned_inputfield("Geburtsdatum", "birthdate", "generic_information");
-        $this->view_render_part_captioned_inputfield("Telefonnummer", "phone", "generic_information", "phone");
-        $this->view_render_part_captioned_inputfield("E-Mail Adresse", "email", "generic_information", "email");
+        $this->view_render_part_captioned_inputfield("Geburtsdatum", "birthdate", "generic_information", null,"width:860px;");
+        $this->view_render_part_captioned_inputfield("Telefonnummer", "phone", "generic_information", "phone", "width:860px;");
+        $this->view_render_part_captioned_inputfield("E-Mail Adresse", "email", "generic_information", "email", "width:860px;");
 
         print "</div>";
 
@@ -257,7 +305,7 @@ class VIEW_JOIN
             foreach ($_SESSION['meters'] as $meter_key => $meter_object)
             {
 
-                print "<div class=\"form-container\">";
+                print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
 
                 print "
                     <div style='float:left;margin-right:80px;'>
@@ -310,13 +358,13 @@ class VIEW_JOIN
         ';
 
         print "<h3>Kontoinformationen</h3>";
-        print "<div class=\"form-container\">";
+        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
 
         $this->view_render_part_captioned_inputfield("Name d. Kontoinhabers", "banking_name", "generic_information", "required");
         $this->view_render_part_captioned_inputfield("IBAN", "banking_iban", "generic_information", "iban");
         $this->view_render_part_annotated_checkbox("Hiermit best&auml;tige ich die Richtigkeit der angegebenen Kontoinformationen<br />und erm&auml;chtige VIERE zum Bankeinzug im Rahmen der Leistungsabrechnung", "banking_consent", "generic_information", "booltrue");
 
-        print "</div><br />";
+        print "</div></div><br />";
 
     }
 
@@ -331,10 +379,11 @@ class VIEW_JOIN
 
         print "<br />&nbsp;<br />&nbsp;<br />";
         print "<h3>Dein Passwort:</h3>";
-        print "<div class=\"form-container\">";
-        print "<h2>" . $_SESSION['mnemonic'] . "</h2>";
-        print "Du kannst dieses Passwort nutzen um jederzeit den Bearbeitungsfortschritt deines Antrages einzusehen - und natürlich um deine Daten zu &auml;ndern.<br />Bitte bewahre es gut auf!";
-        print "</div>";
+        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
+        print "<br /><h2>" . $_SESSION['mnemonic'] . "</h2>";
+        print "</div>&nbsp;<br />";
+        print "Du kannst dieses Passwort nutzen um jederzeit den Bearbeitungsfortschritt deines Antrages einzusehen<br />und natürlich um deine Daten zu &auml;ndern.<br />&nbsp;<br /><b>Bitte bewahre es gut auf!</b>";
+        print "&nbsp;<br />";
 
         // check if this mnemonic was already stored
         $hashed_mnemonic = hash('sha256', $_SESSION['mnemonic']);
@@ -350,12 +399,16 @@ class VIEW_JOIN
             switch($_SESSION['generic_information']['join_type'])
             {
                 case 'agriculture':
+                    if (isset($_SESSION['generic_information']['title']['value'])) $registration_array['title'] = $_SESSION['generic_information']['title']['value'];
+                    if (isset($_SESSION['generic_information']['postnomen']['value'])) $registration_array['postnomen'] = $_SESSION['generic_information']['postnomen']['value'];
                     if (isset($_SESSION['generic_information']['firstname']['value'])) $registration_array['firstname'] = $_SESSION['generic_information']['firstname']['value'];
                     if (isset($_SESSION['generic_information']['lastname']['value'])) $registration_array['lastname'] = $_SESSION['generic_information']['lastname']['value'];
                     if (isset($_SESSION['generic_information']['birthdate']['value'])) $registration_array['birthdate'] = $_SESSION['generic_information']['birthdate']['value'];
                     break;
 
                 case 'individual':
+                    if (isset($_SESSION['generic_information']['title']['value'])) $registration_array['title'] = $_SESSION['generic_information']['title']['value'];
+                    if (isset($_SESSION['generic_information']['postnomen']['value'])) $registration_array['postnomen'] = $_SESSION['generic_information']['postnomen']['value'];
                     if (isset($_SESSION['generic_information']['firstname']['value'])) $registration_array['firstname'] = $_SESSION['generic_information']['firstname']['value'];
                     if (isset($_SESSION['generic_information']['lastname']['value'])) $registration_array['lastname'] = $_SESSION['generic_information']['lastname']['value'];
                     if (isset($_SESSION['generic_information']['birthdate']['value'])) $registration_array['birthdate'] = $_SESSION['generic_information']['birthdate']['value'];
@@ -375,7 +428,7 @@ class VIEW_JOIN
             if (isset($_SESSION['generic_information']['email']['value'])) $registration_array['email'] = $_SESSION['generic_information']['email']['value'];
 
             if (isset($_SESSION['generic_information']['banking_name']['value'])) $registration_array['banking_name'] = $_SESSION['generic_information']['banking_name']['value'];
-            if (isset($_SESSION['generic_information']['banking_iban']['value'])) $registration_array['banking_iban'] = $_SESSION['generic_information']['banking_iban']['value'];
+            if (isset($_SESSION['generic_information']['banking_iban']['value'])) $registration_array['banking_iban'] = strtoupper(str_replace(' ', '', $_SESSION['generic_information']['banking_iban']['value']));
             if (isset($_SESSION['generic_information']['banking_consent']['value']) && $_SESSION['generic_information']['banking_consent']['value'] == '1') $registration_array['banking_consent'] = time();
 
             if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
@@ -434,7 +487,7 @@ class VIEW_JOIN
     {
         print "<br /><h3 style=\"margin:0px;\">Z&auml;hlpunkte (Bezug)</h3>";
         print "<span style=\"font-size:16px;\">Mit welchen Z&auml;hlpunkten m&ouml;chtest du Energie von uns beziehen?</span>";
-        print "<div class=\"form-container\">";
+        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
 
         if(isset($_SESSION['meters']))
         {
@@ -467,7 +520,7 @@ class VIEW_JOIN
     {
         print "<br /><h3 style=\"margin:0px;\">Z&auml;hlpunkte (Einspeisung)</h3>";
         print "<span style=\"font-size:16px;\">Erzeugst du selbst erneuerbare Energie und m&ouml;chtest in unsere EEG einspeisen?</span>";
-        print "<div class=\"form-container\">";
+        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
 
         if(isset($_SESSION['meters']))
         {
@@ -489,7 +542,7 @@ class VIEW_JOIN
     {
         print "<br /><h3 style=\"margin:0px;\">Vorhandene Energiespeicher</h3>";
         print "<span style=\"font-size:16px;\">Freiwillige Angabe / Erhebung zu statistischen Zwecken.</span>";
-        print "<div class=\"form-container\">";
+        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
 
         if(isset($_SESSION['storages']))
         {
@@ -527,11 +580,53 @@ class VIEW_JOIN
                 $prefill = '';
             }
 
-            print '<div style="padding:8px;' . $style . '">' . $caption . '<input type="text" onfocus="this.select()" name="'. $id . '" id="' . $id . '" value="' . $prefill . '" onfocusout="JaxonInteractives.update_session_bucket(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value, ' . "'" .  $session_bucket . "'" . ');" /></div>';
+            print '<div style="padding:8px;line-height:40px;' . $style . '">' . $caption . '<input type="text" onfocus="this.select()" name="'. $id . '" id="' . $id . '" value="' . $prefill . '" onfocusout="JaxonInteractives.update_session_bucket(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value, ' . "'" .  $session_bucket . "'" . ');" /></div>';
         }
         else
         {
             print '<div style="' . $style . '">' . $caption . '<input type="text" onfocus="this.select()" name="' . $id . '" id="' . $id . '" /></div>';
+        }
+    }
+
+    private function view_render_part_captioned_select($caption, $id, $arrOptions, $session_bucket=null, $integrity=null, $style=null)
+    {
+        if($session_bucket != null)
+        {
+            if(isset($_SESSION["$session_bucket"]["$id"]))
+            {
+                $preselect = isset($_SESSION["$session_bucket"]["$id"]["value"]) ? $_SESSION["$session_bucket"]["$id"]["value"] : '';
+            }
+            else
+            {
+                $_SESSION["$session_bucket"]["$id"]["integrity"] = $integrity;
+                $preselect = '';
+            }
+
+            print '<div style="padding:8px;line-height:40px;' . $style . '">' . $caption . '
+                    <select name="'. $id . '" id="' . $id . '" value="' . $preselect . '" onchange="JaxonInteractives.update_session_bucket(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value, ' . "'" .  $session_bucket . "'" . ');" />';
+
+            print "<option value=''>-</option>";
+
+            foreach($arrOptions as $option)
+            {
+                if($preselect == $option) $selected = 'selected';   else $selected = '';
+                print "<option $selected value='" . $option . "'>" . $option . "</option>";
+            }
+
+            print '</select></div>';
+        }
+        else
+        {
+            print '<div style="' . $style . '">' . $caption . '
+                    <select name="' . $id . '" id="' . $id . '" />';
+            print "<option value=''>-</option>";
+
+            foreach($arrOptions as $option)
+            {
+                print "<option value='" . $option . "'>" . $option . "</option>";
+            }
+
+            print '</select></div>';
         }
     }
 
@@ -582,51 +677,6 @@ class VIEW_JOIN
             </div>';
     }
 
-    private function view_render_navigation()
-    {
-        print "<br />&nbsp;<br />";
-
-        switch($_REQUEST['join'])
-        {
-            case 'individual':
-            case 'company':
-            case 'agriculture':
-                print '<button type="button" class="defaultbtn" id="btn_step_meters" onClick="JaxonInteractives.step_generic_to_meters();">Weiter zum n&auml;chsten Schritt</button>';
-                break;
-
-            case 'meters':
-                print '<button type="button" class="defaultbtn" id="btn_step_banking" onClick="JaxonInteractives.step_banking();">Weiter zum n&auml;chsten Schritt</button>';
-                break;
-
-            case 'banking':
-                print '<button type="button" class="defaultbtn" id="btn_step_finish" onClick="JaxonInteractives.step_finish();">Anmeldung abschlie&szlig;en</button>';
-                break;
-
-            case 'finished':
-
-                print '
-    <script>
-        function confirmStartover()
-        {
-          if (confirm("Ja, ich habe das Passwort notiert oder gespeichert"))
-          {
-                window.location.href="/";
-          }
-        }
-    </script>
-';
-
-
-                print '<button type="button" class="defaultbtn" id="btn_step_startover" onClick="confirmStartover();">Zur&uuml;ck zur Hauptseite</button>';
-                break;
-
-            default:
-                break;
-        }
-
-        print "<br />";
-
-    }
 
     private function generate_uuid4($data = null)
     {

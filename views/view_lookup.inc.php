@@ -116,14 +116,18 @@ class VIEW_LOOKUP
         {
             case 'individual':
                 print "<tr><td class=\"profileheader\">Mitgliedsform</td><td>Privatperson</td></tr>";
+                print "<tr><td class=\"profileheader\">Titel</td><td>" . $registration['title'] . "</td></tr>";
                 print "<tr><td class=\"profileheader\">Vorname</td><td>" . $registration['firstname'] . "</td></tr>";
                 print "<tr><td class=\"profileheader\">Nachname</td><td>" . $registration['lastname'] . "</td></tr>";
+                print "<tr><td class=\"profileheader\">Postnomen</td><td>" . $registration['postnomen'] . "</td></tr>";
                 print "<tr><td class=\"profileheader\">Geburtsdatum</td><td>" . $registration['birthdate'] . "</td></tr>";
                 break;
             case 'agriculture':
                 print "<tr><td class=\"profileheader\">Mitgliedsform</td><td>Landwirtschaft</td></tr>";
+                print "<tr><td class=\"profileheader\">Titel</td><td>" . $registration['title'] . "</td></tr>";
                 print "<tr><td class=\"profileheader\">Vorname</td><td>" . $registration['firstname'] . "</td></tr>";
                 print "<tr><td class=\"profileheader\">Nachname</td><td>" . $registration['lastname'] . "</td></tr>";
+                print "<tr><td class=\"profileheader\">Postnomen</td><td>" . $registration['postnomen'] . "</td></tr>";
                 print "<tr><td class=\"profileheader\">Geburtsdatum</td><td>" . $registration['birthdate'] . "</td></tr>";
                 break;
             case 'company':

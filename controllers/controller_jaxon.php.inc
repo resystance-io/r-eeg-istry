@@ -213,6 +213,21 @@ class Interactives
         $_SESSION['meters']["$meter_key"]["$record"]['value'] = $value;
     }
 
+    public function step_back($current_step)
+    {
+        $response = jaxon()->newResponse();
+        if($current_step > 0)
+        {
+            $next_step = $current_step - 1;
+            $response->script("window.location.href='/?join=" . $_SESSION['generic_information']['join_type'] .  "&step=" . $next_step . "';");
+        }
+        else
+        {
+            $response->script("window.location.href='/?join';");
+        }
+        return $response;
+    }
+
     public function next_step($current_step)
     {
         $response = jaxon()->newResponse();
