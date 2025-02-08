@@ -11,8 +11,8 @@ class CONTROLLER_CONFIG
 
 	public function __construct()
 	{
+		// load our configuration file and provide all variables in there in a uniform array
 		include(dirname(__FILE__) . '/../configs/config.php');
-
 		$this->user = get_defined_vars();
 	}
 

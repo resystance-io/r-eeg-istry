@@ -28,6 +28,8 @@ class Interactives
 
     public function deauthenticate()
     {
+        // the user wants to log off -
+        // destroy the session and redirect the user to the webroot
         session_unset();
 
         $response = jaxon()->newResponse();
@@ -37,6 +39,9 @@ class Interactives
 
     public function authenticate()
     {
+        // the user wants to log on -
+        // check if email address and mnemonic match and authenticate the session on success
+
         if(isset($_SESSION['auth_email']) && !filter_var($_SESSION['auth_email'], FILTER_VALIDATE_EMAIL))
         {
             $response = jaxon()->newResponse();
@@ -69,6 +74,7 @@ class Interactives
 
     public function add_meter($meter_type, $prefix)
     {
+        // add another meter input block to the current layout
         $response = jaxon()->newResponse();
 
         $id = $this->generate_uuid4();
@@ -102,6 +108,7 @@ class Interactives
 
     public function add_storage()
     {
+        // add another storage input block to the current layout
         $response = jaxon()->newResponse();
 
         $id = $this->generate_uuid4();
@@ -125,6 +132,7 @@ class Interactives
 
     public function rmv_meter($id)
     {
+        // remove a meter input block from the current layout
         if(isset($_SESSION['meters']["$id"]))
         {
             if($_SESSION['meters']["$id"]['type'] == 'suppliers')
@@ -162,6 +170,7 @@ class Interactives
 
     public function rmv_storage($id)
     {
+        // remove a storage input block from the current layout
         if(isset($_SESSION['storages']["$id"]))
         {
             unset($_SESSION['storages']["$id"]);
@@ -173,6 +182,7 @@ class Interactives
 
     public function update_storage_value($id, $value)
     {
+        // write the given storage value to our session
         if(isset($_SESSION['storages']["$id"]))
         {
             $_SESSION['storages']["$id"]['value'] = $value;
@@ -181,6 +191,7 @@ class Interactives
 
     public function update_meter_value($id, $value)
     {
+        // write the given meter value to our session
         if(isset($_SESSION['meters']["$id"]))
         {
             $_SESSION['meters']["$id"]['value'] = $value;
@@ -189,6 +200,7 @@ class Interactives
 
     public function update_session_bucket($record, $value, $session_bucket)
     {
+        // write a given name-value tuple to our session (into the specified bucket)
         $_SESSION["$session_bucket"]["$record"]["value"] = $value;
         $response = jaxon()->newResponse();
         return $response;
@@ -196,6 +208,7 @@ class Interactives
 
     public function update_credential_cache($record, $value)
     {
+        // write the provided login credentials to the current session's credentials cache
         switch ($record)
         {
             case 'auth_email':
@@ -210,11 +223,13 @@ class Interactives
 
     public function update_meter_detail($meter_key, $record, $value)
     {
+        // write detail information about a certain meter too the current session's meter data
         $_SESSION['meters']["$meter_key"]["$record"]['value'] = $value;
     }
 
     public function step_back($current_step)
     {
+        // navigate one step back (without checking the integrity of the data provided in the current step)
         $response = jaxon()->newResponse();
         if($current_step > 0)
         {
@@ -230,6 +245,7 @@ class Interactives
 
     public function next_step($current_step)
     {
+        // navigate one step forward (and check the integrity of the data provided in the current step)
         $response = jaxon()->newResponse();
 
         if(isset($this->config->user['JOIN_LAYOUT'][$current_step]))
@@ -307,6 +323,7 @@ class Interactives
 
     public function check_step_integrity_company(&$jaxon_response_object)
     {
+        // check the integrity of all data in the company block
         $failmsg = null;
         $focustarget = null;
 
@@ -379,6 +396,7 @@ class Interactives
 
     public function check_step_integrity_individual(&$jaxon_response_object)
     {
+        // check the integrity of all data in the individual block
         $failmsg = null;
         $focustarget = null;
 
@@ -458,6 +476,7 @@ class Interactives
 
     public function check_step_integrity_agriculture(&$jaxon_response_object)
     {
+        // check the integrity of all data in the agriculture block
         $failmsg = null;
         $focustarget = null;
 
@@ -536,6 +555,7 @@ class Interactives
 
     public function check_step_integrity_meters(&$jaxon_response_object)
     {
+        // check the integrity of all data in the meter block
         $failmsg = null;
         $focustarget = null;
 
@@ -570,6 +590,7 @@ class Interactives
 
     public function check_step_meter_details(&$jaxon_response_object)
     {
+        // check the integrity of all data in the meter detail block
         $failmsg = null;
         $focustarget = null;
 
@@ -624,6 +645,7 @@ class Interactives
 
     public function check_step_integrity_storages(&$jaxon_response_object)
     {
+        // check the integrity of all data in the storage block
         $failmsg = null;
         $focustarget = null;
 
@@ -649,6 +671,7 @@ class Interactives
 
     public function check_step_integrity_banking(&$jaxon_response_object)
     {
+        // check the integrity of all data in the banking block
         $failmsg = null;
         $focustarget = null;
 
@@ -682,6 +705,7 @@ class Interactives
 
     private function validate_record($value, $integrity=null)
     {
+        // validate a given record based on its integrity check definition and return upon success or failure
         if(!isset($integrity) || $integrity == null)
         {
             return true;
@@ -809,6 +833,7 @@ class Interactives
 
     public function copy_address($meter_key)
     {
+        // get the main address and copy it to a certain meters detail information
         $response = jaxon()->newResponse();
 
         $response->assign('street_' . $meter_key, 'value', $_SESSION['generic_information']['street']['value']);

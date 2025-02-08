@@ -20,6 +20,7 @@
     include_once('controllers/controller_session.php.inc');
     $session = $object_broker->instance['session'] = new CONTROLLER_SESSION($object_broker);
 
+    // prepare the jaxon environment for asynchronous events
     require('./vendor/autoload.php');
 
     use Jaxon\Jaxon;
@@ -52,26 +53,32 @@
 
         <?php
 
+            // choose what view to display
+
             if(isset($_REQUEST['join']))
             {
+                // people trying to join the eeg
                 include_once('views/view_join.inc.php');
                 $view_join = new VIEW_JOIN($object_broker);
                 $view_join->view_render();
             }
             elseif(isset($_REQUEST['lookup']))
             {
+                // people trying to look up their registration data
                 include_once('views/view_lookup.inc.php');
                 $view_lookup = new VIEW_LOOKUP($object_broker);
                 $view_lookup->view_render();
             }
             elseif(isset($_REQUEST['debug']))
             {
+                // people that are trying to debug this madness
                 include_once('views/view_debug.inc.php');
                 $view_debug = new VIEW_DEBUG();
                 $view_debug->view_render();
             }
             else
             {
+                // people who did not decide yet
                 include_once('views/view_default.inc.php');
                 view_render();
             }
