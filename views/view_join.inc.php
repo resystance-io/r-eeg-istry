@@ -210,16 +210,18 @@ class VIEW_JOIN
         print "<h3>Allgemeine Daten</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
 
-        $this->view_render_part_captioned_inputfield("Firmenwortlaut", "company", "generic_information", "required", "width:880px;");
-        $this->view_render_part_captioned_inputfield("UID", "uid", "generic_information", null, "width:880px;");
+        $this->view_render_part_captioned_inputfield("Firmenwortlaut", "company", "generic_information", "required", "width:440px;float:left");
+        $this->view_render_part_captioned_inputfield("UID", "uid", "generic_information", null, "width:440px;float:left");
+        print "<div style=\"clear:both\"></div>";
         $this->view_render_part_captioned_inputfield("Stra&szlig;e", "street", "generic_information", "required", "width:760px;float:left;");
         $this->view_render_part_captioned_inputfield("Nr.", "number", "generic_information", "required", "width:120px;float:left;");
         print "<div style=\"clear:both\"></div>";
-        $this->view_render_part_captioned_inputfield("Postleitzahl", "zip", "generic_information", "numbers", "width:120px;float:left;");
+        $this->view_render_part_captioned_inputfield("PLZ", "zip", "generic_information", "numbers", "width:120px;float:left;");
         $this->view_render_part_captioned_inputfield("Ort", "city", "generic_information", "required", "width:760px;float:left;");
         print "<div style=\"clear:both\"></div>";
-        $this->view_render_part_captioned_inputfield("Telefonnummer", "phone", "generic_information", "phone", "width:880px");
-        $this->view_render_part_captioned_inputfield("E-Mail Adresse", "email", "generic_information", "email", "width:880px");
+        $this->view_render_part_captioned_inputfield("Telefonnummer", "phone", "generic_information", "phone", "width:440px;float:left;");
+        $this->view_render_part_captioned_inputfield("E-Mail Adresse", "email", "generic_information", "email", "width:440px;float:left;");
+        print "<div style=\"clear:both\"></div>";
 
         print "</div>";
 
@@ -246,12 +248,13 @@ class VIEW_JOIN
         $this->view_render_part_captioned_inputfield("Stra&szlig;e", "street", "generic_information", "required", "width:700px;float:left;");
         $this->view_render_part_captioned_inputfield("Nr.", "number", "generic_information", "required", "width:160px;float:left;");
         print "<div style=\"clear:both\"></div>";
-        $this->view_render_part_captioned_inputfield("Postleitzahl", "zip", "generic_information", "numbers", "width:120px;float:left;");
-        $this->view_render_part_captioned_inputfield("Ort", "city", "generic_information", "required", "width:740px;float:left;");
+        $this->view_render_part_captioned_inputfield("PLZ", "zip", "generic_information", "numbers", "width:120px;float:left;");
+        $this->view_render_part_captioned_inputfield("Ort", "city", "generic_information", "required", "width:540px;float:left;");
+        $this->view_render_part_captioned_inputfield("Geburtsdatum", "birthdate", "generic_information", null, "width:200px;float:left;");
         print "<div style=\"clear:both\"></div>";
-        $this->view_render_part_captioned_inputfield("Geburtsdatum", "birthdate", "generic_information", null, "width:860px;");
-        $this->view_render_part_captioned_inputfield("Telefonnummer", "phone", "generic_information", "phone", "width:860px;");
-        $this->view_render_part_captioned_inputfield("E-Mail Adresse", "email", "generic_information", "email", "width:860px;");
+        $this->view_render_part_captioned_inputfield("Telefonnummer", "phone", "generic_information", "phone", "width:430px;float:left;");
+        $this->view_render_part_captioned_inputfield("E-Mail Adresse", "email", "generic_information", "email", "width:430px;float:left;");
+        print "<div style=\"clear:both\"></div>";
 
         print "</div>";
 
@@ -279,12 +282,13 @@ class VIEW_JOIN
         $this->view_render_part_captioned_inputfield("Stra&szlig;e", "street", "generic_information", "required", "width:700px;float:left;");
         $this->view_render_part_captioned_inputfield("Nr", "number", "generic_information", "required", "width:160px;float:left;");
         print "<div style=\"clear:both\"></div>";
-        $this->view_render_part_captioned_inputfield("Postleitzahl", "zip", "generic_information", "numbers", "width:120px;float:left;");
-        $this->view_render_part_captioned_inputfield("Ort", "city", "generic_information", "required", "width:740px;float:left;");
+        $this->view_render_part_captioned_inputfield("PLZ", "zip", "generic_information", "numbers", "width:120px;float:left;");
+        $this->view_render_part_captioned_inputfield("Ort", "city", "generic_information", "required", "width:540px;float:left;");
+        $this->view_render_part_captioned_inputfield("Geburtsdatum", "birthdate", "generic_information", null, "width:200px;float:left;");
         print "<div style=\"clear:both\"></div>";
-        $this->view_render_part_captioned_inputfield("Geburtsdatum", "birthdate", "generic_information", null,"width:860px;");
-        $this->view_render_part_captioned_inputfield("Telefonnummer", "phone", "generic_information", "phone", "width:860px;");
-        $this->view_render_part_captioned_inputfield("E-Mail Adresse", "email", "generic_information", "email", "width:860px;");
+        $this->view_render_part_captioned_inputfield("Telefonnummer", "phone", "generic_information", "phone", "width:430px;float:left;");
+        $this->view_render_part_captioned_inputfield("E-Mail Adresse", "email", "generic_information", "email", "width:430px;float:left;");
+        print "<div style=\"clear:both\"></div>";
 
         print "</div>";
 
@@ -320,13 +324,18 @@ class VIEW_JOIN
                     print "<h3>Adresse des Einspeisez&auml;hlpunkts " . $meter_object['value'] . "</h3>";
                 }
 
-                $this->view_render_meter_detail_inputfield($meter_key, "Stra&szlig;e", 'street', 'required');
+                $this->view_render_meter_detail_inputfield($meter_key, "Stra&szlig;e", 'street', 'required', "width:320px;float:left;");
 
-                $this->view_render_meter_detail_inputfield($meter_key, "Nummer", 'number', 'required');
+                $this->view_render_meter_detail_inputfield($meter_key, "Nummer", 'number', 'required', "width:150px;float:left;");
 
-                $this->view_render_meter_detail_inputfield($meter_key, "Ort", 'city', 'required');
+                print "<div style=\"clear:both\"></div>";
 
-                $this->view_render_meter_detail_inputfield($meter_key, "PLZ", 'zip', 'numbers');
+                $this->view_render_meter_detail_inputfield($meter_key, "PLZ", 'zip', 'numbers', "width:150px;float:left;");
+
+                $this->view_render_meter_detail_inputfield($meter_key, "Ort", 'city', 'required', "width:320px;float:left;");
+
+                print "<div style=\"clear:both\"></div>";
+
 
                 print '<br /><button type="button" class="thinbtn" id="btn_prefill_' . $meter_key . '" onClick="JaxonInteractives.copy_address(' . "'" . $meter_key . "'" . ');">Von Hauptadresse kopieren</button>';
                 print "</div>";
@@ -580,7 +589,32 @@ class VIEW_JOIN
                 $prefill = '';
             }
 
-            print '<div style="padding:8px;line-height:40px;' . $style . '">' . $caption . '<input type="text" onfocus="this.select()" name="'. $id . '" id="' . $id . '" value="' . $prefill . '" onfocusout="JaxonInteractives.update_session_bucket(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value, ' . "'" .  $session_bucket . "'" . ');" /></div>';
+            print '<div style="padding:8px;line-height:40px;' . $style . '">' . $caption . '<input type="text" onfocus="this.select()" name="' . $id . '" id="' . $id . '" value="' . $prefill . '" onfocusout="JaxonInteractives.update_session_bucket(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value, ' . "'" . $session_bucket . "'" . ');" /></div>';
+
+            if($integrity == 'iban')
+            {
+                print '
+                    <script>
+                        function formatInput(input) {
+                          let value = input.value;
+                        
+                          // Remove all dashes and spaces
+                          value = value.replace(/[-\s]/g, \'\');
+                        
+                          // Group the string into chunks of 4 characters separated by spaces
+                          let formattedValue = value.replace(/(.{4})/g, \'$1 \').trim();
+                        
+                          // Update the input box with the modified value
+                          input.value = formattedValue;
+                        }
+                        
+                        document.getElementById(\'' . $id . '\').addEventListener(\'input\', function() {
+                            formatInput(this);
+                        });
+                    </script>
+                ';
+            }
+
         }
         else
         {
