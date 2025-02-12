@@ -830,17 +830,29 @@ class Interactives
         // get the main address and copy it to a certain meters detail information
         $response = jaxon()->newResponse();
 
-        $response->assign('street_' . $meter_key, 'value', $_SESSION['generic_information']['street']['value']);
-        $_SESSION['meters']["$meter_key"]['street']['value'] = $_SESSION['generic_information']['street']['value'];
+        if(isset($_SESSION['generic_information']['street']['value']))
+        {
+            $response->assign('street_' . $meter_key, 'value', $_SESSION['generic_information']['street']['value']);
+            $_SESSION['meters']["$meter_key"]['street']['value'] = $_SESSION['generic_information']['street']['value'];
+        }
 
-        $response->assign('number_' . $meter_key, 'value', $_SESSION['generic_information']['number']['value']);
-        $_SESSION['meters']["$meter_key"]['number']['value'] = $_SESSION['generic_information']['number']['value'];
+        if(isset($_SESSION['generic_information']['number']['value']))
+        {
+            $response->assign('number_' . $meter_key, 'value', $_SESSION['generic_information']['number']['value']);
+            $_SESSION['meters']["$meter_key"]['number']['value'] = $_SESSION['generic_information']['number']['value'];
+        }
 
-        $response->assign('zip_' . $meter_key, 'value', $_SESSION['generic_information']['zip']['value']);
-        $_SESSION['meters']["$meter_key"]['zip']['value'] = $_SESSION['generic_information']['zip']['value'];
+        if(isset($_SESSION['generic_information']['zip']['value']))
+        {
+            $response->assign('zip_' . $meter_key, 'value', $_SESSION['generic_information']['zip']['value']);
+            $_SESSION['meters']["$meter_key"]['zip']['value'] = $_SESSION['generic_information']['zip']['value'];
+        }
 
-        $response->assign('city_' . $meter_key, 'value', $_SESSION['generic_information']['city']['value']);
-        $_SESSION['meters']["$meter_key"]['city']['value'] = $_SESSION['generic_information']['city']['value'];
+        if(isset($_SESSION['generic_information']['city']['value']))
+        {
+            $response->assign('city_' . $meter_key, 'value', $_SESSION['generic_information']['city']['value']);
+            $_SESSION['meters']["$meter_key"]['city']['value'] = $_SESSION['generic_information']['city']['value'];
+        }
 
         return $response;
 
