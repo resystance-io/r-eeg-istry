@@ -220,7 +220,7 @@ class VIEW_JOIN
         $this->view_render_part_captioned_inputfield("Ort", "city", "generic_information", "required", "width:760px;float:left;");
         print "<div style=\"clear:both\"></div>";
         $this->view_render_part_captioned_inputfield("Telefonnummer", "phone", "generic_information", "phone", "width:440px;float:left;");
-        $this->view_render_part_captioned_inputfield("E-Mail Adresse", "email", "generic_information", "email", "width:440px;float:left;");
+        $this->view_render_part_captioned_inputfield("E-Mail-Adresse", "email", "generic_information", "email", "width:440px;float:left;");
         print "<div style=\"clear:both\"></div>";
 
         print "</div>";
@@ -253,7 +253,7 @@ class VIEW_JOIN
         $this->view_render_part_captioned_inputfield("Geburtsdatum", "birthdate", "generic_information", null, "width:200px;float:left;");
         print "<div style=\"clear:both\"></div>";
         $this->view_render_part_captioned_inputfield("Telefonnummer", "phone", "generic_information", "phone", "width:430px;float:left;");
-        $this->view_render_part_captioned_inputfield("E-Mail Adresse", "email", "generic_information", "email", "width:430px;float:left;");
+        $this->view_render_part_captioned_inputfield("E-Mail-Adresse", "email", "generic_information", "email", "width:430px;float:left;");
         print "<div style=\"clear:both\"></div>";
 
         print "</div>";
@@ -287,7 +287,7 @@ class VIEW_JOIN
         $this->view_render_part_captioned_inputfield("Geburtsdatum", "birthdate", "generic_information", null, "width:200px;float:left;");
         print "<div style=\"clear:both\"></div>";
         $this->view_render_part_captioned_inputfield("Telefonnummer", "phone", "generic_information", "phone", "width:430px;float:left;");
-        $this->view_render_part_captioned_inputfield("E-Mail Adresse", "email", "generic_information", "email", "width:430px;float:left;");
+        $this->view_render_part_captioned_inputfield("E-Mail-Adresse", "email", "generic_information", "email", "width:430px;float:left;");
         print "<div style=\"clear:both\"></div>";
 
         print "</div>";
@@ -344,7 +344,7 @@ class VIEW_JOIN
 
                 if ($meter_object['type'] == "suppliers")
                 {
-                    print "<h3>Einspeiseleistung</h3>";
+                    print "<h3>Leistung Produktionsanlage</h3>";
 
                     $this->view_render_meter_detail_inputfield($meter_key, "Leistung (kWp)", 'power', 'decimal');
                 }
@@ -371,7 +371,7 @@ class VIEW_JOIN
 
         $this->view_render_part_captioned_inputfield("Name d. Kontoinhabers", "banking_name", "generic_information", "required");
         $this->view_render_part_captioned_inputfield("IBAN", "banking_iban", "generic_information", "iban");
-        $this->view_render_part_annotated_checkbox("Hiermit best&auml;tige ich die Richtigkeit der angegebenen Kontoinformationen<br />und erm&auml;chtige VIERE zum Bankeinzug im Rahmen der Leistungsabrechnung", "banking_consent", "generic_information", "booltrue");
+        $this->view_render_part_annotated_checkbox("Hiermit best&auml;tige ich die Richtigkeit der angegebenen Kontoinformationen<br />und erm&auml;chtige VIERE zum Bankeinzug im Rahmen der Leistungsabrechnung <br /> Creditor ID: AT57ZZZ00000073600", "banking_consent", "generic_information", "booltrue");
 
         print "</div></div><br />";
 
