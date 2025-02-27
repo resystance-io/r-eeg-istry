@@ -54,7 +54,7 @@ class VIEW_JOIN
                 default:
                     print '
                         <header id="header">
-                            <p>Sch&ouml;n dass du dich f&uuml;r die Mitgliedschaft in unserer EEG interessierst.<br />Wir freuen uns &uuml;ber jedes neue Mitglied.<br /></p>
+                            <p>Sch&ouml;n dass Du dich f&uuml;r die Mitgliedschaft in unserer EEG interessierst.<br />Wir freuen uns &uuml;ber jedes neue Mitglied!<br /></p>
             
                             <p style="color:white">Bitte w&auml;hle die passende Beitrittsform:</p>
                         </header>
@@ -284,7 +284,7 @@ class VIEW_JOIN
         print "<div style=\"clear:both\"></div>";
         $this->view_render_part_captioned_inputfield("PLZ", "zip", "generic_information", "numbers", "width:120px;float:left;");
         $this->view_render_part_captioned_inputfield("Ort", "city", "generic_information", "required", "width:540px;float:left;");
-        $this->view_render_part_captioned_inputfield("Geburtsdatum", "birthdate", "generic_information", null, "width:200px;float:left;");
+        $this->view_render_part_captioned_inputfield("Geburtsdatum", "birthdate", "generic_information", "required", "width:200px;float:left;");
         print "<div style=\"clear:both\"></div>";
         $this->view_render_part_captioned_inputfield("Telefonnummer", "phone", "generic_information", "phone", "width:430px;float:left;");
         $this->view_render_part_captioned_inputfield("E-Mail-Adresse", "email", "generic_information", "email", "width:430px;float:left;");
@@ -300,7 +300,7 @@ class VIEW_JOIN
         print '
                     <header id="header">
                         <h2>Erg&auml;nzende Angaben</h2>
-                        <p>Bitte erg&auml;nze die Informationen zu den von dir angegebenen Z&auml;hlpunkten</p>
+                        <p>Bitte erg&auml;nze die Informationen zu den von dir angegebenen Z&auml;hlpunkten!</p>
                     </header>
         ';
 
@@ -362,7 +362,7 @@ class VIEW_JOIN
         print '
                     <header id="header">
                         <h2>Zahlungsinformationen</h2>
-                        <p>Noch ein paar Infos zum Konto, dann ist es geschafft...</p>
+                        <p>Noch ein paar Infos zum Konto, dann ist es geschafft ...</p>
                     </header>
         ';
 
@@ -371,7 +371,7 @@ class VIEW_JOIN
 
         $this->view_render_part_captioned_inputfield("Name d. Kontoinhabers", "banking_name", "generic_information", "required");
         $this->view_render_part_captioned_inputfield("IBAN", "banking_iban", "generic_information", "iban");
-        $this->view_render_part_annotated_checkbox("Hiermit best&auml;tige ich die Richtigkeit der angegebenen Kontoinformationen<br />und erm&auml;chtige VIERE zum Bankeinzug im Rahmen der Leistungsabrechnung <br /> Creditor ID: AT57ZZZ00000073600", "banking_consent", "generic_information", "booltrue");
+        $this->view_render_part_annotated_checkbox("Hiermit best&auml;tige ich die Richtigkeit der angegebenen Kontoinformationen<br />und erm&auml;chtige VIERE zum Bankeinzug im Rahmen der Leistungsabrechnung <br /> Creditor ID: AT57ZZZ00000073600.", "banking_consent", "generic_information", "booltrue");
 
         print "</div></div><br />";
 
@@ -383,15 +383,15 @@ class VIEW_JOIN
         $_SESSION['finished'] = true;
 
         print "&nbsp;<br />&nbsp;<br />";
-        print "<h2>Vielen Dank f&uuml;r deine Anmeldung</h2>";
-        print "&nbsp;<br>Deine Daten werden schnellstm&ouml;glich &uuml;berpr&uuml;ft und in unser System &uuml;bernommen.<br />Sobald das Datum feststeht ab dem du eneuerbare Energie aus unserer Gemeinschaft beziehen wirst, kontaktieren wir dich umgehend. <br /><br />Solltest du Fragen haben, stehen wir dir selbstverst&auml;ndlich gerne zur Verf&uuml;gung.<br />";
+        print "<h2>Vielen Dank f&uuml;r Deine Anmeldung!</h2>";
+        print "&nbsp;<br>Deine Daten werden schnellstm&ouml;glich &uuml;berpr&uuml;ft und in unser System &uuml;bernommen.<br />Sobald das Datum feststeht, ab dem Du eneuerbare Energie aus unserer Gemeinschaft beziehen wirst, kontaktieren wir Dich umgehend. <br /><br />Solltest Du Fragen haben, stehen wir Dir selbstverst&auml;ndlich gerne zur Verf&uuml;gung.<br />";
 
         print "<br />&nbsp;<br />&nbsp;<br />";
         print "<h3>Dein Passwort:</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
         print "<br /><h2>" . $_SESSION['mnemonic'] . "</h2>";
         print "</div>&nbsp;<br />";
-        print "Du kannst dieses Passwort nutzen um jederzeit den Bearbeitungsfortschritt deines Antrages einzusehen<br />und natürlich um deine Daten zu &auml;ndern.<br />&nbsp;<br /><b>Bitte bewahre es gut auf!</b>";
+        print "Du kannst dieses Passwort nutzen, um jederzeit den Bearbeitungsfortschritt Deines Antrages einzusehen<br />und natürlich um Deine Daten zu &auml;ndern.<br />&nbsp;<br /><b>Bitte bewahre es gut auf!</b>";
         print "&nbsp;<br />";
 
         // check if this mnemonic was already stored
@@ -495,7 +495,7 @@ class VIEW_JOIN
     private function view_render_consumption_meters()
     {
         print "<br /><h3 style=\"margin:0px;\">Z&auml;hlpunkte (Bezug)</h3>";
-        print "<span style=\"font-size:16px;\">Mit welchen Z&auml;hlpunkten m&ouml;chtest du Energie von uns beziehen?</span>";
+        print "<span style=\"font-size:16px;\">Mit welchen Z&auml;hlpunkten m&ouml;chtest Du Energie von uns beziehen?</span>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
 
         if(isset($_SESSION['meters']))
@@ -528,7 +528,7 @@ class VIEW_JOIN
     private function view_render_supply_meters()
     {
         print "<br /><h3 style=\"margin:0px;\">Z&auml;hlpunkte (Einspeisung)</h3>";
-        print "<span style=\"font-size:16px;\">Erzeugst du selbst erneuerbare Energie und m&ouml;chtest in unsere EEG einspeisen?</span>";
+        print "<span style=\"font-size:16px;\">Erzeugst Du selbst erneuerbare Energie und m&ouml;chtest in unsere EEG einspeisen?</span>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
 
         if(isset($_SESSION['meters']))
@@ -550,7 +550,7 @@ class VIEW_JOIN
     private function view_render_energy_storage()
     {
         print "<br /><h3 style=\"margin:0px;\">Vorhandene Energiespeicher</h3>";
-        print "<span style=\"font-size:16px;\">Freiwillige Angabe / Erhebung zu statistischen Zwecken.</span>";
+        print "<span style=\"font-size:16px;\">Freiwillige Angabe - Erhebung zu statistischen Zwecken.</span>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
 
         if(isset($_SESSION['storages']))
