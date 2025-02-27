@@ -28,9 +28,9 @@ class VIEW_LOOKUP
                 print '
                     <header id="header">
                         <h1>Erneuerbare Energiegemeinschaft VIERE</h1>
-                        <p>Beitrittsstatus- u. Datenabfrage<br /></p>
+                        <p>Beitrittsstatus- und Datenabfrage<br /></p>
         
-                        <p style="color:white">Bitte melde dich mit deinen Zugangsdaten an</p>
+                        <p style="color:white">Bitte melde Dich mit Deinen Zugangsdaten an!</p>
                     </header>
                 ';
                 $this->view_render_login();
@@ -50,7 +50,7 @@ class VIEW_LOOKUP
         }
 
         print "<div class=\"form-container\">";
-        print 'E-Mail Adresse:<br><input type="text" onfocus="this.select()" name="auth_email" id="auth_email" value="' . $username_prefill . '" onfocusout="JaxonInteractives.update_credential_cache(' . "'auth_email'" . ', document.getElementById(' . "'auth_email'" . ').value);" />';
+        print 'E-Mail-Adresse:<br><input type="text" onfocus="this.select()" name="auth_email" id="auth_email" value="' . $username_prefill . '" onfocusout="JaxonInteractives.update_credential_cache(' . "'auth_email'" . ', document.getElementById(' . "'auth_email'" . ').value);" />';
         print '<br />';
         print 'Passwort:<br><input type="password" onfocus="this.select()" name="auth_mnemonic" id="auth_mnemonic" value="" onfocusout="JaxonInteractives.update_credential_cache(' . "'auth_mnemonic'" . ', document.getElementById(' . "'auth_mnemonic'" . ').value);" />';
         print "</div><br />";
@@ -69,7 +69,7 @@ class VIEW_LOOKUP
         print '
                     <header id="header">
                         <h1>Erneuerbare Energiegemeinschaft VIERE</h1>
-                        <p>Beitrittsstatus- u. Datenabfrage<br /></p>
+                        <p>Beitrittsstatus- und Datenabfrage<br /></p>
         
                         <p style="color:white">' . $_SESSION['authenticated'] . ' <button type="button" class="" style="background-color:darkred;margin:9px;" id="btn_deauthenticate" onClick="JaxonInteractives.deauthenticate();">Abmelden</button></p>
                     </header>
@@ -87,7 +87,7 @@ class VIEW_LOOKUP
         print "<table>";
         print "<tr><td class=\"profileheader\">Anmeldung &uuml;bermittelt:</td><td>" . date("d.m.Y", $registration['registration_date']) . "</td></tr>";
 
-        print "<tr><td class=\"profileheader\">EEG Beitritt best&auml;tigt:</td>";
+        print "<tr><td class=\"profileheader\">EEG-Beitritt best&auml;tigt:</td>";
         if ($registration['migration_date'] != null)
         {
             print "<td>" . date("d.m.Y", $registration['migration_date']) . "</td>";
@@ -140,13 +140,13 @@ class VIEW_LOOKUP
         print "<tr><td class=\"profileheader\">Stra&szlig;e</td><td>" . $registration['street'] . ' ' . $registration['number'] . "</td></tr>";
         print "<tr><td class=\"profileheader\">Ort</td><td>" . $registration['zip'] . ' ' . $registration['city'] . "</td></tr>";
         print "<tr><td class=\"profileheader\">Telefonnummer</td><td>" . $registration['phone'] . "</td></tr>";
-        print "<tr><td class=\"profileheader\">E-Mail Adresse</td><td>" . $registration['email'] . "</td></tr>";
+        print "<tr><td class=\"profileheader\">E-Mail-Adresse</td><td>" . $registration['email'] . "</td></tr>";
         print "</table>";
 
         print '<br />&nbsp;<br />';
         print '<h3>Bankverbindung</h3>';
         print "<table>";
-        print "<tr><td class=\"profileheader\">Kontof&uuml;hrende Person:</td><td>" . $registration['banking_name'] . "</td></tr>";
+        print "<tr><td class=\"profileheader\">Kontoinhaber*in:</td><td>" . $registration['banking_name'] . "</td></tr>";
         print "<tr><td class=\"profileheader\">Aktive IBAN:</td><td>" . $registration['banking_iban'] . "</td></tr>";
         print "<tr><td class=\"profileheader\">Einzugserm&auml;chtigung erteilt:</td><td>" . date("d.m.Y H:i:s", $registration['banking_consent']) . "</td></tr>";
         print "</table>";
