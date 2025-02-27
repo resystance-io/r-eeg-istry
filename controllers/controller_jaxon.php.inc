@@ -312,6 +312,12 @@ class Interactives
                             return $response;
                         }
                         break;
+                    case 'approvals':
+                        if($this->check_step_approval_details($response) === false)
+                        {
+                            return $response;
+                        }
+                        break;
                 }
             }
 
@@ -661,7 +667,45 @@ class Interactives
 
         return true;
     }
+    public function check_step_approval_details(&$jaxon_response_object)
+    {
+        // check the integrity of all data in the banking block
+        $failmsg = null;
+        $focustarget = null;
 
+        if($this->validate_record($_SESSION['generic_information']['bylaws_consent']['value'], $_SESSION['generic_information']['bylaws_consent']['integrity']) === false)
+        {
+            $failmsg = "Bitte akzeptieren Sie unsere Statuten";
+            $focustarget = 'bylaws_consent';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['tos_consent']['value'], $_SESSION['generic_information']['tos_consent']['integrity']) === false)
+        {
+            $failmsg = "Bitte akzeptieren Sie unsere AGBs";
+            $focustarget = 'tos_consent';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['gdpr_consent']['value'], $_SESSION['generic_information']['gdpr_consent']['integrity']) === false)
+        {
+            $failmsg = "Bitte akzeptieren Sie unsere Datenschutzbestimmungen";
+            $focustarget = 'gdpr_consent';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['network_consent']['value'], $_SESSION['generic_information']['network_consent']['integrity']) === false)
+        {
+            $failmsg = "Bitte erteilen Sie uns die Vollmacht gegenüber der Netzbetreiber";
+            $focustarget = 'network_consent';
+        }
+
+        if($failmsg)
+        {
+            $jaxon_response_object->alert($failmsg);
+            $jaxon_response_object->script("document.getElementById('" . $focustarget . "').focus();");
+            return false;
+        }
+
+        return true;
+    }
 
     public function check_step_integrity_banking(&$jaxon_response_object)
     {

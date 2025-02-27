@@ -17,9 +17,13 @@ CREATE TABLE `registrations` (
   `banking_name` varchar(128) DEFAULT NULL,
   `banking_iban` varchar(34) DEFAULT NULL,
   `banking_consent` int(11) unsigned DEFAULT NULL COMMENT 'good until March 7, 2106',
-  `registration_date` int(11) unsigned DEFAULT NULL,
-  `migration_date` int(11) unsigned DEFAULT NULL,
-  `delivery_date` int(11) unsigned DEFAULT NULL,
+  `network_consent` int(11) unsigned DEFAULT NULL COMMENT 'good until March 7, 2106',
+  `bylaws_consent` int(11) unsigned DEFAULT NULL COMMENT 'good until March 7, 2106',
+  `gdpr_consent` int(11) unsigned DEFAULT NULL COMMENT 'good until March 7, 2106',
+  `tos_consent` int(11) unsigned DEFAULT NULL COMMENT 'good until March 7, 2106',
+  `registration_date` int(11) unsigned DEFAULT NULL COMMENT 'good until March 7, 2106',
+  `migration_date` int(11) unsigned DEFAULT NULL COMMENT 'good until March 7, 2106',
+  `delivery_date` int(11) unsigned DEFAULT NULL COMMENT 'good until March 7, 2106',
   `ip_address` varchar(128) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

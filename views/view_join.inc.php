@@ -148,6 +148,10 @@ class VIEW_JOIN
                         case 'banking':
                             $this->view_render_banking_details();
                             break;
+
+                        case 'approvals':
+                            $this->view_render_approvals();
+                            break;
                     }
                 }
 
@@ -362,7 +366,7 @@ class VIEW_JOIN
         print '
                     <header id="header">
                         <h2>Zahlungsinformationen</h2>
-                        <p>Noch ein paar Infos zum Konto, dann ist es geschafft...</p>
+                        <p>Noch ein paar Infos zum Konto, bald ist es geschafft...</p>
                     </header>
         ';
 
@@ -377,9 +381,53 @@ class VIEW_JOIN
 
     }
 
+    private function view_render_approvals()
+    {
+        print '
+                    <header id="header">
+                        <h2>Best&auml;tigungen &amp; Freigaben</h2>
+                        <p>Aus rechtlichen Gr&uuml;nden ben&ouml;tigen wir noch deine formale Zustimmung in den folgenden Bereichen:</p>
+                    </header>
+        ';
+
+        print "<h3>Statuten</h3>";
+        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
+        $this->view_render_part_annotated_checkbox(
+            "Ich best&auml;tige die Kenntnisnahme der Statuten der EEG VIERE, abrufbar unter folgendem Link: ...",
+            "bylaws_consent", "generic_information", "booltrue");
+        print "</div><br />";
+
+        print "<h3>AGBs</h3>";
+        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
+        $this->view_render_part_annotated_checkbox(
+            "Ich best&auml;tige die Kenntnisnahme der AGBs der EEG VIERE, abrufbar unter folgendem Link: ...",
+            "tos_consent", "generic_information", "booltrue");
+        print "</div><br />";
+
+        print "<h3>Datenschutz</h3>";
+        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
+        $this->view_render_part_annotated_checkbox(
+            "Ich best&auml;tige die Kenntnisnahme der Datenschutzbestimmungen, abrufbar unter folgendem Link: ...",
+            "gdpr_consent", "generic_information", "booltrue");
+        print "</div><br />";
+
+        print "<h3>Netzbetreibervollmacht</h3>";
+        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
+        $this->view_render_part_annotated_checkbox(
+            "Ich erteile der EEG VIERE f&uuml;r die Dauer der Mitgliedschaft zeitlich unbegrenzt die Vollmacht,<br />
+                        in meinem Namen s&auml;mtliche Schritte und Abstimmungen mit dem zust&auml;ndigen Netzbetreiber<br />
+                        (Netz O&Ouml;) durchzuf&uuml;hren, die zur vollst&auml;ndigen Aktivierung und Deaktivierung der angef&uuml;hrten<br />
+                        Z&auml;hlpunkte in der EEG VIERE notwendig sind.<br />
+                        &nbsp;<br />
+                        Dies betrifft insbesondere auch die Registrierung und Nutzung des E-Service-Portals der Netz O&Ouml;.",
+            "network_consent", "generic_information", "booltrue");
+
+        print "</div></div><br />";
+
+    }
+
     private function view_render_finished()
     {
-
         $_SESSION['finished'] = true;
 
         print "&nbsp;<br />&nbsp;<br />";
@@ -439,6 +487,10 @@ class VIEW_JOIN
             if (isset($_SESSION['generic_information']['banking_name']['value'])) $registration_array['banking_name'] = $_SESSION['generic_information']['banking_name']['value'];
             if (isset($_SESSION['generic_information']['banking_iban']['value'])) $registration_array['banking_iban'] = strtoupper(str_replace(' ', '', $_SESSION['generic_information']['banking_iban']['value']));
             if (isset($_SESSION['generic_information']['banking_consent']['value']) && $_SESSION['generic_information']['banking_consent']['value'] == '1') $registration_array['banking_consent'] = time();
+            if (isset($_SESSION['generic_information']['bylaws_consent']['value']) && $_SESSION['generic_information']['bylaws_consent']['value'] == '1') $registration_array['bylaws_consent'] = time();
+            if (isset($_SESSION['generic_information']['tos_consent']['value']) && $_SESSION['generic_information']['tos_consent']['value'] == '1') $registration_array['tos_consent'] = time();
+            if (isset($_SESSION['generic_information']['gdpr_consent']['value']) && $_SESSION['generic_information']['gdpr_consent']['value'] == '1') $registration_array['gdpr_consent'] = time();
+            if (isset($_SESSION['generic_information']['network_consent']['value']) && $_SESSION['generic_information']['network_consent']['value'] == '1') $registration_array['network_consent'] = time();
 
             if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
             {
@@ -676,9 +728,8 @@ class VIEW_JOIN
             }
 
             $_SESSION["$session_bucket"]["$id"]['integrity'] = $integrity;
-            print '<div style="display: flex; align-items: center;"><input ' . $checked . ' type="checkbox" name="' . $id . '" id="' . $id . '" onchange="JaxonInteractives.update_session_bucket(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').checked, ' . "'" .  $session_bucket . "'" . ');" /><label for="' . $id . '" style="margin-top:16px;margin-left:12px;line-height: 24px;">' . $annotation . '</label>';
-            
-        print '<br />';
+            print '<div style="display: flex; align-items: center;"><input ' . $checked . ' type="checkbox" name="' . $id . '" id="' . $id . '" onchange="JaxonInteractives.update_session_bucket(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').checked, ' . "'" .  $session_bucket . "'" . ');" /><label for="' . $id . '" style="margin-top:16px;margin-left:12px;line-height: 24px;">' . $annotation . '</label></div>';
+
     }
 
     private function view_render_prefixed_meter($caption, $prefix, $id, $value="000000000")

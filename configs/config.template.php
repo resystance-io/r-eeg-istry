@@ -26,26 +26,27 @@ $JOIN_LAYOUT = [
     ['supply'],
     ['storage'],
     ['meters'],
-    ['banking']
+    ['banking'],
+    ['approvals']
 ];
 
 
 //////* LET'S CALL THIS, THE -- AUSTRIAN -- CONFIGURATION BLOCK *//////
 
 $preNameTitles = [
-    "Dipl.-Ing.",   // Diplom-Ingenieur (equivalent to MSc)
-    "Dr.",          // Doktor (PhD equivalent)
-    "FH-Prof.",     // Fachhochschul-Professor
-    "Ing.",         // Ingenieur
-    "Mag.",         // Magister (Master’s degree)
-    "MMag.",        // Double Magister (e.g., MMag. rer.soc.oec.)
-    "Priv.-Doz.",   // Privatdozent (habilitation)
-    "Prof.",        // Professor
-    "Univ.-Prof.",  // University Professor
-    "Dr. techn.",   // Doctor of Technical Sciences
-    "Dr. rer. nat.",// Doctor of Natural Sciences
-    "Dr. phil.",    // Doctor of Philosophy (humanities)
-    "Dr. iur."      // Doctor of Law
+    "Dipl.-Ing.",       // Diplom-Ingenieur (equivalent to MSc)
+    "Dr.",              // Doktor (PhD equivalent)
+    "FH-Prof.",         // Fachhochschul-Professor
+    "Ing.",             // Ingenieur
+    "Mag.",             // Magister (Master’s degree)
+    "MMag.",            // Double Magister (e.g., MMag. rer.soc.oec.)
+    "Priv.-Doz.",       // Privatdozent (habilitation)
+    "Prof.",            // Professor
+    "Univ.-Prof.",      // University Professor
+    "Dr. techn.",       // Doctor of Technical Sciences
+    "Dr. rer. nat.",    // Doctor of Natural Sciences
+    "Dr. phil.",        // Doctor of Philosophy (humanities)
+    "Dr. iur."          // Doctor of Law
 ];
 
 $postNameDegrees = [
