@@ -849,6 +849,101 @@ class Interactives
                     }
                     break;
 
+                case 'vat_basic':
+
+                    $vatpattern = '/^(ATU\d{8}|BE0\d{9}|BG\d{9,10}|CY\d{8}L|CZ\d{8,10}|DE\d{9}|DK\d{8}|EE\d{9}|EL\d{9}|ES[A-Z0-9]\d{7}[A-Z0-9]|FI\d{8}|FR[A-Z0-9]{2}\d{9}|HR\d{11}|HU\d{8}|IE\d{7}[A-Z]{1,2}|IT\d{11}|LT\d{9,12}|LU\d{8}|LV\d{11}|MT\d{8}|NL\d{9}B\d{2}|PL\d{10}|PT\d{9}|RO\d{2,10}|SE\d{12}|SI\d{8}|SK\d{10})$/i';
+
+                    if(isset($value) && preg_match($vatpattern, trim($value)))
+                    {
+                        // okay, we made it past the regex. Let's take a closer look at austria and germany and check
+                        // for validity based on their modulo rules
+                        $countryCode = substr(trim($value), 0, 2);
+
+                        switch($countryCode)
+                        {
+                            case "AT":
+                                $digits = substr(trim($value), 3); // Skip "U" for Austria
+                                $weights = [1, 2, 1, 2, 1, 2, 1]; // Multiplication pattern
+                                $sum = 0;
+
+                                for ($i = 0; $i < 7; $i++) {
+                                    $product = $digits[$i] * $weights[$i];
+                                    $sum += ($product > 9) ? ($product - 9) : $product;
+                                }
+
+                                $checksum = (10 - ($sum % 10)) % 10;
+                                if ($checksum == $digits[7]) {
+                                    return true;
+                                }
+                                break;
+
+                            case "DE":
+                                $digits = substr(trim($value), 2);
+                                $sum = 0;
+                                $weight = 10; // Initial weight is 10
+
+                                for ($i = 0; $i < 8; $i++) {
+                                    $sum = ($digits[$i] + $weight) % 10;
+                                    if ($sum == 0) {
+                                        $sum = 10;
+                                    }
+                                    $sum *= 2;
+                                    $sum %= 11;
+                                }
+
+                                $checksum = (11 - $sum) % 10;
+                                if ($checksum == $digits[8]) {
+                                    return true;
+                                }
+                                break;
+
+                            default:
+                                // let's return true since we don't have access to a more sophisticated check
+                                // for these countries
+                                return true;
+                        }
+
+                       return true; // VAT ID is valid
+                    }
+                    break;
+
+                case 'vat_extended':
+
+                    $vatpattern = '/^(ATU\d{8}|BE0\d{9}|BG\d{9,10}|CY\d{8}L|CZ\d{8,10}|DE\d{9}|DK\d{8}|EE\d{9}|EL\d{9}|ES[A-Z0-9]\d{7}[A-Z0-9]|FI\d{8}|FR[A-Z0-9]{2}\d{9}|HR\d{11}|HU\d{8}|IE\d{7}[A-Z]{1,2}|IT\d{11}|LT\d{9,12}|LU\d{8}|LV\d{11}|MT\d{8}|NL\d{9}B\d{2}|PL\d{10}|PT\d{9}|RO\d{2,10}|SE\d{12}|SI\d{8}|SK\d{10})$/i';
+
+                    if(isset($value) && preg_match($vatpattern, trim($value)))
+                    {
+
+                        $wsdl = "https://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl";
+
+                        $countryCode = substr(trim($value), 0, 2); // First two characters (country code)
+                        $localID = substr(trim($value), 2); // Everything after the first two characters
+
+                        try
+                        {
+                            $client = new SoapClient($wsdl);
+                            $response = $client->checkVat([
+                                'countryCode' => $countryCode,
+                                'vatNumber' => $localID
+                            ]);
+
+                            if ($response->valid)
+                            {
+                                return true; // VAT ID is valid
+                            }
+                            else
+                            {
+                                return false; // VAT ID is not valid
+                            }
+                        }
+                        catch (SoapFault $e)
+                        {
+                            // Handle error (e.g., API service down or incorrect request)
+                            return false;
+                        }
+                    }
+                    break;
+
                 case 'meter_shortid':
                     if(isset($value))
                     {
