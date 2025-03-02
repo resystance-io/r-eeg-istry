@@ -152,6 +152,15 @@ class VIEW_LOOKUP
         print "</table>";
 
         print '<br />&nbsp;<br />';
+        print '<h3>Zustimmungen</h3>';
+        print "<table>";
+        print "<tr><td class=\"profileheader\">Statuten akzeptiert:</td><td>" . date("d.m.Y H:i:s", $registration['bylaws_consent']) . "</td></tr>";
+        print "<tr><td class=\"profileheader\">Datenschutzbestimmungen akzeptiert:</td><td>" . date("d.m.Y H:i:s", $registration['gdpr_consent']) . "</td></tr>";
+        print "<tr><td class=\"profileheader\">AGB akzeptiert:</td><td>" . date("d.m.Y H:i:s", $registration['tos_consent']) . "</td></tr>";
+        print "<tr><td class=\"profileheader\">Netzbetreibervollmacht erteilt:</td><td>" . date("d.m.Y H:i:s", $registration['network_consent']) . "</td></tr>";
+        print "</table>";
+
+        print '<br />&nbsp;<br />';
         print '<h3>Registrierte Z&auml;hlpunkte</h3>';
         print "<table>";
 
