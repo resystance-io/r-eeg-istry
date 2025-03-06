@@ -649,12 +649,15 @@ class Interactives
         $failmsg = null;
         $focustarget = null;
 
-        foreach($_SESSION['storages'] as $storage_key => $storage_object)
+        if(isset($_SESSION['storages']) && count($_SESSION['storages']) > 0)
         {
-            if($this->validate_record($storage_object['value'], 'numbers>0') === false)
+            foreach ($_SESSION['storages'] as $storage_key => $storage_object)
             {
-                $failmsg = "Bitte überprüfen Sie die angegebene Speicherkapazität";
-                $focustarget = $storage_key;
+                if ($this->validate_record($storage_object['value'], 'numbers>0') === false)
+                {
+                    $failmsg = "Bitte überprüfen Sie die angegebene Speicherkapazität";
+                    $focustarget = $storage_key;
+                }
             }
         }
 
@@ -784,6 +787,16 @@ class Interactives
                     if(is_numeric(str_replace(',', '.', $value)) && $value > 0)
                     {
                         return true;
+                    }
+                    break;
+
+                case 'percent':
+                    if(is_numeric($value))
+                    {
+                        if($value >= 0 && $value <= 100)
+                        {
+                            return true;
+                        }
                     }
                     break;
 
