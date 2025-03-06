@@ -174,3 +174,74 @@ span.metertype {
     font-size: 16px;
     font-weight: bold;
 }
+
+.help-container {
+    position: relative;
+    display: inline-block;
+}
+
+.help-icon {
+    width: 24px;
+    height: 24px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+}
+
+.help-box {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    color: #333;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+    width: 250px;
+    text-align: center;
+    font-size: 14px;
+    display: none;
+    z-index: 1000;
+}
+
+/* Show infobox when clicked */
+.help-container:focus-within .help-box {
+    display: block;
+}
+
+/* Optional: Close on clicking anywhere outside */
+.help-container input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+}
+
+.help-container input:checked ~ .help-box {
+    display: block;
+}
+
+/* Background overlay to close the help box */
+.help-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 999;
+}
+
+.help-container:focus-within ~ .help-overlay {
+    display: block;
+}

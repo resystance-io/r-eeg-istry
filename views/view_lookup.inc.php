@@ -168,8 +168,11 @@ class VIEW_LOOKUP
         foreach ($meters as $meter)
         {
             if ($meter['meter_type'] == 'consumer') $meter_nice = "Verbrauch"; else    $meter_nice = "Einspeisung";
-            if ($meter['meter_power'] != null) $meter_power = '(' . $meter['meter_power'] . ' kWp)'; else    $meter_power = '';
-            print "<tr class=\"profilemeterline\"><td class=\"profilemeter\"><span class=\"metertype\">$meter_nice $meter_power</span><br />" . $meter['meter_id'] . "</td></tr>";
+
+            if ($meter['meter_participation'] != null) $meter_participation = 'Faktor: ' . $meter['meter_participation'] . '%'; else $meter_participation = '';
+            if ($meter['meter_power'] != null) $meter_power .= ', Leistung: ' . $meter['meter_power'] . ' kWp'; else $meter_power = '';
+
+            print "<tr class=\"profilemeterline\"><td class=\"profilemeter\"><span class=\"metertype\">$meter_nice ($meter_participation$meter_power)</span><br />" . $meter['meter_id'] . "</td></tr>";
         }
 
         print "</table>";

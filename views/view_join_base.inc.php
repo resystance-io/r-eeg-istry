@@ -2,11 +2,55 @@
 
 class VIEW_JOIN_BASE
 {
-    protected function view_render_meter_detail_inputfield($meter_key, $caption, $id, $integrity, $style=null)
+    protected function view_render_meter_detail_inputfield($meter_key, $caption, $id, $integrity, $style=null, $default=null)
     {
         $prefill = (isset($_SESSION['meters']["$meter_key"]["$id"]['value'])) ? $_SESSION['meters']["$meter_key"]["$id"]['value'] : '';
+        if($prefill == '' && $default)
+        {
+            $prefill = $default;
+            $_SESSION['meters']["$meter_key"]["$id"]['value'] = $default;
+        }
+
         $_SESSION['meters']["$meter_key"]["$id"]['integrity'] = $integrity;
         print '<div style="padding:8px;' . $style . '">' . $caption . '<br><input type="text" name="' . $id . '_' . $meter_key . '" value="' . $prefill . '" id="' . $id . '_' . $meter_key . '" onfocus="this.select()" onfocusout="JaxonInteractives.update_meter_detail(' . "'" . $meter_key . "'" . ', ' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . '_' . $meter_key . "'" . ').value);" /></div>';
+    }
+
+    protected function view_render_meter_detail_explained_inputfield($meter_key, $caption, $id, $integrity, $style=null, $default=null, $unit=null, $explanation=null)
+    {
+        $prefill = (isset($_SESSION['meters']["$meter_key"]["$id"]['value'])) ? $_SESSION['meters']["$meter_key"]["$id"]['value'] : '';
+        if($prefill == '' && $default)
+        {
+            $prefill = $default;
+            $_SESSION['meters']["$meter_key"]["$id"]['value'] = $default;
+        }
+
+        $_SESSION['meters']["$meter_key"]["$id"]['integrity'] = $integrity;
+
+        print '
+            <br />
+            <div id="container-' . $id . '">' . $caption . '<br>
+                <div class="input-box" style="width:200px;">
+                    <input type="text" name="' . $id . '_' . $meter_key . '" id="' . $id . '_' . $meter_key . '" value="' . $prefill . '" maxlength="4" style="width:80px;text-align:center" onfocus="this.select()" onfocusout="JaxonInteractives.update_meter_detail(' . "'" . $meter_key . "'" . ', ' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . '_' . $meter_key . "'" . ').value);" />
+                    <span class="prefix">' . $unit . '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        ';
+
+        if($explanation)
+        {
+            print "<div class=\"help-container\" style=\"float:right\" tabindex=\"0\">
+                                <span class=\"help-icon\">?</span>
+                                <div class=\"help-box\">
+                                    $explanation 
+                                </div>
+                           </div>
+                           <div class=\"help-overlay\"></div>
+                    ";
+        }
+
+        print '
+                </div>
+                <br />
+            </div>
+        ';
     }
 
     protected function view_render_part_captioned_inputfield($caption, $id, $session_bucket=null, $integrity=null, $style=null)

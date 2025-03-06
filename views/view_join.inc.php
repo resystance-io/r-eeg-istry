@@ -326,7 +326,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
 
                 if ($meter_object['type'] == "consumers")
                 {
-                    print "<h3>Adresse des Bezugsz&auml;hlpunkts " . $meter_object['value'] . "</h3>";
+                    print "<h3>Adresse des Bezugsz&auml;hlpunkts " . $meter_object['value'] . "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</h3>";
                 }
                 elseif ($meter_object['type'] == "suppliers")
                 {
@@ -351,11 +351,13 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
 
                 print "<div style='float:left;height:100%;valign:middle'>";
 
+                $this->view_render_meter_detail_explained_inputfield($meter_key, "Teilnahmefaktor", 'participation', 'percent', null, 100, "Prozent", "Ein Z&auml;hlpunkt kann an bis zu 5 EEGs teilnehmen.<br />&nbsp;<br />Der Teilnahmefaktor legt fest, zu wieviel Prozent dieser Z&auml;hlpunkt an <b style=\"color:black\">dieser EEG</b> teilnimmt.");
+
                 if ($meter_object['type'] == "suppliers")
                 {
-                    print "<h3>Leistung Produktionsanlage</h3>";
+                    print "<br />";
 
-                    $this->view_render_meter_detail_inputfield($meter_key, "Leistung (kWp)", 'power', 'decimal');
+                    $this->view_render_meter_detail_explained_inputfield($meter_key, "Maximale Leistung", 'power', 'decimal', null, 10, "&nbsp;&nbsp;&nbsp;&nbsp;kWp");
                 }
 
                 print "</div>";
@@ -532,6 +534,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                     $meter_array['meter_addr_number'] = $meter_object['number']['value'];
                     $meter_array['meter_addr_city'] = $meter_object['city']['value'];
                     $meter_array['meter_addr_zip'] = $meter_object['zip']['value'];
+                    $meter_array['meter_participation'] = $meter_object['participation']['value'];
 
                     $meter_autoinc_id = $this->object_broker->instance['db']->insert_row_with_array($this->config->user['DBTABLE_METERS'], $meter_array);
                 }
