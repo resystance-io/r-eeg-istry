@@ -597,7 +597,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
             {
                 if($meter_object['type'] == "consumers")
                 {
-                    $this->view_render_prefixed_meter("Z&auml;hlpunktnummer (letzte 9 Stellen)", $this->config->user['EEG_CONSUMERS_PREFIX'], $meter_key, $meter_object['value']);
+                    $this->view_render_prefixed_meter("Z&auml;hlpunktnummer (letzte 7 Stellen)", $this->config->user['EEG_CONSUMERS_PREFIX'], $meter_key, $meter_object['value']);
                     $consumer_count++;
                 }
             }
@@ -609,7 +609,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
             $_SESSION['meters']["$id"]['prefix'] = $this->config->user['EEG_CONSUMERS_PREFIX'];
             $_SESSION['meters']["$id"]['value'] = '0000000';
             $_SESSION['meters']["$id"]['type'] = 'consumers';
-            $this->view_render_prefixed_meter("Z&auml;hlpunktnummer (letzte 9 Stellen)", $this->config->user['EEG_CONSUMERS_PREFIX'], $id);
+            $this->view_render_prefixed_meter("Z&auml;hlpunktnummer (letzte 7 Stellen)", $this->config->user['EEG_CONSUMERS_PREFIX'], $id);
         }
 
         print "<div id='end_of_consumers'></div>";
@@ -636,7 +636,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
             {
                 if($meter_object['type'] == "suppliers")
                 {
-                    $this->view_render_prefixed_meter("Z&auml;hlpunktnummer (letzte 9 Stellen)", $this->config->user['EEG_SUPPLIERS_PREFIX'], $meter_key, $meter_object['value']);
+                    $this->view_render_prefixed_meter("Z&auml;hlpunktnummer (letzte 7 Stellen)", $this->config->user['EEG_SUPPLIERS_PREFIX'], $meter_key, $meter_object['value']);
                 }
             }
 
