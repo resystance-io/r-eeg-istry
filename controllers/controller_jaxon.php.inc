@@ -86,7 +86,7 @@ class Interactives
         $element = '
             Z&auml;hlpunktnummer (letzte 7 Stellen) <div class="input-box">
                 <span class="prefix">' . $prefix . '</span>
-                <input type="text" name="' . $id . '" id="' . $id . '" value="0000000" maxlength="9" onfocus="this.select()"  onfocusout="JaxonInteractives.update_meter_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
+                <input type="text" name="' . $id . '" id="' . $id . '" value="0000000" maxlength="7" onfocus="this.select()"  onfocusout="JaxonInteractives.update_meter_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
                 <button style="background-color:darkred"  onclick="JaxonInteractives.rmv_meter(' . "'" . $id . "'" . ', ' . "'" . $meter_type . "'" . ');"><i style="font-size:16px;color:white;" class="icon fa-trash-alt"></i></button>
             </div>
             <br />

@@ -168,7 +168,7 @@ class VIEW_JOIN_BASE
             <div id="container-' . $id . '">' . $caption . '<br>
                 <div class="input-box">
                     <span class="prefix">' . $prefix . '</span>
-                    <input type="text" name="' . $id . '" id="' . $id . '" value="' . $value . '" maxlength="9" onfocus="this.select()" onfocusout="JaxonInteractives.update_meter_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
+                    <input type="text" name="' . $id . '" id="' . $id . '" value="' . $value . '" maxlength="7" onfocus="this.select()" onfocusout="JaxonInteractives.update_meter_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
                     <button style="background-color:darkred"  onclick="JaxonInteractives.rmv_meter(' . "'" . $id . "'" . ');"><i style="font-size:16px;color:white;" class="icon fa-trash-alt"></i></button><br>
                 </div>
                 <br />
