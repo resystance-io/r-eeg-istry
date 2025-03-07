@@ -26,6 +26,18 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
 
         if(isset($_REQUEST['join']))
         {
+            if(isset($_REQUEST['step']) && $_REQUEST['step'] > 0)
+            {
+                // check if the requirements for the previous steps were satisfied:
+                if($_REQUEST['step'] > ($_SESSION['latestsave'] + 1))
+                {
+                    // this step is ahead of its time. Let's go back to the next feasible one
+                    $feasible_step = $_SESSION['latestsave'] + 1;
+                    print '<script>window.location.href="/?join=' . $_SESSION['generic_information']['join_type'] . '&step=' . $feasible_step . '";</script>';
+                    return false;
+                }
+            }
+
             switch ($_REQUEST['join'])
             {
                 case "individual":
@@ -255,9 +267,13 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         $this->view_render_part_captioned_inputfield("Stra&szlig;e", "street", "generic_information", "required", "width:700px;float:left;");
         $this->view_render_part_captioned_inputfield("Nr.", "number", "generic_information", "required", "width:160px;float:left;");
         print "<div style=\"clear:both\"></div>";
-        $this->view_render_part_captioned_inputfield("PLZ", "zip", "generic_information", "numbers", "width:120px;float:left;");
-        $this->view_render_part_captioned_inputfield("Ort", "city", "generic_information", "required", "width:540px;float:left;");
-        $this->view_render_part_captioned_inputfield("Geburtsdatum", "birthdate", "generic_information", null, "width:200px;float:left;");
+        $this->view_render_part_captioned_inputfield("PLZ", "zip", "generic_information", "numbers", "width:200px;float:left;");
+        $this->view_render_part_captioned_inputfield("Ort", "city", "generic_information", "required", "width:660px;float:left;");
+        print "<div style=\"clear:both\"></div>";
+        $identity_type_arr = ['passport' => 'Reisepass', 'idcard' => 'Personalausweis', 'driverslicense' => 'F&uuml;hrerschein'];
+        $this->view_render_part_captioned_select("Identit&auml;tsnachweis", "idprovider", $identity_type_arr, "generic_information", "required", "width:200px;float:left;");
+        $this->view_render_part_captioned_inputfield("Ausweisnummer", "idvalue", "generic_information", "required", "width:460px;float:left;");
+        $this->view_render_part_captioned_inputfield("Geburtsdatum", "birthdate", "generic_information", "required", "width:200px;float:left;");
         print "<div style=\"clear:both\"></div>";
         $this->view_render_part_captioned_inputfield("Telefonnummer", "phone", "generic_information", "phone", "width:430px;float:left;");
         $this->view_render_part_captioned_inputfield("E-Mail-Adresse", "email", "generic_information", "email", "width:430px;float:left;");
@@ -290,8 +306,12 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         $this->view_render_part_captioned_inputfield("Stra&szlig;e", "street", "generic_information", "required", "width:700px;float:left;");
         $this->view_render_part_captioned_inputfield("Nr", "number", "generic_information", "required", "width:160px;float:left;");
         print "<div style=\"clear:both\"></div>";
-        $this->view_render_part_captioned_inputfield("PLZ", "zip", "generic_information", "numbers", "width:120px;float:left;");
-        $this->view_render_part_captioned_inputfield("Ort", "city", "generic_information", "required", "width:540px;float:left;");
+        $this->view_render_part_captioned_inputfield("PLZ", "zip", "generic_information", "numbers", "width:200px;float:left;");
+        $this->view_render_part_captioned_inputfield("Ort", "city", "generic_information", "required", "width:660px;float:left;");
+        print "<div style=\"clear:both\"></div>";
+        $identity_type_arr = ['passport' => 'Reisepass', 'idcard' => 'Personalausweis', 'driverslicense' => 'F&uuml;hrerschein'];
+        $this->view_render_part_captioned_select("Identit&auml;tsnachweis", "idprovider", $identity_type_arr, "generic_information", "required", "width:200px;float:left;");
+        $this->view_render_part_captioned_inputfield("Ausweisnummer", "idvalue", "generic_information", "required", "width:460px;float:left;");
         $this->view_render_part_captioned_inputfield("Geburtsdatum", "birthdate", "generic_information", "required", "width:200px;float:left;");
         print "<div style=\"clear:both\"></div>";
         $this->view_render_part_captioned_inputfield("Telefonnummer", "phone", "generic_information", "phone", "width:430px;float:left;");
@@ -470,6 +490,8 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                     if (isset($_SESSION['generic_information']['firstname']['value'])) $registration_array['firstname'] = $_SESSION['generic_information']['firstname']['value'];
                     if (isset($_SESSION['generic_information']['lastname']['value'])) $registration_array['lastname'] = $_SESSION['generic_information']['lastname']['value'];
                     if (isset($_SESSION['generic_information']['birthdate']['value'])) $registration_array['birthdate'] = $_SESSION['generic_information']['birthdate']['value'];
+                    if (isset($_SESSION['generic_information']['idprovider']['value'])) $registration_array['idprovider'] = $_SESSION['generic_information']['idprovider']['value'];
+                    if (isset($_SESSION['generic_information']['idvalue']['value'])) $registration_array['idvalue'] = $_SESSION['generic_information']['idvalue']['value'];
                     break;
 
                 case 'individual':
@@ -478,6 +500,8 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                     if (isset($_SESSION['generic_information']['firstname']['value'])) $registration_array['firstname'] = $_SESSION['generic_information']['firstname']['value'];
                     if (isset($_SESSION['generic_information']['lastname']['value'])) $registration_array['lastname'] = $_SESSION['generic_information']['lastname']['value'];
                     if (isset($_SESSION['generic_information']['birthdate']['value'])) $registration_array['birthdate'] = $_SESSION['generic_information']['birthdate']['value'];
+                    if (isset($_SESSION['generic_information']['idprovider']['value'])) $registration_array['idprovider'] = $_SESSION['generic_information']['idprovider']['value'];
+                    if (isset($_SESSION['generic_information']['idvalue']['value'])) $registration_array['idvalue'] = $_SESSION['generic_information']['idvalue']['value'];
                     break;
 
                 case 'company':

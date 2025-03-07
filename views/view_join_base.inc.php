@@ -30,8 +30,8 @@ class VIEW_JOIN_BASE
             <br />
             <div id="container-' . $id . '">' . $caption . '<br>
                 <div class="input-box" style="width:200px;">
-                    <input type="text" name="' . $id . '_' . $meter_key . '" id="' . $id . '_' . $meter_key . '" value="' . $prefill . '" maxlength="4" style="width:80px;text-align:center" onfocus="this.select()" onfocusout="JaxonInteractives.update_meter_detail(' . "'" . $meter_key . "'" . ', ' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . '_' . $meter_key . "'" . ').value);" />
-                    <span class="prefix">' . $unit . '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <input type="text" name="' . $id . '_' . $meter_key . '" id="' . $id . '_' . $meter_key . '" value="' . $prefill . '" maxlength="4" style="width:65px;text-align:center" onfocus="this.select()" onfocusout="JaxonInteractives.update_meter_detail(' . "'" . $meter_key . "'" . ', ' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . '_' . $meter_key . "'" . ').value);" />
+                    <span class="prefix">' . $unit . '&nbsp;&nbsp;&nbsp;</span>
         ';
 
         if($explanation)
@@ -119,10 +119,14 @@ class VIEW_JOIN_BASE
 
             print "<option value=''>-</option>";
 
-            foreach($arrOptions as $option)
+            foreach($arrOptions as $option => $value)
             {
+                if(!$value)
+                {
+                    $value = $option;
+                }
                 if($preselect == $option) $selected = 'selected';   else $selected = '';
-                print "<option $selected value='" . $option . "'>" . $option . "</option>";
+                print "<option $selected value='" . $option . "'>" . $value . "</option>";
             }
 
             print '</select></div>';
@@ -165,7 +169,7 @@ class VIEW_JOIN_BASE
                 <div class="input-box">
                     <span class="prefix">' . $prefix . '</span>
                     <input type="text" name="' . $id . '" id="' . $id . '" value="' . $value . '" maxlength="9" onfocus="this.select()" onfocusout="JaxonInteractives.update_meter_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
-                    &nbsp;&nbsp;<button style="background-color:darkred"  onclick="JaxonInteractives.rmv_meter(' . "'" . $id . "'" . ');"><i style="font-size:16px;color:white;" class="icon fa-trash-alt"></i></button><br>
+                    <button style="background-color:darkred"  onclick="JaxonInteractives.rmv_meter(' . "'" . $id . "'" . ');"><i style="font-size:16px;color:white;" class="icon fa-trash-alt"></i></button><br>
                 </div>
                 <br />
             </div>';
@@ -177,7 +181,7 @@ class VIEW_JOIN_BASE
             <div id="container-' . $id . '">' . $caption . '<br>
                 <div class="input-box" style="width:254px;">
                     <span class="prefix">Kapazit&auml;t:&nbsp;</span>
-                    <input type="text" name="' . $id . '" id="' . $id . '" value="' . $value . '" maxlength="4" style="width:80px;text-align:center" onfocus="this.select()" onfocusout="JaxonInteractives.update_storage_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
+                    <input type="text" name="' . $id . '" id="' . $id . '" value="' . $value . '" maxlength="4" style="width:65px;text-align:center" onfocus="this.select()" onfocusout="JaxonInteractives.update_storage_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
                     <span class="prefix">kWh</span>
                     &nbsp;&nbsp;&nbsp;&nbsp;<button style="background-color:darkred"  onclick="JaxonInteractives.rmv_storage(' . "'" . $id . "'" . ');"><i style="font-size:16px;color:white;" class="icon fa-trash-alt"></i></button><br>
                 </div>

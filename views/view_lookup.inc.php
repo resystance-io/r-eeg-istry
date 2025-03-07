@@ -112,6 +112,9 @@ class VIEW_LOOKUP
         print '<br />&nbsp;<br />';
         print '<h3>Allgemeine Informationen</h3>';
         print "<table>";
+
+        $identity_type_arr = ['passport' => 'Reisepass', 'idcard' => 'Personalausweis', 'driverslicense' => 'F&uuml;hrerschein'];
+
         switch ($registration['type'])
         {
             case 'individual':
@@ -121,6 +124,9 @@ class VIEW_LOOKUP
                 print "<tr><td class=\"profileheader\">Nachname</td><td>" . $registration['lastname'] . "</td></tr>";
                 print "<tr><td class=\"profileheader\">Postnomen</td><td>" . $registration['postnomen'] . "</td></tr>";
                 print "<tr><td class=\"profileheader\">Geburtsdatum</td><td>" . $registration['birthdate'] . "</td></tr>";
+                print "<tr><td class=\"profileheader\">Identit&auml;tsbest&auml;tigung via</td><td>" . $identity_type_arr[$registration['idprovider']] . "</td></tr>";
+                print "<tr><td class=\"profileheader\">Nummer des Identit&auml;tsdokumentes</td><td>" . $registration['idvalue'] . "</td></tr>";
+
                 break;
             case 'agriculture':
                 print "<tr><td class=\"profileheader\">Mitgliedsform</td><td>Landwirtschaft</td></tr>";
@@ -129,6 +135,8 @@ class VIEW_LOOKUP
                 print "<tr><td class=\"profileheader\">Nachname</td><td>" . $registration['lastname'] . "</td></tr>";
                 print "<tr><td class=\"profileheader\">Postnomen</td><td>" . $registration['postnomen'] . "</td></tr>";
                 print "<tr><td class=\"profileheader\">Geburtsdatum</td><td>" . $registration['birthdate'] . "</td></tr>";
+                print "<tr><td class=\"profileheader\">Identit&auml;tsbest&auml;tigung via</td><td>" . $identity_type_arr[$registration['idprovider']] . "</td></tr>";
+                print "<tr><td class=\"profileheader\">Nummer des Identit&auml;tsdokumentes</td><td>" . $registration['idvalue'] . "</td></tr>";
                 break;
             case 'company':
                 print "<tr><td class=\"profileheader\">Mitgliedsform</td><td>Unternehmen</td></tr>";
@@ -170,7 +178,7 @@ class VIEW_LOOKUP
             if ($meter['meter_type'] == 'consumer') $meter_nice = "Verbrauch"; else    $meter_nice = "Einspeisung";
 
             if ($meter['meter_participation'] != null) $meter_participation = 'Faktor: ' . $meter['meter_participation'] . '%'; else $meter_participation = '';
-            if ($meter['meter_power'] != null) $meter_power .= ', Leistung: ' . $meter['meter_power'] . ' kWp'; else $meter_power = '';
+            if ($meter['meter_power'] != null) $meter_power = ', Leistung: ' . $meter['meter_power'] . ' kWp'; else $meter_power = '';
 
             print "<tr class=\"profilemeterline\"><td class=\"profilemeter\"><span class=\"metertype\">$meter_nice ($meter_participation$meter_power)</span><br />" . $meter['meter_id'] . "</td></tr>";
         }

@@ -50,6 +50,9 @@ class CONTROLLER_SESSION
             // finished flag
             $_SESSION['finished'] = false;
 
+            // last finished step to
+            $_SESSION['latestsave'] = 0;
+
             // registration mnemonic
             $_SESSION['mnemonic'] = $this->generate_session_mnemonic();
 

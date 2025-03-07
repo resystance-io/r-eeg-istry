@@ -87,7 +87,7 @@ class Interactives
             Z&auml;hlpunktnummer (letzte 9 Stellen) <div class="input-box">
                 <span class="prefix">' . $prefix . '</span>
                 <input type="text" name="' . $id . '" id="' . $id . '" value="000000000" maxlength="9" onfocus="this.select()"  onfocusout="JaxonInteractives.update_meter_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
-                &nbsp;&nbsp;<button style="background-color:darkred"  onclick="JaxonInteractives.rmv_meter(' . "'" . $id . "'" . ', ' . "'" . $meter_type . "'" . ');"><i style="font-size:16px;color:white;" class="icon fa-trash-alt"></i></button>
+                <button style="background-color:darkred"  onclick="JaxonInteractives.rmv_meter(' . "'" . $id . "'" . ', ' . "'" . $meter_type . "'" . ');"><i style="font-size:16px;color:white;" class="icon fa-trash-alt"></i></button>
             </div>
             <br />
         ';
@@ -118,7 +118,7 @@ class Interactives
         <div id="container-' . $id . '">Speicher<br>
             <div class="input-box" style="width:254px;">
                 <span class="prefix">Kapazit&auml;t:&nbsp;</span>
-                <input type="text" name="' . $id . '" id="' . $id . '" value="0" maxlength="4" style="width:80px;text-align:center" onfocus="this.select()" onfocusout="JaxonInteractives.update_storage_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
+                <input type="text" name="' . $id . '" id="' . $id . '" value="0" maxlength="4" style="width:65px;text-align:center" onfocus="this.select()" onfocusout="JaxonInteractives.update_storage_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
                 <span class="prefix">kWh</span>
                 &nbsp;&nbsp;&nbsp;&nbsp;<button style="background-color:darkred"  onclick="JaxonInteractives.rmv_storage(' . "'" . $id . "'" . ');"><i style="font-size:16px;color:white;" class="icon fa-trash-alt"></i></button><br>
             </div>
@@ -322,6 +322,7 @@ class Interactives
             }
 
             $next_step = $current_step + 1;
+            $_SESSION['latestsave'] = $current_step;
             $response->script("window.location.href='/?join=" . $_SESSION['generic_information']['join_type'] .  "&step=" . $next_step . "';");
             return $response;
         }
@@ -411,6 +412,18 @@ class Interactives
             $focustarget = 'email';
         }
 
+        if($this->validate_record($_SESSION['generic_information']['title']['value'], $_SESSION['generic_information']['title']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie Ihren Titel";
+            $focustarget = 'title';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['postnomen']['value'], $_SESSION['generic_information']['postnomen']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie Ihr Postnomen";
+            $focustarget = 'postnomen';
+        }
+
         if($this->validate_record($_SESSION['generic_information']['firstname']['value'], $_SESSION['generic_information']['firstname']['integrity']) === false)
         {
             $failmsg = "Bitte überprüfen Sie den Vornamen";
@@ -463,6 +476,18 @@ class Interactives
         {
             $failmsg = "Bitte überprüfen Sie das Geburtsdatum";
             $focustarget = 'birthdate';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['idprovider']['value'], $_SESSION['generic_information']['idprovider']['integrity']) === false)
+        {
+            $failmsg = "Bitte wählen Sie ihr bevorzugtes Ausweisdokument";
+            $focustarget = 'idprovider';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['idvalue']['value'], $_SESSION['generic_information']['idvalue']['integrity']) === false)
+        {
+            $failmsg = "Bitte geben Sie die Nummer des gewählten Ausweisdokumentes an";
+            $focustarget = 'idvalue';
         }
 
         if($failmsg)
@@ -489,6 +514,18 @@ class Interactives
             $focustarget = 'email';
         }
 
+        if($this->validate_record($_SESSION['generic_information']['title']['value'], $_SESSION['generic_information']['title']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie Ihren Titel";
+            $focustarget = 'title';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['postnomen']['value'], $_SESSION['generic_information']['postnomen']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie Ihr Postnomen";
+            $focustarget = 'postnomen';
+        }
+
         if($this->validate_record($_SESSION['generic_information']['firstname']['value'], $_SESSION['generic_information']['firstname']['integrity']) === false)
         {
             $failmsg = "Bitte überprüfen Sie den Vornamen";
@@ -541,6 +578,18 @@ class Interactives
         {
             $failmsg = "Bitte überprüfen Sie das Geburtsdatum";
             $focustarget = 'birthdate';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['idprovider']['value'], $_SESSION['generic_information']['idprovider']['integrity']) === false)
+        {
+            $failmsg = "Bitte wählen Sie ihr bevorzugtes Ausweisdokument";
+            $focustarget = 'idprovider';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['idvalue']['value'], $_SESSION['generic_information']['idvalue']['integrity']) === false)
+        {
+            $failmsg = "Bitte geben Sie die Nummer des gewählten Ausweisdokumentes an";
+            $focustarget = 'idvalue';
         }
 
         if($failmsg)
@@ -620,6 +669,12 @@ class Interactives
                 {
                     $failmsg = "Bitte überprüfen Sie die angegebene Postleitzahl";
                     $focustarget = 'zip_' . $meter_key;
+                }
+
+                if ($this->validate_record($meter_object['participation']['value'], $meter_object['participation']['integrity']) === false)
+                {
+                    $failmsg = "Bitte überprüfen Sie den angegebenen Teilnahmefaktor";
+                    $focustarget = 'participation_' . $meter_key;
                 }
 
                 if($meter_object['type'] == 'suppliers')
