@@ -607,7 +607,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         {
             $id = $this->generate_uuid4();
             $_SESSION['meters']["$id"]['prefix'] = $this->config->user['EEG_CONSUMERS_PREFIX'];
-            $_SESSION['meters']["$id"]['value'] = '000000000';
+            $_SESSION['meters']["$id"]['value'] = '0000000';
             $_SESSION['meters']["$id"]['type'] = 'consumers';
             $this->view_render_prefixed_meter("Z&auml;hlpunktnummer (letzte 9 Stellen)", $this->config->user['EEG_CONSUMERS_PREFIX'], $id);
         }

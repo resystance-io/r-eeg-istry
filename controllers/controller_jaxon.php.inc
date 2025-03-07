@@ -80,13 +80,13 @@ class Interactives
         $id = $this->generate_uuid4();
 
         $_SESSION['meters']["$id"]['prefix'] = $prefix;
-        $_SESSION['meters']["$id"]['value'] = '000000000';
+        $_SESSION['meters']["$id"]['value'] = '0000000';
         $_SESSION['meters']["$id"]['type'] = $meter_type;
 
         $element = '
-            Z&auml;hlpunktnummer (letzte 9 Stellen) <div class="input-box">
+            Z&auml;hlpunktnummer (letzte 7 Stellen) <div class="input-box">
                 <span class="prefix">' . $prefix . '</span>
-                <input type="text" name="' . $id . '" id="' . $id . '" value="000000000" maxlength="9" onfocus="this.select()"  onfocusout="JaxonInteractives.update_meter_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
+                <input type="text" name="' . $id . '" id="' . $id . '" value="0000000" maxlength="9" onfocus="this.select()"  onfocusout="JaxonInteractives.update_meter_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
                 <button style="background-color:darkred"  onclick="JaxonInteractives.rmv_meter(' . "'" . $id . "'" . ', ' . "'" . $meter_type . "'" . ');"><i style="font-size:16px;color:white;" class="icon fa-trash-alt"></i></button>
             </div>
             <br />
@@ -1015,7 +1015,7 @@ class Interactives
                 case 'meter_shortid':
                     if(isset($value))
                     {
-                        if (is_numeric($value) && strlen($value) == 9 && $value != '000000000')
+                        if (is_numeric($value) && strlen($value) == 7 && $value != '0000000')
                         {
                             return true;
                         }

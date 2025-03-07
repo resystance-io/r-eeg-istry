@@ -162,7 +162,7 @@ class VIEW_JOIN_BASE
 
     }
 
-    protected function view_render_prefixed_meter($caption, $prefix, $id, $value="000000000")
+    protected function view_render_prefixed_meter($caption, $prefix, $id, $value="0000000")
     {
         print '
             <div id="container-' . $id . '">' . $caption . '<br>
