@@ -13,8 +13,19 @@ $DBTABLE_REGISTRATIONS		= 	'registrations';
 $DBTABLE_METERS             =   'meters';
 $DBTABLE_STORAGES           =   'storages';
 
+/////////* EMAIL CONFIGURATION *///////////////
+
+$MAIL_MTA_ADDRESS = '';
+$MAIL_MTA_PORT = 587;
+$MAIL_MTA_USER = '';
+$MAIL_MTA_PASS = '';
+$MAIL_FROM = ['sender@domain.tld' => 'nicename'];
+$MAIL_DEBUGGING = 0;
+$MAIL_OPTIONS = ['ssl'=>[ 'verify_peer'=>false, 'verify_peer_name'=>false, 'allow_self_signed'=>true ] ];
+
 /////////* EEG SPECIFIC DATA *///////////////
 
+$EEG_NICENAME = "FOO";
 $EEG_CONSUMERS_PREFIX = 'AT 000000 00000 0000000000 000';
 $EEG_SUPPLIERS_PREFIX = 'AT 000000 00000 0000000000 000';
 

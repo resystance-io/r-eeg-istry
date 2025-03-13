@@ -471,6 +471,21 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         print "Du kannst dieses Passwort nutzen, um jederzeit den Bearbeitungsfortschritt Deines Antrages einzusehen<br />und natürlich um Deine Daten zu &auml;ndern.<br />&nbsp;<br /><b>Bitte bewahre es gut auf!</b>";
         print "&nbsp;<br />";
 
+        $welcome_mail_text = "Hallo " . $_SESSION['generic_information']['firstname']['value'] . " " . $_SESSION['generic_information']['lastname']['value'] . ",<br /><br />";
+        $welcome_mail_text .= "Dein Antrag auf Mitgliedschaft bei der EEG VIERE wurde erfolgreich abgeschlossen.<br />";
+        $welcome_mail_text .= "Dein Benutzername: <b>" . $_SESSION['generic_information']['email']['value'] . "</b><br /><br />";
+        $welcome_mail_text .= "Dein Passwort: <b>" . $_SESSION['mnemonic'] . "</b><br /><br />";
+
+        $this->object_broker->instance['email']->subject = "Deine Anmeldung an der EEG " . $this->config->user['EEG_NICENAME'];
+        $this->object_broker->instance['email']->AddRecipient($_SESSION['generic_information']['email']['value']);
+        $this->object_broker->instance['email']->messageHTML = $welcome_mail_text;
+
+        if ($this->object_broker->instance['email']->Send('smtp')) { //choose SMTP as transport method
+            $welcome_mail_sent = true;
+        } else {
+            $welcome_mail_sent = false;
+        }
+
         // check if this mnemonic was already stored
         $hashed_mnemonic = hash('sha256', $_SESSION['mnemonic']);
         $mnemonic_count = $this->object_broker->instance['db']->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_REGISTRATIONS'],'mnemonic',$hashed_mnemonic);

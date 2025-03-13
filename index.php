@@ -20,6 +20,19 @@
     include_once('controllers/controller_session.php.inc');
     $session = $object_broker->instance['session'] = new CONTROLLER_SESSION($object_broker);
 
+    // preconfigure the mail user agent interface class
+    include_once('controllers/controller_mua.inc.php');
+    class_alias("codeworxtech\PHPMailerPro\PHPMailerPro", "PHPMailerPro");
+    $mail = $object_broker->instance['email'] = new PHPMailerPro();
+    $mail->SetSender($config->user['MAIL_FROM']);
+    $mail->smtpHost     = $config->user['MAIL_MTA_ADDRESS'];
+    $mail->smtpDebug    = $config->user['MAIL_DEBUGGING'];
+    $mail->smtpPort     = $config->user['MAIL_MTA_PORT'];
+    $mail->smtpUsername = $config->user['MAIL_MTA_USER'];
+    $mail->smtpPassword = $config->user['MAIL_MTA_PASS'];
+    $mail->smtpOptions = $config->user['MAIL_OPTIONS'];
+
+
     // prepare the jaxon environment for asynchronous events
     require('./vendor/autoload.php');
 
