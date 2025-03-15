@@ -261,8 +261,10 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         print "<h3>Allgemeine Daten</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
 
-        $this->view_render_part_captioned_inputfield("Firmenwortlaut", "company", "generic_information", "required", "width:440px;float:left");
-        $this->view_render_part_captioned_inputfield("UID", "uid", "generic_information", null, "width:440px;float:left");
+        $this->view_render_part_captioned_inputfield("Firmenwortlaut", "company", "generic_information", "required", "width:400px;float:left");
+        $this->view_render_part_captioned_inputfield("UID", "uid", "generic_information", null, "width:280px;float:left");
+        $tax_type_arr = ['yes' => 'Ja', 'no' => 'Nein'];
+        $this->view_render_part_captioned_select("Umsatzsteuerpflichtig", "salestax", $tax_type_arr, "generic_information", "boolean", "width:200px;float:left;");
         print "<div style=\"clear:both\"></div>";
         $this->view_render_part_captioned_inputfield("Stra&szlig;e", "street", "generic_information", "required", "width:760px;float:left;");
         $this->view_render_part_captioned_inputfield("Nr.", "number", "generic_information", "required", "width:120px;float:left;");
@@ -546,6 +548,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                     if (isset($_SESSION['generic_information']['uid']['value'])) $registration_array['uid'] = $_SESSION['generic_information']['uid']['value'];
                     if (isset($_SESSION['generic_information']['idprovider']['value'])) $registration_array['idprovider'] = $_SESSION['generic_information']['idprovider']['value'];
                     if (isset($_SESSION['generic_information']['idvalue']['value'])) $registration_array['idvalue'] = $_SESSION['generic_information']['idvalue']['value'];
+                    if (isset($_SESSION['generic_information']['salestax']['value'])) $registration_array['salestax'] = $_SESSION['generic_information']['salestax']['value'];
                     break;
             }
 

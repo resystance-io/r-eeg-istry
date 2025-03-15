@@ -389,6 +389,12 @@ class Interactives
             $focustarget = 'uid';
         }
 
+        if($this->validate_record($_SESSION['generic_information']['salestax']['value'], $_SESSION['generic_information']['salestax']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie Ihren Umsatzsteuerstatus";
+            $focustarget = 'salestax';
+        }
+
         if($failmsg)
         {
             $jaxon_response_object->alert($failmsg);
@@ -877,6 +883,15 @@ class Interactives
                     if(isset($value))
                     {
                         if($value == 'true' || $value == '1' || $value == 'yes')
+                        {
+                            return true;
+                        }
+                    }
+
+                case 'boolean':
+                    if(isset($value))
+                    {
+                        if($value == 'true' || $value == '1' || $value == 'yes' || $value == 'false' || $value == '0' || $value == 'no')
                         {
                             return true;
                         }

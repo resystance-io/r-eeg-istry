@@ -114,6 +114,7 @@ class VIEW_LOOKUP
         print "<table>";
 
         $identity_type_arr = ['passport' => 'Reisepass', 'idcard' => 'Personalausweis', 'driverslicense' => 'F&uuml;hrerschein', 'commerceid' => 'Firmenbuchnummer', 'associationid' => 'Vereinsregister'];
+        $tax_type_arr = ['yes' => 'Ja', 'no' => 'Nein'];
 
         switch ($registration['type'])
         {
@@ -143,6 +144,7 @@ class VIEW_LOOKUP
                 print "<tr><td class=\"profileheader\">Mitgliedsform</td><td>Unternehmen</td></tr>";
                 print "<tr><td class=\"profileheader\">Firmenwortlaut</td><td>" . $registration['company_name'] . "</td></tr>";
                 print "<tr><td class=\"profileheader\">UID</td><td>" . $registration['uid'] . "</td></tr>";
+                print "<tr><td class=\"profileheader\">Umsatzsteuerpflichtig</td><td>" . $tax_type_arr[$registration['salestax']] . "</td></tr>";
                 print "<tr><td class=\"profileheader\">Firmenbuch oder ZVR?</td><td>" . $identity_type_arr[$registration['idprovider']] . "</td></tr>";
                 print "<tr><td class=\"profileheader\">(FB-/ZVR) Nummer</td><td>" . $registration['idvalue'] . "</td></tr>";
                 break;
