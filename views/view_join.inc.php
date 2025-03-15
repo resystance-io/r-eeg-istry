@@ -270,6 +270,10 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         $this->view_render_part_captioned_inputfield("PLZ", "zip", "generic_information", "numbers", "width:120px;float:left;");
         $this->view_render_part_captioned_inputfield("Ort", "city", "generic_information", "required", "width:760px;float:left;");
         print "<div style=\"clear:both\"></div>";
+        $registration_type_arr = ['commerceid' => 'Firmenbuchnummer', 'associationid' => 'Vereinsnummer'];
+        $this->view_render_part_captioned_select("FBN oder ZVR (falls vorhanden)", "idprovider", $registration_type_arr, "generic_information", "required", "width:300px;float:left;");
+        $this->view_render_part_captioned_inputfield("Registrierungsnummer (falls vorhanden)", "idvalue", "generic_information", null, "width:580px;float:left;");
+        print "<div style=\"clear:both\"></div>";
         $this->view_render_part_captioned_inputfield("Telefonnummer", "phone", "generic_information", "phone", "width:440px;float:left;");
         $this->view_render_part_captioned_inputfield("E-Mail-Adresse", "email", "generic_information", "email", "width:440px;float:left;");
         print "<div style=\"clear:both\"></div>";
@@ -540,6 +544,8 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                 case 'company':
                     if (isset($_SESSION['generic_information']['company']['value'])) $registration_array['company_name'] = $_SESSION['generic_information']['company']['value'];
                     if (isset($_SESSION['generic_information']['uid']['value'])) $registration_array['uid'] = $_SESSION['generic_information']['uid']['value'];
+                    if (isset($_SESSION['generic_information']['idprovider']['value'])) $registration_array['idprovider'] = $_SESSION['generic_information']['idprovider']['value'];
+                    if (isset($_SESSION['generic_information']['idvalue']['value'])) $registration_array['idvalue'] = $_SESSION['generic_information']['idvalue']['value'];
                     break;
             }
 

@@ -113,7 +113,7 @@ class VIEW_LOOKUP
         print '<h3>Allgemeine Informationen</h3>';
         print "<table>";
 
-        $identity_type_arr = ['passport' => 'Reisepass', 'idcard' => 'Personalausweis', 'driverslicense' => 'F&uuml;hrerschein'];
+        $identity_type_arr = ['passport' => 'Reisepass', 'idcard' => 'Personalausweis', 'driverslicense' => 'F&uuml;hrerschein', 'commerceid' => 'Firmenbuchnummer', 'associationid' => 'Vereinsregister'];
 
         switch ($registration['type'])
         {
@@ -126,8 +126,8 @@ class VIEW_LOOKUP
                 print "<tr><td class=\"profileheader\">Geburtsdatum</td><td>" . $registration['birthdate'] . "</td></tr>";
                 print "<tr><td class=\"profileheader\">Identit&auml;tsbest&auml;tigung via</td><td>" . $identity_type_arr[$registration['idprovider']] . "</td></tr>";
                 print "<tr><td class=\"profileheader\">Nummer des Identit&auml;tsdokumentes</td><td>" . $registration['idvalue'] . "</td></tr>";
-
                 break;
+
             case 'agriculture':
                 print "<tr><td class=\"profileheader\">Mitgliedsform</td><td>Landwirtschaft</td></tr>";
                 print "<tr><td class=\"profileheader\">Titel</td><td>" . $registration['title'] . "</td></tr>";
@@ -138,10 +138,13 @@ class VIEW_LOOKUP
                 print "<tr><td class=\"profileheader\">Identit&auml;tsbest&auml;tigung via</td><td>" . $identity_type_arr[$registration['idprovider']] . "</td></tr>";
                 print "<tr><td class=\"profileheader\">Nummer des Identit&auml;tsdokumentes</td><td>" . $registration['idvalue'] . "</td></tr>";
                 break;
+
             case 'company':
                 print "<tr><td class=\"profileheader\">Mitgliedsform</td><td>Unternehmen</td></tr>";
                 print "<tr><td class=\"profileheader\">Firmenwortlaut</td><td>" . $registration['company_name'] . "</td></tr>";
                 print "<tr><td class=\"profileheader\">UID</td><td>" . $registration['uid'] . "</td></tr>";
+                print "<tr><td class=\"profileheader\">Firmenbuch oder ZVR?</td><td>" . $identity_type_arr[$registration['idprovider']] . "</td></tr>";
+                print "<tr><td class=\"profileheader\">(FB-/ZVR) Nummer</td><td>" . $registration['idvalue'] . "</td></tr>";
                 break;
         }
 
