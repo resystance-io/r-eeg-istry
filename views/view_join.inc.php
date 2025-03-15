@@ -185,19 +185,53 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
             {
                 if($_REQUEST['step'] == count($this->config->user['JOIN_LAYOUT']))
                 {
-                    $this->view_render_finished();
+                    if($this->view_render_finished() === true)
+                    {
+                        $mail_template = file_get_contents('assets/templates/mail_welcome.html');
+                        $mail_template = str_replace('{%FIRSTNAME%}', $_SESSION['generic_information']['firstname']['value'], $mail_template);
+                        $mail_template = str_replace('{%LASTNAME%}', $_SESSION['generic_information']['lastname']['value'], $mail_template);
+                        $mail_template = str_replace('{%USERNAME%}', $_SESSION['generic_information']['email']['value'], $mail_template);
+                        $mail_template = str_replace('{%PASSWORD%}', $_SESSION['mnemonic'], $mail_template);
 
-                    print '
-    <script>
-        function confirmStartover()
-        {
-          if (confirm("Ja, ich habe das Passwort notiert oder gespeichert"))
-          {
-                window.location.href="/";
-          }
-        }
-    </script>
-';
+                        $this->object_broker->instance['email']->subject = "Deine Anmeldung an der EEG " . $this->config->user['EEG_NICENAME'];
+                        $this->object_broker->instance['email']->AddRecipient($_SESSION['generic_information']['email']['value']);
+                        $this->object_broker->instance['email']->messageHTML = $mail_template;
+
+                        if ($this->object_broker->instance['email']->Send('smtp'))
+                        {
+                            $welcome_mail_sent = true;
+                        }
+                        else
+                        {
+                            $welcome_mail_sent = false;
+                        }
+
+                        if($welcome_mail_sent === false)
+                        {
+                            print '
+                                <script>
+                                    function confirmStartover()
+                                    {
+                                      if (confirm("Wir konnten Deine Zugangsdaten leider nicht an deine eMail Adresse senden. Bitte stelle sicher, dass du die eingeblendeten Zugangsdaten erfolgreich notiert hast."))
+                                      {
+                                            window.location.href="/";
+                                      }
+                                    }
+                                </script>
+                            ';
+                        }
+                        else
+                        {
+                            print '
+                                <script>
+                                    function confirmStartover()
+                                    {
+                                        window.location.href="/";
+                                    }
+                                </script>
+                            ';
+                        }
+                    }
 
                     print '<br />';
                     print '<div style="clear:both"></div>';
@@ -210,7 +244,6 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                     print '    </div>';
                     print '<div style="clear:both"></div>';
                     print '</div>';
-
                 }
             }
         }
@@ -471,22 +504,6 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         print "Du kannst dieses Passwort nutzen, um jederzeit den Bearbeitungsfortschritt Deines Antrages einzusehen<br />und natürlich um Deine Daten zu &auml;ndern.<br />&nbsp;<br /><b>Bitte bewahre es gut auf!</b>";
         print "&nbsp;<br />";
 
-        $welcome_mail_text = "Hallo " . $_SESSION['generic_information']['firstname']['value'] . " " . $_SESSION['generic_information']['lastname']['value'] . ",<br /><br />";
-        # $welcome_mail_text .= "Dein Antrag auf Mitgliedschaft bei der EEG VIERE wurde erfolgreich abgeschlossen.<br />";
-        $welcome_mail_text .= "<p>vielen Dank für Deine Anmeldung zur Erneuerbaren Energiegemeinschaft VIERE.<br />Wir freuen uns sehr, dass Du Interesse daran hast, Teil unserer Gemeinschaft zu werden und gemeinsam mit uns einen Beitrag zur Förderung erneuerbarer Energien zu leisten.</p><p>Hiermit bestätigen wir den Eingang Deiner Anmeldung. Wir werden Deine Unterlagen und die technische Machbarkeit nun prüfen und dich zeitnah über die weiteren Schritte informieren. Sollten wir zusätzliche Informationen oder Dokumente von dir benötigen, werden wir uns umgehend melden.</p><p>In der Zwischenzeit möchten wir dir mitteilen, dass Du dich auf unserer Webseite <a href="https://www.viere.at">www.viere.at</a> mit weiterführenden Details versorgen kannst.</p><p>Bei Fragen oder Anliegen stehen wir dir selbstverständlich gerne zur Verfügung. Du erreichst uns unter energie@viere.at.<br /></p><p>Nochmals herzlichen Dank für das Interesse und Deine Bereitschaft, sich für eine nachhaltige Zukunft zu engagieren. Wir freuen uns darauf, dich bald als Mitglied unserer Gemeinschaft begrüßen zu dürfen.</p></b><br /><br />Den aktuellen Stand deines Antrags kannst du gerne im Portal <a href="https://portal.viere.at">portal.viere.at</a> mit folgenden Logindaten selbstständig prüfen.";
-        $welcome_mail_text .= "</b><br /><br />Dein Benutzername: <b>" . $_SESSION['generic_information']['email']['value'] . "</b><br /><br />";
-        $welcome_mail_text .= "Dein Passwort: <b>" . $_SESSION['mnemonic'] . "</b><br /><br />";
-
-        $this->object_broker->instance['email']->subject = "Deine Anmeldung an der EEG " . $this->config->user['EEG_NICENAME'];
-        $this->object_broker->instance['email']->AddRecipient($_SESSION['generic_information']['email']['value']);
-        $this->object_broker->instance['email']->messageHTML = $welcome_mail_text;
-
-        if ($this->object_broker->instance['email']->Send('smtp')) { //choose SMTP as transport method
-            $welcome_mail_sent = true;
-        } else {
-            $welcome_mail_sent = false;
-        }
-
         // check if this mnemonic was already stored
         $hashed_mnemonic = hash('sha256', $_SESSION['mnemonic']);
         $mnemonic_count = $this->object_broker->instance['db']->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_REGISTRATIONS'],'mnemonic',$hashed_mnemonic);
@@ -591,6 +608,12 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                     $storage_autoinc_id = $this->object_broker->instance['db']->insert_row_with_array($this->config->user['DBTABLE_STORAGES'], $storage_array);
                 }
             }
+
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
 
