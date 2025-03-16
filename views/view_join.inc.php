@@ -593,7 +593,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                 {
                     $this->view_render_meter_detail_explained_inputfield($meter_key, "Maximale Leistung", 'power', 'decimal', null, 10, "&nbsp;&nbsp;&nbsp;&nbsp;kWp");
 
-                    $this->view_render_meter_detail_explained_inputfield($meter_key, "R&uuml;ckspeiselimitierung", 'feedlimit', 'decimal', null, 0, "&nbsp;&nbsp;&nbsp;&nbsp;kVA");
+                    $this->view_render_meter_detail_explained_inputfield($meter_key, "Erlaubte Netzzugangsleistung", 'feedlimit', 'decimal', null, 0, "&nbsp;&nbsp;&nbsp;&nbsp;kVA");
                 }
 
                 print "</div>";
