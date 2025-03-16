@@ -663,9 +663,11 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                         in meinem Namen s&auml;mtliche Schritte und Abstimmungen mit dem zust&auml;ndigen Netzbetreiber<br />
                         (Netz O&Ouml;) durchzuf&uuml;hren, die zur vollst&auml;ndigen Aktivierung und Deaktivierung der angef&uuml;hrten<br />
                         Z&auml;hlpunkte in der EEG VIERE notwendig sind.<br />
-                        &nbsp;<br />
                         Dies betrifft insbesondere auch die Registrierung und Nutzung des E-Service-Portals der Netz O&Ouml;.",
             "network_consent", "generic_information", "booltrue");
+
+        $this->view_render_part_captioned_inputfield("Kundennummer beim zust&auml;ndigen Netzbetreiber", "network_customerid", "generic_information", "required", "width:500px;padding-left:60px;");
+
 
         print "</div></div><br />";
 
@@ -742,6 +744,9 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
             if (isset($_SESSION['generic_information']['tos_consent']['value']) && $_SESSION['generic_information']['tos_consent']['value'] == '1') $registration_array['tos_consent'] = time();
             if (isset($_SESSION['generic_information']['gdpr_consent']['value']) && $_SESSION['generic_information']['gdpr_consent']['value'] == '1') $registration_array['gdpr_consent'] = time();
             if (isset($_SESSION['generic_information']['network_consent']['value']) && $_SESSION['generic_information']['network_consent']['value'] == '1') $registration_array['network_consent'] = time();
+            if (isset($_SESSION['generic_information']['network_customerid']['value'])) $registration_array['network_customerid'] = $_SESSION['generic_information']['network_customerid']['value'];
+
+
 
             if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
             {

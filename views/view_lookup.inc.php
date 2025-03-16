@@ -154,6 +154,7 @@ class VIEW_LOOKUP
         print "<tr><td class=\"profileheader\">Ort</td><td>" . $registration['zip'] . ' ' . $registration['city'] . "</td></tr>";
         print "<tr><td class=\"profileheader\">Telefonnummer</td><td>" . $registration['phone'] . "</td></tr>";
         print "<tr><td class=\"profileheader\">E-Mail-Adresse</td><td>" . $registration['email'] . "</td></tr>";
+        print "<tr><td class=\"profileheader\">Kundennummer Netzbetreiber</td><td>" . $registration['network_customerid'] . "</td></tr>";
         print "</table>";
 
         print '<br />&nbsp;<br />';
