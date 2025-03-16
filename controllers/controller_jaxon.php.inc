@@ -683,6 +683,12 @@ class Interactives
                     $focustarget = 'participation_' . $meter_key;
                 }
 
+                if ($this->validate_record($meter_object['feedlimit']['value'], $meter_object['feedlimit']['integrity']) === false)
+                {
+                    $failmsg = "Bitte überprüfen Sie die maximal erlaubte Netzzugangsleistung";
+                    $focustarget = 'feedlimit_' . $meter_key;
+                }
+
                 if($meter_object['type'] == 'suppliers')
                 {
                     if ($this->validate_record($meter_object['power']['value'], $meter_object['power']['integrity']) === false)
