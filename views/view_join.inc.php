@@ -287,6 +287,9 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
         print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Umsatzsteuer ID (falls vorhanden)<br />';
         print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Firmenbuchnummer oder ZVR Zahl (falls vorhanden)<br />';
+        print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;Aktive E-Mail Adresse f&uuml;r die Registrierung und f&uuml;r die Abrechnung (erhalt der Rechnungen)<br />';
+        print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;Bankinformationen (IBAN und Name des Kontoinhabers)<br />';
+        print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;Befugnis eine SEPA Lastschrift zu akzeptieren<br />';
         print "</div>";
 
         print "<br />";
@@ -294,7 +297,27 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         print "<h3>Z&auml;hlpunkte</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
         print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;Z&auml;hlpunktnummern f&uuml;r Bezug und ggf. Einspeisung (siehe letzte Energieabrechnung)<br />';
+        print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;R&uuml;ckspeiselimitierung falls welche vom Netzbetreiber vorgeschrieben wurde<br />';
+        print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;Photovoltaikleistung (oder anderweitige Generatorleistung) f&uuml;r Einspeisez&auml;hlpunkte<br />';
+        print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;Inventarnummer der betroffenen Z&auml;hler<br />';
         print "</div>";
+
+        print "<br />";
+        
+        print "<h3>Netzbetreiber</h3>";
+        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
+        print '<i class="fa fa-passport"></i>&nbsp;&nbsp;&nbsp;&nbsp;Kundennummer beim Netzbetreiber (Nicht vom Energieversorger)<br />';
+        print '<i class="fa fa-passport"></i>&nbsp;&nbsp;&nbsp;&nbsp;Zugangsdaten f&uuml;r das Netzbetreiberportal (falls vorhanden)<br />';
+        print "</div>";
+
+        print "<br />";
+        
+        print "<h3>Energieversorger</h3>";
+        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
+        print '<i class="fa fa-passport"></i>&nbsp;&nbsp;&nbsp;&nbsp;Rechnung eines Verbraucherz&auml;hlpunktes (Monats- oder Jahresabrechnung m&ouml;glich)<br />';
+        print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;Gutschrift eines Lieferz&auml;lpunktes (Monats- oder Jahresabrechnung m&ouml;glich)<br />';
+        print "</div>";
+
 
         print "<br />";
         print "<br />";
@@ -351,6 +374,9 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         print "<h3>Allgemein</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
         print '<i class="fa fa-passport"></i>&nbsp;&nbsp;&nbsp;&nbsp;Ein g&uuml;ltiges Ausweisdokument (Reisepass, Personalausweis, F&uuml;hrerschein)<br />';
+        print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;Aktive E-Mail Adresse f&uuml;r die Registrierung und f&uuml;r die Abrechnung (erhalt der Rechnungen)<br />';
+        print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;Bankinformationen (IBAN und Name des Kontoinhabers)<br />';
+        print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;Befugnis eine SEPA Lastschrift zu akzeptieren<br />';
         print "</div>";
 
         print "<br />";
@@ -358,7 +384,27 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         print "<h3>Z&auml;hlpunkte</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
         print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;Z&auml;hlpunktnummern f&uuml;r Bezug und ggf. Einspeisung (siehe letzte Energieabrechnung)<br />';
+        print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;R&uuml;ckspeiselimitierung falls welche vom Netzbetreiber vorgeschrieben wurde<br />';
+        print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;Photovoltaikleistung (oder anderweitige Generatorleistung) f&uuml;r Einspeisez&auml;hlpunkte<br />';
+        print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;Inventarnummer der betroffenen Z&auml;hler<br />';
         print "</div>";
+
+        print "<br />";
+        
+        print "<h3>Netzbetreiber</h3>";
+        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
+        print '<i class="fa fa-passport"></i>&nbsp;&nbsp;&nbsp;&nbsp;Kundennummer beim Netzbetreiber (Nicht vom Energieversorger)<br />';
+        print '<i class="fa fa-passport"></i>&nbsp;&nbsp;&nbsp;&nbsp;Zugangsdaten f&uuml;r das Netzbetreiberportal (falls vorhanden)<br />';
+        print "</div>";
+
+        print "<br />";
+        
+        print "<h3>Energieversorger</h3>";
+        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
+        print '<i class="fa fa-passport"></i>&nbsp;&nbsp;&nbsp;&nbsp;Rechnung eines Verbraucherz&auml;hlpunktes (Monats- oder Jahresabrechnung m&ouml;glich)<br />';
+        print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;Gutschrift eines Lieferz&auml;lpunktes (Monats- oder Jahresabrechnung m&ouml;glich)<br />';
+        print "</div>";
+
 
         print "<br />";
         print "<br />";
@@ -416,6 +462,9 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         print "<h3>Allgemein</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
         print '<i class="fa fa-passport"></i>&nbsp;&nbsp;&nbsp;&nbsp;Ein g&uuml;ltiges Ausweisdokument (Reisepass, Personalausweis, F&uuml;hrerschein)<br />';
+        print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;Aktive E-Mail Adresse f&uuml;r die Registrierung und f&uuml;r die Abrechnung (erhalt der Rechnungen)<br />';
+        print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;Bankinformationen (IBAN und Name des Kontoinhabers)<br />';
+        print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;Befugnis eine SEPA Lastschrift zu akzeptieren<br />';
         print "</div>";
 
         print "<br />";
@@ -423,7 +472,27 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         print "<h3>Z&auml;hlpunkte</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
         print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;Z&auml;hlpunktnummern f&uuml;r Bezug und ggf. Einspeisung (siehe letzte Energieabrechnung)<br />';
+        print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;R&uuml;ckspeiselimitierung falls welche vom Netzbetreiber vorgeschrieben wurde<br />';
+        print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;Photovoltaikleistung (oder anderweitige Generatorleistung) f&uuml;r Einspeisez&auml;hlpunkte<br />';
+        print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;Inventarnummer der betroffenen Z&auml;hler<br />';
         print "</div>";
+
+        print "<br />";
+        
+        print "<h3>Netzbetreiber</h3>";
+        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
+        print '<i class="fa fa-passport"></i>&nbsp;&nbsp;&nbsp;&nbsp;Kundennummer beim Netzbetreiber (Nicht vom Energieversorger)<br />';
+        print '<i class="fa fa-passport"></i>&nbsp;&nbsp;&nbsp;&nbsp;Zugangsdaten f&uuml;r das Netzbetreiberportal (falls vorhanden)<br />';
+        print "</div>";
+
+        print "<br />";
+        
+        print "<h3>Energieversorger</h3>";
+        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
+        print '<i class="fa fa-passport"></i>&nbsp;&nbsp;&nbsp;&nbsp;Rechnung eines Verbraucherz&auml;hlpunktes (Monats- oder Jahresabrechnung m&ouml;glich)<br />';
+        print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;Gutschrift eines Lieferz&auml;lpunktes (Monats- oder Jahresabrechnung m&ouml;glich)<br />';
+        print "</div>";
+
 
         print "<br />";
         print "<br />";
@@ -615,7 +684,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
         print "<br /><h2>" . $_SESSION['mnemonic'] . "</h2>";
         print "</div>&nbsp;<br />";
-        print "Du kannst dieses Passwort nutzen, um jederzeit den Bearbeitungsfortschritt Deines Antrages einzusehen<br />und natürlich um Deine Daten zu &auml;ndern.<br />&nbsp;<br /><b>Bitte bewahre es gut auf!</b>";
+        print "Du kannst dieses Passwort nutzen, um jederzeit den Bearbeitungsfortschritt Deines Antrages einzusehen<br />und nat&uuml;rlich um Deine Daten zu &auml;ndern.<br />&nbsp;<br /><b>Bitte bewahre es gut auf!</b>";
         print "&nbsp;<br />";
 
         // check if this mnemonic was already stored
