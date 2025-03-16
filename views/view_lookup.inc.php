@@ -60,7 +60,7 @@ class VIEW_LOOKUP
 
     private function view_render_profile()
     {
-        if (!filter_var($_SESSION['authenticated'], FILTER_VALIDATE_EMAIL))
+        if (!filter_var($_SESSION['authenticated'], FILTER_VALIDATE_INT))
         {
             print "<script>window.location.href='/';</script>";
             exit;
@@ -71,11 +71,11 @@ class VIEW_LOOKUP
                         <h1>Erneuerbare Energiegemeinschaft VIERE</h1>
                         <p>Beitrittsstatus- und Datenabfrage<br /></p>
         
-                        <p style="color:white">' . $_SESSION['authenticated'] . ' <button type="button" class="" style="background-color:darkred;margin:9px;" id="btn_deauthenticate" onClick="JaxonInteractives.deauthenticate();">Abmelden</button></p>
+                        <p style="color:white">' . $_SESSION['auth_email'] . ' <button type="button" class="" style="background-color:darkred;margin:9px;" id="btn_deauthenticate" onClick="JaxonInteractives.deauthenticate();">Abmelden</button></p>
                     </header>
         ';
 
-        $registrations = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'email', $_SESSION['authenticated']);
+        $registrations = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'id', $_SESSION['authenticated']);
         if ($registrations == NULL || count($registrations) == 0)
         {
             print '<h3>Fehler:</h3><br />Die angeforderten Daten konnten nicht abgerufen werden.<br />Bitte kontaktiere den Support';

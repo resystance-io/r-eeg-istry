@@ -55,11 +55,11 @@ class Interactives
         if(isset($_SESSION['auth_mnemonic'])) unset($_SESSION['auth_mnemonic']);
 
         $hashed_mnemonic_provided = hash('sha256', $password);
-        $hashed_mnemonic_stored = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'mnemonic', 'email', $username);
 
-        if($hashed_mnemonic_provided == $hashed_mnemonic_stored)
+        $account_id = $this->db->get_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'id', 'email', $username, 'mnemonic', $hashed_mnemonic_provided);
+        if($account_id)
         {
-            $_SESSION['authenticated'] = $username;
+            $_SESSION['authenticated'] = $account_id;
             $response = jaxon()->newResponse();
             $response->script("window.location.href='/?lookup=profile';");
             return $response;

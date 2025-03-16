@@ -625,7 +625,6 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         if($mnemonic_count == 0)
         {
             $registration_array['registration_date'] = time();
-            $registration_array['structure_version'] = 1;
             $registration_array['mnemonic'] = $hashed_mnemonic;
             $registration_array['type'] = $_SESSION['generic_information']['join_type'];
 
