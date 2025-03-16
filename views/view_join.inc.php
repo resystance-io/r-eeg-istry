@@ -186,9 +186,17 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
 
                 print '<br />';
 
+                if(($_REQUEST['step'] == 0) && ($panel == 'preparation'))
+                {
+                    $step_caption = 'Los gehts!';
+                }
+                else
+                {
+                    $step_caption = 'Weiter zum n&auml;chsten Schritt';
+                }
                 print '<div style="width:100%">';
                 print '<div style="float:left;padding-right:20px;"><button type="button" class="defaultbtn" style="float:left;max-width:100px" onClick="JaxonInteractives.step_back(\'' . $_REQUEST['step'] . '\');"><i class="fa fa-arrow-left"></i></button></div>';
-                print '<div style="float:left;padding-right:20px;"><button type="button" class="defaultbtn" style="float:left" onClick="JaxonInteractives.next_step(\'' . $_REQUEST['step'] . '\');">Weiter zum n&auml;chsten Schritt</button></div>';
+                print '<div style="float:left;padding-right:20px;"><button type="button" class="defaultbtn" style="float:left" onClick="JaxonInteractives.next_step(\'' . $_REQUEST['step'] . '\');">' . $step_caption . '</button></div>';
                 print '<div style="float:left;padding-top:20px;text-align:center">';
                 print '    <div style="width:' . $progress_bar_width . 'px;background-color:rgba(255, 255, 255, 0.4);">';
                 print '        <div style="width:' . $progress_fill_width . 'px;background-color:lightseagreen;text-align:center">' . $progress_text . '</div>' . $progress_bar_text;
@@ -271,7 +279,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                     <br />
                     <header id="header">
                         <h2>Als Unternehmen beitreten</h2>
-                        <p>Bevor Du los legst - bereite folgende Unterlagen und Informationen vor, da Du diese im Verlauf der Registrierung ben&ouml;tigen wirst:</p>
+                        <p>Bevor Du los legst, bereite folgende Unterlagen und Informationen vor, da Du diese im Verlauf der Registrierung ben&ouml;tigen wirst:</p>
                     </header>
         ';
 
@@ -336,7 +344,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                     <br />
                     <header id="header">
                         <h2>Als Privatperson beitreten</h2>
-                        <p>Bevor Du los legst - bereite folgende Unterlagen und Informationen vor, da Du diese im Verlauf der Registrierung ben&ouml;tigen wirst:</p>
+                        <p>Bevor Du los legst, bereite folgende Unterlagen und Informationen vor, da Du diese im Verlauf der Registrierung ben&ouml;tigen wirst:</p>
                     </header>
         ';
 
@@ -401,7 +409,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                     <br />
                     <header id="header">
                         <h2>Als Landwirtschaft beitreten</h2>
-                        <p>Bevor Du los legst - bereite folgende Unterlagen und Informationen vor, da Du diese im Verlauf der Registrierung ben&ouml;tigen wirst:</p>
+                        <p>Bevor Du los legst, bereite folgende Unterlagen und Informationen vor, da Du diese im Verlauf der Registrierung ben&ouml;tigen wirst:</p>
                     </header>
         ';
 
