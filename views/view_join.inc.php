@@ -591,9 +591,9 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
 
                 if ($meter_object['type'] == "suppliers")
                 {
-                    print "<br />";
-
                     $this->view_render_meter_detail_explained_inputfield($meter_key, "Maximale Leistung", 'power', 'decimal', null, 10, "&nbsp;&nbsp;&nbsp;&nbsp;kWp");
+
+                    $this->view_render_meter_detail_explained_inputfield($meter_key, "R&uuml;ckspeiselimitierung", 'feedlimit', 'decimal', null, 0, "&nbsp;&nbsp;&nbsp;&nbsp;kVA");
                 }
 
                 print "</div>";
@@ -777,6 +777,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                     $meter_array['meter_addr_city'] = $meter_object['city']['value'];
                     $meter_array['meter_addr_zip'] = $meter_object['zip']['value'];
                     $meter_array['meter_participation'] = $meter_object['participation']['value'];
+                    $meter_array['meter_feedlimit'] = $meter_object['feedlimit']['value'];
 
                     $meter_autoinc_id = $this->object_broker->instance['db']->insert_row_with_array($this->config->user['DBTABLE_METERS'], $meter_array);
                 }

@@ -184,8 +184,9 @@ class VIEW_LOOKUP
 
             if ($meter['meter_participation'] != null) $meter_participation = 'Faktor: ' . $meter['meter_participation'] . '%'; else $meter_participation = '';
             if ($meter['meter_power'] != null) $meter_power = ', Leistung: ' . $meter['meter_power'] . ' kWp'; else $meter_power = '';
+            if ($meter['meter_feedlimit'] != null) $meter_feedlimit = ', R&uuml;ckspeiselimit: ' . $meter['meter_feedlimit'] . ' kVA'; else $meter_feedlimit = '';
 
-            print "<tr class=\"profilemeterline\"><td class=\"profilemeter\"><span class=\"metertype\">$meter_nice ($meter_participation$meter_power)</span><br />" . $meter['meter_id'] . "</td></tr>";
+            print "<tr class=\"profilemeterline\"><td class=\"profilemeter\"><span class=\"metertype\">$meter_nice ($meter_participation$meter_power$meter_feedlimit)</span><br />" . $meter['meter_id'] . "</td></tr>";
         }
 
         print "</table>";
