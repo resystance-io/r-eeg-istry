@@ -767,6 +767,12 @@ class Interactives
             $focustarget = 'network_consent';
         }
 
+        if($this->validate_record($_SESSION['generic_information']['network_customerid']['value'], $_SESSION['generic_information']['network_customerid']['integrity']) === false)
+        {
+            $failmsg = "Bitte geben Sie Ihre Netzbetreiber-Kundennummer bekannt";
+            $focustarget = 'network_customerid';
+        }
+
         if($failmsg)
         {
             $jaxon_response_object->alert($failmsg);
