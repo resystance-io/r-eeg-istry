@@ -334,12 +334,12 @@ class Interactives
         $failmsg = null;
         $focustarget = null;
 
-        $email_already_used = $this->db->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_REGISTRATIONS'],'email', $_SESSION['generic_information']['email']['value']);
+        /*$email_already_used = $this->db->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_REGISTRATIONS'],'email', $_SESSION['generic_information']['email']['value']);
         if($email_already_used > 0)
         {
             $failmsg = "Diese E-Mail-Adresse ist bereits einem Benutzer dieser EEG zugeordnet";
             $focustarget = 'email';
-        }
+        }*/
 
         if($this->validate_record($_SESSION['generic_information']['company']['value'], $_SESSION['generic_information']['company']['integrity']) === false)
         {
@@ -411,12 +411,12 @@ class Interactives
         $failmsg = null;
         $focustarget = null;
 
-        $email_already_used = $this->db->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_REGISTRATIONS'],'email',$_SESSION['generic_information']['email']['value']);
+        /*$email_already_used = $this->db->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_REGISTRATIONS'],'email',$_SESSION['generic_information']['email']['value']);
         if($email_already_used > 0)
         {
             $failmsg = "Diese E-Mail-Adresse ist bereits einem Benutzer dieser EEG zugeordnet";
             $focustarget = 'email';
-        }
+        }*/
 
         if($this->validate_record($_SESSION['generic_information']['title']['value'], $_SESSION['generic_information']['title']['integrity']) === false)
         {
@@ -513,12 +513,12 @@ class Interactives
         $failmsg = null;
         $focustarget = null;
 
-        $email_already_used = $this->db->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_REGISTRATIONS'],'email',$_SESSION['generic_information']['email']['value']);
+        /*$email_already_used = $this->db->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_REGISTRATIONS'],'email',$_SESSION['generic_information']['email']['value']);
         if($email_already_used > 0)
         {
             $failmsg = "Diese E-Mail-Adresse ist bereits einem Benutzer dieser EEG zugeordnet";
             $focustarget = 'email';
-        }
+        }*/
 
         if($this->validate_record($_SESSION['generic_information']['title']['value'], $_SESSION['generic_information']['title']['integrity']) === false)
         {
