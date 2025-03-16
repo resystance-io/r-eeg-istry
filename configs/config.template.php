@@ -32,6 +32,7 @@ $EEG_SUPPLIERS_PREFIX = 'AT 000000 00000 0000000000 000';
 /////* LAYOUT SPECIFIC CONFIGURATION *///////////
 
 $JOIN_LAYOUT = [
+    ['preparation'],
     ['generic'],
     ['consumption'],
     ['supply'],

@@ -126,6 +126,22 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                 {
                     switch ($panel)
                     {
+                        case 'preparation':
+                            if($_SESSION['generic_information']['join_type'] == 'company')
+                            {
+                                $this->view_render_company_preparation();
+                            }
+                            elseif($_SESSION['generic_information']['join_type'] == 'individual')
+                            {
+                                $this->view_render_individual_preparation();
+
+                            }
+                            elseif($_SESSION['generic_information']['join_type'] == 'agriculture')
+                            {
+                                $this->view_render_agriculture_preparation();
+                            }
+                            break;
+
                         case 'generic':
                             if($_SESSION['generic_information']['join_type'] == 'company')
                             {
@@ -248,6 +264,36 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
             }
         }
     }
+
+    private function view_render_company_preparation()
+    {
+        print '
+                    <br />
+                    <header id="header">
+                        <h2>Als Unternehmen beitreten</h2>
+                        <p>Bevor Du los legst - bereite folgende Unterlagen und Informationen vor, da Du diese im Verlauf der Registrierung ben&ouml;tigen wirst:</p>
+                    </header>
+        ';
+
+        print "<h3>Allgemein</h3>";
+        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
+        print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Umsatzsteuer ID (falls vorhanden)<br />';
+        print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Firmenbuchnummer oder ZVR Zahl (falls vorhanden)<br />';
+        print "</div>";
+
+        print "<br />";
+
+        print "<h3>Z&auml;hlpunkte</h3>";
+        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
+        print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;Z&auml;hlpunktnummern f&uuml;r Bezug und ggf. Einspeisung (siehe letzte Energieabrechnung)<br />';
+        print "</div>";
+
+        print "<br />";
+        print "<br />";
+
+        print "<h3>Alles bereit? Dann geht's auch schon los...</h3>";
+    }
+
     private function view_render_company()
     {
         print '
@@ -284,6 +330,33 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
 
     }
 
+    private function view_render_individual_preparation()
+    {
+        print '
+                    <br />
+                    <header id="header">
+                        <h2>Als Privatperson beitreten</h2>
+                        <p>Bevor Du los legst - bereite folgende Unterlagen und Informationen vor, da Du diese im Verlauf der Registrierung ben&ouml;tigen wirst:</p>
+                    </header>
+        ';
+
+        print "<h3>Allgemein</h3>";
+        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
+        print '<i class="fa fa-passport"></i>&nbsp;&nbsp;&nbsp;&nbsp;Ein g&uuml;ltiges Ausweisdokument (Reisepass, Personalausweis, F&uuml;hrerschein)<br />';
+        print "</div>";
+
+        print "<br />";
+
+        print "<h3>Z&auml;hlpunkte</h3>";
+        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
+        print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;Z&auml;hlpunktnummern f&uuml;r Bezug und ggf. Einspeisung (siehe letzte Energieabrechnung)<br />';
+        print "</div>";
+
+        print "<br />";
+        print "<br />";
+
+        print "<h3>Alles bereit? Dann geht's auch schon los...</h3>";
+    }
     private function view_render_individual()
     {
 
@@ -322,6 +395,33 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
 
     }
 
+    private function view_render_agriculture_preparation()
+    {
+        print '
+                    <br />
+                    <header id="header">
+                        <h2>Als Landwirtschaft beitreten</h2>
+                        <p>Bevor Du los legst - bereite folgende Unterlagen und Informationen vor, da Du diese im Verlauf der Registrierung ben&ouml;tigen wirst:</p>
+                    </header>
+        ';
+
+        print "<h3>Allgemein</h3>";
+        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
+        print '<i class="fa fa-passport"></i>&nbsp;&nbsp;&nbsp;&nbsp;Ein g&uuml;ltiges Ausweisdokument (Reisepass, Personalausweis, F&uuml;hrerschein)<br />';
+        print "</div>";
+
+        print "<br />";
+
+        print "<h3>Z&auml;hlpunkte</h3>";
+        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
+        print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;Z&auml;hlpunktnummern f&uuml;r Bezug und ggf. Einspeisung (siehe letzte Energieabrechnung)<br />';
+        print "</div>";
+
+        print "<br />";
+        print "<br />";
+
+        print "<h3>Alles bereit? Dann geht's auch schon los...</h3>";
+    }
 
     private function view_render_agriculture()
     {
