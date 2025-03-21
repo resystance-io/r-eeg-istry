@@ -1,6 +1,6 @@
 <?php
 
-class VIEW_JOIN_BASE
+class VIEW_JOIN_BASE extends VIEW
 {
     protected function view_render_meter_detail_inputfield($meter_key, $caption, $id, $integrity, $style=null, $default=null)
     {

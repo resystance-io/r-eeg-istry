@@ -1,24 +1,28 @@
 <?php
 
+include_once('view.inc.php');
 include_once('view_join_base.inc.php');
 
 class VIEW_JOIN extends VIEW_JOIN_BASE
 {
+    private $tenant_info;
 
-    private $config;
-    private $object_broker;
-
-    public function __construct($object_broker, $database=NULL)
+    public function __construct()
     {
-        $this->object_broker = $object_broker;
-        $this->config = $object_broker->instance['config'];
+        parent::__construct();
+
+        if(isset($_SESSION['tenant']) && $_SESSION['tenant'] != '')
+        {
+            $tenant_info = $this->object_broker->instance['db']->get_rows_by_column_value($this->config->user['DBTABLE_TENANTS'], 'id', $_SESSION['tenant'], $limit = 1);
+            $this->tenant_info = $tenant_info[0];
+        }
     }
+
     public function view_render()
     {
-
         print '
                     <header id="header">
-                        <h1>Erneuerbare Energiegemeinschaft VIERE</h1>
+                        <h1>' . $this->tenant_info['fullname'] . '</h1>
                     </header>
         ';
 
@@ -697,6 +701,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
 
         if($mnemonic_count == 0)
         {
+            $registration_array['tenant'] = $_SESSION['tenant'];
             $registration_array['registration_date'] = time();
             $registration_array['mnemonic'] = $hashed_mnemonic;
             $registration_array['type'] = $_SESSION['generic_information']['join_type'];

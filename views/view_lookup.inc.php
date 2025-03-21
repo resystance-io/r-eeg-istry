@@ -1,20 +1,9 @@
 <?php
 
-class VIEW_LOOKUP
+include_once('view.inc.php');
+
+class VIEW_LOOKUP extends VIEW
 {
-
-    private $config;
-    private $object_broker;
-    private $db;
-
-    public function __construct($object_broker, $database = NULL)
-    {
-
-        $this->object_broker = $object_broker;
-        $this->config = $object_broker->instance['config'];
-        $this->db = $object_broker->instance['db'];
-    }
-
     public function view_render()
     {
 
