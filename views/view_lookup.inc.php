@@ -55,22 +55,31 @@ class VIEW_LOOKUP extends VIEW
             exit;
         }
 
+        $registrations = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'id', $_SESSION['authenticated']);
+        if ($registrations == NULL || count($registrations) == 0)
+        {
+            print '<h3>Fehler:</h3><br />Die Daten dieser Registrierung konnten nicht abgerufen werden.<br />Bitte kontaktiere den Support';
+            return false;
+        }
+        $registration = $registrations[0];
+
+        $tenant_info = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_TENANTS'], 'id', $registration['tenant']);
+        if ($tenant_info == NULL || count($tenant_info) == 0)
+        {
+            print '<h3>Fehler:</h3><br />Die Eigenschaften der EEG konnten nicht abgerufen werden.<br />Bitte kontaktiere den Support';
+            return false;
+        }
+        $tenant_info = $tenant_info[0];
+
+
         print '
                     <header id="header">
-                        <h1>Erneuerbare Energiegemeinschaft VIERE</h1>
+                        <h1>' . $tenant_info['fullname'] . '</h1>
                         <p>Beitrittsstatus- und Datenabfrage<br /></p>
         
                         <p style="color:white">' . $_SESSION['auth_email'] . ' <button type="button" class="" style="background-color:darkred;margin:9px;" id="btn_deauthenticate" onClick="JaxonInteractives.deauthenticate();">Abmelden</button></p>
                     </header>
         ';
-
-        $registrations = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'id', $_SESSION['authenticated']);
-        if ($registrations == NULL || count($registrations) == 0)
-        {
-            print '<h3>Fehler:</h3><br />Die angeforderten Daten konnten nicht abgerufen werden.<br />Bitte kontaktiere den Support';
-            return false;
-        }
-        $registration = $registrations[0];
 
         print '<h3>Status</h3>';
         print "<table>";

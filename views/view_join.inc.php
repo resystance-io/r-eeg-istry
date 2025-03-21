@@ -622,12 +622,15 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                     </header>
         ';
 
+        $shortname = $this->tenant_info['shortname'];
+        $cid = $this->tenant_info['creditor_id'];
+
         print "<h3>Kontoinformationen</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
 
         $this->view_render_part_captioned_inputfield("Name d. Kontoinhabers", "banking_name", "generic_information", "required");
         $this->view_render_part_captioned_inputfield("IBAN", "banking_iban", "generic_information", "iban");
-        $this->view_render_part_annotated_checkbox("Hiermit best&auml;tige ich die Richtigkeit der angegebenen Kontoinformationen<br />und erm&auml;chtige VIERE zum Bankeinzug im Rahmen der Leistungsabrechnung <br /> Creditor ID: AT57ZZZ00000073600.", "banking_consent", "generic_information", "booltrue");
+        $this->view_render_part_annotated_checkbox("Hiermit best&auml;tige ich die Richtigkeit der angegebenen Kontoinformationen<br />und erm&auml;chtige " . $shortname . " zum Bankeinzug im Rahmen der Leistungsabrechnung <br /> Creditor ID: " . $cid . ".", "banking_consent", "generic_information", "booltrue");
 
         print "</div></div><br />";
 
@@ -643,26 +646,38 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                     </header>
         ';
 
-        print "<h3>Statuten</h3>";
-        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
-        $this->view_render_part_annotated_checkbox(
-            "Ich best&auml;tige die Kenntnisnahme der &nbsp; <a style=\"color:lightblue;text-decoration:none;\" href=\"/download/statuten.pdf\" target=\"_blank\"><span class=\"fa fa-download\"></span> Statuten der EEG VIERE</a>",
-            "bylaws_consent", "generic_information", "booltrue");
-        print "</div><br />";
+        $bylaws_asset = $this->tenant_info['download_bylaws'];
+        if($bylaws_asset != '')
+        {
+            print "<h3>Statuten</h3>";
+            print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
+            $this->view_render_part_annotated_checkbox(
+                "Ich best&auml;tige die Kenntnisnahme der &nbsp; <a style=\"color:lightblue;text-decoration:none;\" href=\"/download/" . $bylaws_asset . "\" target=\"_blank\"><span class=\"fa fa-download\"></span> Statuten der EEG VIERE</a>",
+                "bylaws_consent", "generic_information", "booltrue");
+            print "</div><br />";
+        }
 
-        print "<h3>AGBs</h3>";
-        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
-        $this->view_render_part_annotated_checkbox(
-            "Ich best&auml;tige die Kenntnisnahme der  &nbsp; <a style=\"color:lightblue;text-decoration:none;\" href=\"/download/agb.pdf\" target=\"_blank\"><span class=\"fa fa-download\"></span> Allgemeinen Gesch&auml;ftsbedingungen der EEG VIERE</a>",
-            "tos_consent", "generic_information", "booltrue");
-        print "</div><br />";
+        $tos_asset = $this->tenant_info['download_tos'];
+        if($tos_asset != '')
+        {
+            print "<h3>AGBs</h3>";
+            print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
+            $this->view_render_part_annotated_checkbox(
+                "Ich best&auml;tige die Kenntnisnahme der  &nbsp; <a style=\"color:lightblue;text-decoration:none;\" href=\"/download/" . $tos_asset . "\" target=\"_blank\"><span class=\"fa fa-download\"></span> Allgemeinen Gesch&auml;ftsbedingungen der EEG VIERE</a>",
+                "tos_consent", "generic_information", "booltrue");
+            print "</div><br />";
+        }
 
-        print "<h3>Datenschutz</h3>";
-        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
-        $this->view_render_part_annotated_checkbox(
-            "Ich best&auml;tige die Kenntnisnahme der  &nbsp; <a style=\"color:lightblue;text-decoration:none;\" href=\"/download/dsgvo.pdf\" target=\"_blank\"><span class=\"fa fa-download\"></span> Datenschutzerkl&auml;rung der EEG VIERE</a>",
-            "gdpr_consent", "generic_information", "booltrue");
-        print "</div><br />";
+        $gdpr_asset = $this->tenant_info['download_gdpr'];
+        if($gdpr_asset != '')
+        {
+            print "<h3>Datenschutz</h3>";
+            print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
+            $this->view_render_part_annotated_checkbox(
+                "Ich best&auml;tige die Kenntnisnahme der  &nbsp; <a style=\"color:lightblue;text-decoration:none;\" href=\"/download/" . $gdpr_asset . "\" target=\"_blank\"><span class=\"fa fa-download\"></span> Datenschutzerkl&auml;rung der EEG VIERE</a>",
+                "gdpr_consent", "generic_information", "booltrue");
+            print "</div><br />";
+        }
 
         print "<h3>Netzbetreibervollmacht</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
