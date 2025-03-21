@@ -53,7 +53,7 @@ class VIEW_JOIN_BASE
         ';
     }
 
-    protected function view_render_part_captioned_inputfield($caption, $id, $session_bucket=null, $integrity=null, $style=null)
+    protected function view_render_part_captioned_inputfield($caption, $id, $session_bucket=null, $integrity=null, $style=null, $placeholder=null)
     {
         if($session_bucket != null)
         {
@@ -67,7 +67,7 @@ class VIEW_JOIN_BASE
                 $prefill = '';
             }
 
-            print '<div style="padding:8px;line-height:40px;' . $style . '">' . $caption . '<input type="text" onfocus="this.select()" name="' . $id . '" id="' . $id . '" value="' . $prefill . '" onfocusout="JaxonInteractives.update_session_bucket(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value, ' . "'" . $session_bucket . "'" . ');" /></div>';
+            print '<div style="padding:8px;line-height:40px;' . $style . '">' . $caption . '<input type="text" onfocus="this.select()" name="' . $id . '" id="' . $id . '" placeholder="' . $placeholder . '" value="' . $prefill . '" onfocusout="JaxonInteractives.update_session_bucket(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value, ' . "'" . $session_bucket . "'" . ');" /></div>';
 
             if($integrity == 'iban')
             {

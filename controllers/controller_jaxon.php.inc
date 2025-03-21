@@ -773,6 +773,12 @@ class Interactives
             $focustarget = 'network_customerid';
         }
 
+        if($this->validate_record($_SESSION['generic_information']['network_inventoryid']['value'], $_SESSION['generic_information']['network_inventoryid']['integrity']) === false)
+        {
+            $failmsg = "Bitte geben Sie die Inventarnummer eines beliebigen Zählers in dieser Registrierung bekannt.";
+            $focustarget = 'network_inventoryid';
+        }
+
         if($failmsg)
         {
             $jaxon_response_object->alert($failmsg);
@@ -899,6 +905,8 @@ class Interactives
                             return true;
                         }
                     }
+                    break;
+
 
                 case 'boolean':
                     if(isset($value))
@@ -908,7 +916,18 @@ class Interactives
                             return true;
                         }
                     }
-                    
+                    break;
+
+                case 'hwinventoryid':
+                    if(isset($value))
+                    {
+                        if (preg_match('/^[A-Za-z0-9]{3}([:. ])[A-Za-z0-9]{3}([:. ])[A-Za-z0-9]{3}$/', $value))
+                        {
+                            return true;
+                        }
+                    }
+                    break;
+
                 case 'iban':
                     if(isset($value))
                     {

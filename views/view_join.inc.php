@@ -667,6 +667,8 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
             "network_consent", "generic_information", "booltrue");
 
         $this->view_render_part_captioned_inputfield("Kundennummer beim zust&auml;ndigen Netzbetreiber", "network_customerid", "generic_information", "required", "width:500px;padding-left:60px;");
+        print "<br />";
+        $this->view_render_part_captioned_inputfield("Inventarnummer eines beliebigen Z&auml;hlers", "network_inventoryid", "generic_information", "hwinventoryid", "width:500px;padding-left:60px;", "xxx.xxx.xxx");
 
 
         print "</div></div><br />";
@@ -745,7 +747,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
             if (isset($_SESSION['generic_information']['gdpr_consent']['value']) && $_SESSION['generic_information']['gdpr_consent']['value'] == '1') $registration_array['gdpr_consent'] = time();
             if (isset($_SESSION['generic_information']['network_consent']['value']) && $_SESSION['generic_information']['network_consent']['value'] == '1') $registration_array['network_consent'] = time();
             if (isset($_SESSION['generic_information']['network_customerid']['value'])) $registration_array['network_customerid'] = $_SESSION['generic_information']['network_customerid']['value'];
-
+            if (isset($_SESSION['generic_information']['network_inventoryid']['value'])) $registration_array['network_inventoryid'] = $_SESSION['generic_information']['network_inventoryid']['value'];
 
 
             if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
