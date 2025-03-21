@@ -67,7 +67,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                 default:
                     print '
                         <header id="header">
-                            <p>Sch&ouml;n dass Du dich f&uuml;r die Mitgliedschaft in unserer EEG interessierst.<br />Wir freuen uns &uuml;ber jedes neue Mitglied!<br /></p>
+                            <p>Sch&ouml;n dass Du Dich f&uuml;r die Mitgliedschaft in unserer EEG interessierst.<br />Wir freuen uns &uuml;ber jedes neue Mitglied!<br /></p>
             
                             <p style="color:white">Bitte w&auml;hle die passende Beitrittsform:</p>
                         </header>
@@ -279,7 +279,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                     <br />
                     <header id="header">
                         <h2>Als Unternehmen beitreten</h2>
-                        <p>Bevor Du los legst, bereite folgende Unterlagen und Informationen vor, da Du diese im Verlauf der Registrierung ben&ouml;tigen wirst:</p>
+                        <p>Bevor Du loslegst, bereite bitte folgende Unterlagen und Informationen vor, da Du diese im Verlauf der Registrierung ben&ouml;tigen wirst:</p>
                     </header>
         ';
 
@@ -287,12 +287,12 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
         print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Umsatzsteuer ID (falls vorhanden)<br />';
         print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Firmenbuchnummer oder ZVR Zahl (falls vorhanden)<br />';
-        print '<i class="fa fa-envelope"></i>&nbsp;&nbsp;&nbsp;&nbsp;Aktive E-Mail Adresse f&uuml;r die Registrierung (und zum Erhalt der Rechnungen)<br />';
+        print '<i class="fa fa-envelope"></i>&nbsp;&nbsp;&nbsp;&nbsp;Aktive E-Mail-Adresse f&uuml;r die Registrierung (und zum Erhalt der Rechnungen)<br />';
         print '<i class="fa fa-piggy-bank"></i>&nbsp;&nbsp;&nbsp;&nbsp;Bankinformationen (IBAN und Name des Kontoinhabers)<br />';
-        print '<i class="fa fa-clipboard-check"></i>&nbsp;&nbsp;&nbsp;&nbsp;Befugnis eine SEPA Lastschrift zu akzeptieren<br />';
+        print '<i class="fa fa-clipboard-check"></i>&nbsp;&nbsp;&nbsp;&nbsp;Befugnis, eine SEPA Lastschrift zu akzeptieren<br />';
         print "</div>";
 
-        print "<br />";
+        print "<br />"; "<br />";
 
         print "<h3>Z&auml;hlpunkte</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
@@ -302,15 +302,15 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;Inventarnummer der betroffenen Z&auml;hler<br />';
         print "</div>";
 
-        print "<br />";
+        print "<br />"; "<br />";
         
         print "<h3>Netzbetreiber</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
-        print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Kundennummer beim Netzbetreiber (nicht vom Energieversorger)<br />';
         print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Zugangsdaten f&uuml;r das Netzbetreiberportal (falls vorhanden)<br />';
+        print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Kundennummer beim Netzbetreiber (nicht vom Energieversorger) (falls vorhanden)<<br />';
         print "</div>";
 
-        print "<br />";
+        print "<br />"; "<br />";
         
         print "<h3>Energieversorger</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
@@ -367,19 +367,19 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                     <br />
                     <header id="header">
                         <h2>Als Privatperson beitreten</h2>
-                        <p>Bevor Du los legst, bereite folgende Unterlagen und Informationen vor, da Du diese im Verlauf der Registrierung ben&ouml;tigen wirst:</p>
+                        <p>Bevor Du loslegst, bereite bitte folgende Unterlagen und Informationen vor, da Du diese im Verlauf der Registrierung ben&ouml;tigen wirst:</p>
                     </header>
         ';
 
         print "<h3>Allgemein</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
         print '<i class="fa fa-passport"></i>&nbsp;&nbsp;&nbsp;&nbsp;Ein g&uuml;ltiges Ausweisdokument (Reisepass, Personalausweis, F&uuml;hrerschein)<br />';
-        print '<i class="fa fa-envelope"></i>&nbsp;&nbsp;&nbsp;&nbsp;Aktive E-Mail Adresse f&uuml;r die Registrierung (und zum Erhalt der Rechnungen)<br />';
+        print '<i class="fa fa-envelope"></i>&nbsp;&nbsp;&nbsp;&nbsp;Aktive E-Mail-Adresse f&uuml;r die Registrierung (und zum Erhalt der Rechnungen)<br />';
         print '<i class="fa fa-piggy-bank"></i>&nbsp;&nbsp;&nbsp;&nbsp;Bankinformationen (IBAN und Name des Kontoinhabers)<br />';
-        print '<i class="fa fa-clipboard-check"></i>&nbsp;&nbsp;&nbsp;&nbsp;Befugnis eine SEPA Lastschrift zu akzeptieren<br />';
+        print '<i class="fa fa-clipboard-check"></i>&nbsp;&nbsp;&nbsp;&nbsp;Befugnis, eine SEPA Lastschrift zu akzeptieren<br />';
         print "</div>";
 
-        print "<br />";
+        print "<br />"; "<br />";
 
         print "<h3>Z&auml;hlpunkte</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
@@ -389,15 +389,15 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;Inventarnummer der betroffenen Z&auml;hler<br />';
         print "</div>";
 
-        print "<br />";
+        print "<br />"; "<br />";
         
         print "<h3>Netzbetreiber</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
-        print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Kundennummer beim Netzbetreiber (nicht vom Energieversorger)<br />';
         print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Zugangsdaten f&uuml;r das Netzbetreiberportal (falls vorhanden)<br />';
+        print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Kundennummer beim Netzbetreiber (nicht vom Energieversorger) (falls vorhanden)<<br />';
         print "</div>";
 
-        print "<br />";
+        print "<br />"; "<br />";
         
         print "<h3>Energieversorger</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
@@ -455,19 +455,19 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                     <br />
                     <header id="header">
                         <h2>Als Landwirtschaft beitreten</h2>
-                        <p>Bevor Du los legst, bereite folgende Unterlagen und Informationen vor, da Du diese im Verlauf der Registrierung ben&ouml;tigen wirst:</p>
+                        <p>Bevor Du loslegst, bereite bitte folgende Unterlagen und Informationen vor, da Du diese im Verlauf der Registrierung ben&ouml;tigen wirst:</p>
                     </header>
         ';
 
         print "<h3>Allgemein</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
         print '<i class="fa fa-passport"></i>&nbsp;&nbsp;&nbsp;&nbsp;Ein g&uuml;ltiges Ausweisdokument (Reisepass, Personalausweis, F&uuml;hrerschein)<br />';
-        print '<i class="fa fa-envelope"></i>&nbsp;&nbsp;&nbsp;&nbsp;Aktive E-Mail Adresse f&uuml;r die Registrierung (und zum Erhalt der Rechnungen)<br />';
+        print '<i class="fa fa-envelope"></i>&nbsp;&nbsp;&nbsp;&nbsp;Aktive E-Mail-Adresse f&uuml;r die Registrierung (und zum Erhalt der Rechnungen)<br />';
         print '<i class="fa fa-piggy-bank"></i>&nbsp;&nbsp;&nbsp;&nbsp;Bankinformationen (IBAN und Name des Kontoinhabers)<br />';
-        print '<i class="fa fa-clipboard-check"></i>&nbsp;&nbsp;&nbsp;&nbsp;Befugnis eine SEPA Lastschrift zu akzeptieren<br />';
+        print '<i class="fa fa-clipboard-check"></i>&nbsp;&nbsp;&nbsp;&nbsp;Befugnis, eine SEPA Lastschrift zu akzeptieren<br />';
         print "</div>";
 
-        print "<br />";
+        print "<br />"; "<br />";
 
         print "<h3>Z&auml;hlpunkte</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
@@ -477,15 +477,15 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;Inventarnummer der betroffenen Z&auml;hler<br />';
         print "</div>";
 
-        print "<br />";
+        print "<br />"; "<br />";
 
         print "<h3>Netzbetreiber</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
-        print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Kundennummer beim Netzbetreiber (nicht vom Energieversorger)<br />';
         print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Zugangsdaten f&uuml;r das Netzbetreiberportal (falls vorhanden)<br />';
+        print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Kundennummer beim Netzbetreiber (nicht vom Energieversorger) (falls vorhanden)<<br />';
         print "</div>";
 
-        print "<br />";
+        print "<br />"; "<br />";
 
         print "<h3>Energieversorger</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
