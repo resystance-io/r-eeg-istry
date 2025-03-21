@@ -182,6 +182,10 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                             $this->view_render_banking_details();
                             break;
 
+                        case 'optionals':
+                            $this->view_render_optionals();
+                            break;
+
                         case 'approvals':
                             $this->view_render_approvals();
                             break;
@@ -679,6 +683,30 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
 
     }
 
+    private function view_render_optionals()
+    {
+        print '
+                    <br />
+                    <header id="header">
+                        <h2>Freiwillige Angaben</h2>
+                        <p>Die folgenden Abfragen dienen nur zu statistischen Zwecken und k&ouml;nnen freiwillig beantwortet werden:</p>
+                    </header>
+        ';
+
+        print "<h3>Verbraucher im Haushalt</h3>";
+        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
+        $car_count_arr = ['0' => 'Keine', '1' => '1', '2' => '2', '3' => '3', '4' => '4', 'F' => '5 oder mehr (Fuhrpark)'];
+        $this->view_render_part_captioned_select("Anzahl der E-Autos im Haushalt", "electric_car_count", $car_count_arr, "generic_information", null, "width:400px;float:left;");
+        $this->view_render_part_captioned_inputfield("Batteriekapazit&aumlt der KFZ in kWh", "electric_car_capacity", "generic_information", null, "width:400px", "(Bei mehreren KFZ bitte Gesamtsumme angeben)");
+        print "<br />";
+        $water_heating_arr = ['boiler' => 'Heizstab/Boiler', 'heatpump' => 'W&auml;rmepumpe', 'solar' => 'Solarthermie', 'district' => 'Fernw&auml;rme', 'other' => 'Sonstige'];
+        $this->view_render_part_captioned_select("Wie bereitest du Warmwasser im Sommer?", "water_heating_summer", $water_heating_arr, "generic_information", null, "width:400px;float:left;");
+        print "</div><br />";
+
+        print "</div></div><br />";
+
+    }
+
     private function view_render_finished()
     {
         $_SESSION['finished'] = true;
@@ -753,6 +781,10 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
             if (isset($_SESSION['generic_information']['network_consent']['value']) && $_SESSION['generic_information']['network_consent']['value'] == '1') $registration_array['network_consent'] = time();
             if (isset($_SESSION['generic_information']['network_customerid']['value'])) $registration_array['network_customerid'] = $_SESSION['generic_information']['network_customerid']['value'];
             if (isset($_SESSION['generic_information']['network_inventoryid']['value'])) $registration_array['network_inventoryid'] = $_SESSION['generic_information']['network_inventoryid']['value'];
+
+            if (isset($_SESSION['generic_information']['electric_car_count']['value'])) $registration_array['electric_car_count'] = $_SESSION['generic_information']['electric_car_count']['value'];
+            if (isset($_SESSION['generic_information']['electric_car_capacity']['value'])) $registration_array['electric_car_capacity'] = $_SESSION['generic_information']['electric_car_capacity']['value'];
+            if (isset($_SESSION['generic_information']['water_heating_summer']['value'])) $registration_array['water_heating_summer'] = $_SESSION['generic_information']['water_heating_summer']['value'];
 
 
             if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))

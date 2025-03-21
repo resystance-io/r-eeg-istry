@@ -73,9 +73,12 @@
                 // if we do not have a tenancy set yet, let's try to get it from our configuration
                 if(!isset($_SESSION['tenant']))
                 {
-                    if (isset($config->user['tenant_fallback_on_empty_request']) && $config->user['tenant_fallback_on_empty_request'] === true && isset($config->user['default_tenant_id']) && is_numeric($config->user['default_tenant_id']))
+                    if (isset($view->config->user['tenant_fallback_on_empty_request']) && $view->config->user['tenant_fallback_on_empty_request'] == true)
                     {
-                        $_SESSION['tenant'] = $config->user['default_tenant_id'];
+                        if(isset($view->config->user['default_tenant_id']) && is_numeric($view->config->user['default_tenant_id']))
+                        {
+                            $_SESSION['tenant'] = $view->config->user['default_tenant_id'];
+                        }
                     }
                 }
             }

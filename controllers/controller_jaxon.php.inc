@@ -312,6 +312,14 @@ class Interactives
                             return $response;
                         }
                         break;
+
+                    case 'optionals':
+                        if($this->check_step_optionals($response) === false)
+                        {
+                            return $response;
+                        }
+                        break;
+
                     case 'approvals':
                         if($this->check_step_approval_details($response) === false)
                         {
@@ -727,6 +735,26 @@ class Interactives
                 }
             }
         }
+
+        if($failmsg)
+        {
+            $jaxon_response_object->alert($failmsg);
+            $jaxon_response_object->script("document.getElementById('" . $focustarget . "').focus();");
+            return false;
+        }
+
+        return true;
+    }
+
+    public function check_step_optionals(&$jaxon_response_object)
+    {
+        // check the integrity of all data in the banking block
+        $failmsg = null;
+        $focustarget = null;
+
+
+
+
 
         if($failmsg)
         {

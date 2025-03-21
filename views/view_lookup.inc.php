@@ -145,6 +145,9 @@ class VIEW_LOOKUP extends VIEW
         print "<tr><td class=\"profileheader\">E-Mail-Adresse</td><td>" . $registration['email'] . "</td></tr>";
         print "<tr><td class=\"profileheader\">Kundennummer Netzbetreiber</td><td>" . $registration['network_customerid'] . "</td></tr>";
         print "<tr><td class=\"profileheader\">Inventarnummer eines Z&auml;hlers</td><td>" . $registration['network_inventoryid'] . "</td></tr>";
+        print "<tr><td class=\"profileheader\">Optional: Anzahl d. E-Autos</td><td>" . $registration['electric_car_count'] . "</td></tr>";
+        print "<tr><td class=\"profileheader\">Optional: E-Auto Gesamt-kWh</td><td>" . $registration['electric_car_capacity'] . "</td></tr>";
+        print "<tr><td class=\"profileheader\">Optional: Hei&szlig;wasserbereitung (Sommer)</td><td>" . $registration['water_heating_summer'] . "</td></tr>";
 
         print "</table>";
 
