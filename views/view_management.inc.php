@@ -7,7 +7,6 @@ class VIEW_MANAGEMENT extends VIEW
     {
         ?>
 
-        <!--<input type="button" value="JAXON FOO TEST" onclick="jaxon_foo()" /><br />-->
         <header id="header">
             <h1>R:EEG:ISTRY | Management</h1>
             <p>Energiegemeinschaften und Anmeldungen verwalten<br /></p>
@@ -21,6 +20,11 @@ class VIEW_MANAGEMENT extends VIEW
                 <thead>
                   <tr>
         ';
+
+        if(isset($_REQUEST['sortkey']))
+        {
+            $_SESSION['dashboard']['sortkey'] = $_REQUEST['sortkey'];
+        }
 
         $column_configs = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARD_COLUMNS'], 'visible', 'y');
         $layout_columns = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARD_LAYOUT'], 'user', '1', NULL, 'sort', 'ASC');
@@ -36,7 +40,58 @@ class VIEW_MANAGEMENT extends VIEW
             }));
             $columns[$column_count] = $column_config[0];
 
-            print '<th>' . $columns[$column_count]['nicename'] . '</th>';
+            if($columns[$column_count]['sortable'] == 'y')
+            {
+                if(isset($_SESSION['dashboard']['sortkey']))
+                {
+                    $sortkey_arr = explode(';', $_SESSION['dashboard']['sortkey']);
+                    $sortkey_field = $sortkey_arr[0];
+                    $sortkey_direction = $sortkey_arr[1];
+                    if($sortkey_field == $columns[$column_count]['name'])
+                    {
+                        // this is the sorted column
+                        $fa_sort_color = 'black';
+                        if($sortkey_direction == 'asc')
+                        {
+                            // currently we're sorting ascending
+                            $fa_sort_icon = 'fa-sort-up';
+                            $fa_sort_link = 'sortkey=' . $columns[$column_count]['name'] . ';desc';
+                        }
+                        elseif($sortkey_direction == 'desc')
+                        {
+                            // currently we're sorting descending
+                            $fa_sort_icon = 'fa-sort-down';
+                            $fa_sort_link = 'sortkey=' . $columns[$column_count]['name'] . ';asc';
+                        }
+                        else
+                        {
+                            // wtf?
+                            $fa_sort_icon = 'fa-sort';
+                            $fa_sort_link = 'sortkey=' . $columns[$column_count]['name'] . ';asc';
+                        }
+                    }
+                    else
+                    {
+                        // this is not the sorted column
+                        $fa_sort_color = 'lightblue';
+                        $fa_sort_icon = 'fa-sort';
+                        $fa_sort_link = 'sortkey=' . $columns[$column_count]['name'] . ';asc';
+                    }
+                }
+                else
+                {
+                    $fa_sort_color = 'lightblue';
+                    $fa_sort_icon = 'fa-sort';
+                    $fa_sort_link = 'sortkey=' . $columns[$column_count]['name'] . ';asc';
+                }
+
+                print '<th style="cursor:pointer" onclick="self.location.href=\'?manage&' . $fa_sort_link . '\'">' . $columns[$column_count]['nicename'] . '<i style="margin-top:6px;color:' . $fa_sort_color . '" class="fa ' . $fa_sort_icon . ' fa-pull-right"></i></th>';
+            }
+            else
+            {
+                print '<th>' . $columns[$column_count]['nicename'] . '</th>';
+            }
+
             $column_count++;
         }
 
@@ -46,7 +101,17 @@ class VIEW_MANAGEMENT extends VIEW
                 <tbody>
         ';
 
-        $registrations = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_REGISTRATIONS']);
+        if(isset($_REQUEST['sortkey']))
+        {
+            $sortkey_arr = explode(';', $_REQUEST['sortkey']);
+        }
+        else
+        {
+            $sortkey_arr[0] = null;
+            $sortkey_arr[1] = null;
+        }
+
+        $registrations = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], null, null, null, $sortkey_arr[0], $sortkey_arr[1]);
         foreach($registrations as $registration)
         {
             print '<tr>';
