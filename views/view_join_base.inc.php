@@ -92,6 +92,41 @@ class VIEW_JOIN_BASE extends VIEW
                     </script>
                 ';
             }
+            elseif($integrity == 'hwinventoryid')
+            {
+                print '
+                    <script>
+                        function formatInput(input) {                        
+                            // removes all non-numbers
+                            var number = input.value.replace(/\D/g, '');
+                            
+                            // limits to 9 digits
+                            if (number.length > 9) {
+                                number = number.slice(0, 9);
+                            }
+                            
+                            // formating the value to xxx.xxx.xxx
+                            var formattedNumber = '';
+                            for (var i = 0; i < number.length; i += 3) {
+                                if (i > 0) {
+                                    formattedNumber += '.';
+                                }
+                                formattedNumber += number.slice(i, i + 3);
+                            }
+                            
+                            // Update the input box with the modified value
+                            input.value = formattedValue;
+                        }
+                        
+                        input.value = formattedNumber;
+                        
+                        document.getElementById(\'' . $id . '\').addEventListener(\'input\', function() {
+                            formatInput(this);
+                        });
+                    </script>
+                ';
+                
+            }
 
         }
         else
