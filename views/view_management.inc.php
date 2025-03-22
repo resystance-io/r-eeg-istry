@@ -30,12 +30,108 @@ class VIEW_MANAGEMENT extends VIEW
                     <td>John Doe</td>
                     <td>25</td>
                     <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
                   </tr>
                   <tr>
                     <td>Jane Smith</td>
                     <td>30</td>
                     <td>jane.smith@example.com</td>
                   </tr>
+                  <tr>
+                    <td>John Doe</td>
+                    <td>25</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                  </tr>
+                  <tr>
+                    <td>John Doe</td>
+                    <td>25</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                  </tr>
+                  <tr>
+                    <td>John Doe</td>
+                    <td>25</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                  </tr>
+                   <tr>
+                    <td>John Doe</td>
+                    <td>25</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                  </tr>
+                  <tr>
+                    <td>John Doe</td>
+                    <td>25</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                  </tr>
+                  <tr>
+                    <td>John Doe</td>
+                    <td>25</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                  </tr>
+                  <tr>
+                    <td>John Doe</td>
+                    <td>25</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                  </tr>
+                  <tr>
+                    <td>John Doe</td>
+                    <td>25</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                  </tr>
+                  <tr>
+                    <td>John Doe</td>
+                    <td>25</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                    <td>john.doe@example.com</td>
+                  </tr>
+                  
                   <!-- Additional rows can go here -->
                 </tbody>
               </table>
