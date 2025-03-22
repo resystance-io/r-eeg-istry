@@ -105,6 +105,13 @@
                 $view_debug = new VIEW_DEBUG();
                 $view_debug->view_render();
             }
+            elseif(isset($_REQUEST['manage']))
+            {
+                // management
+                include_once('views/view_management.inc.php');
+                $view_manage = new VIEW_MANAGEMENT();
+                $view_manage->view_render();
+            }
             else
             {
                 // people who did not decide yet

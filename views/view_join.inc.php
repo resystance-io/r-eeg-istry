@@ -1,6 +1,5 @@
 <?php
 
-include_once('view.inc.php');
 include_once('view_join_base.inc.php');
 
 class VIEW_JOIN extends VIEW_JOIN_BASE
@@ -222,10 +221,15 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                         $mail_template = file_get_contents('assets/templates/mail_welcome.html');
                         $mail_template = str_replace('{%FIRSTNAME%}', $_SESSION['generic_information']['firstname']['value'], $mail_template);
                         $mail_template = str_replace('{%LASTNAME%}', $_SESSION['generic_information']['lastname']['value'], $mail_template);
-                        $mail_template = str_replace('{%EMAIL%}', $_SESSION['generic_information']['email']['value'], $mail_template);
-                        $mail_template = str_replace('{%PASSWORD%}', $_SESSION['mnemonic'], $mail_template);
+                        $mail_template = str_replace('{%USEREMAIL%}', $_SESSION['generic_information']['email']['value'], $mail_template);
+                        $mail_template = str_replace('{%USERPASSWORD%}', $_SESSION['mnemonic'], $mail_template);
+                        $mail_template = str_replace('{%CONTACTEMAIL%}', $this->tenant_info['contact_email'], $mail_template);
+                        $mail_template = str_replace('{%CONTACTWEB%}', $this->tenant_info['contact_website'], $mail_template);
+                        $mail_template = str_replace('{%REEGISTRYWEB%}', $this->tenant_info['reegistry_website'], $mail_template);
+                        $mail_template = str_replace('{%REFERRER%}', $this->tenant_info['referrer'], $mail_template);
 
-                        $this->object_broker->instance['email']->subject = "Deine Anmeldung an der EEG " . $this->config->user['EEG_NICENAME'];
+
+                        $this->object_broker->instance['email']->subject = "Deine Anmeldung an der EEG " . $this->tenant_info['shortname'];
                         $this->object_broker->instance['email']->AddRecipient($_SESSION['generic_information']['email']['value']);
                         $this->object_broker->instance['email']->messageHTML = $mail_template;
 
