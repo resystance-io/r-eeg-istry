@@ -1,0 +1,84 @@
+/* Scrollable container */
+.table-container {
+    border: 1px solid #e5e7eb;
+    overflow: auto; /* Enables both horizontal and vertical scrolling */
+    height: 500px; /* Limits table height for vertical scrolling */
+}
+
+/* Table layout */
+.table {
+    border-collapse: collapse;
+    width: 100%;
+    table-layout: fixed; /* Ensures consistent column widths */
+}
+
+/* Table cells and headers */
+.table th,
+.table td {
+    padding: 8px;
+    text-align: center;
+    border: 1px solid #e5e7eb;
+}
+
+/* Frozen first column */
+.table td:nth-child(1),
+.table th:nth-child(1) {
+    background: white; /* Highlighted background for frozen column */
+    position: sticky;
+    left: 0; /* Ensures the column stays on the left */
+    z-index: 5; /* Keeps the column above other cells */
+    color: black;
+}
+.table th:nth-child(1) {
+    background-image: linear-gradient(lightslategrey, lightblue);
+    width: 160px;
+}
+/* Add higher z-index for header */
+.table th:nth-child(1) {
+    z-index: 6;
+}
+
+/* Sticky header */
+.table th {
+    background-image: linear-gradient(lightslategrey, lightblue);
+    color: black;
+    font-size: 14px;
+    font-weight: bold;
+    position: sticky;
+    top: 0; /* Makes the header stick to the top */
+    z-index: 2; /* Keeps the header above the table body */
+}
+
+/* Styling for table body */
+.table td {
+    font-size: 14px;
+}
+
+/* Zebra striping for rows */
+.table tr:nth-child(odd) {
+    background-color: whitesmoke;
+    color: black;
+}
+.table tr:nth-child(even) {
+    background-color: white;
+    color: black;
+}
+
+/* Hover effect for rows */
+.table tr:hover {
+    background-color: rgba(14, 116, 144, 0.1);
+    color: white;
+}
+
+/* Hover effect for columns */
+.table td:hover {
+    background-color: rgba(14, 116, 144, 0.1);
+    color: white;
+}
+
+/* No data row styling */
+.no-data {
+    text-align: center;
+    font-size: 14px;
+    color: #9ca3af;
+}

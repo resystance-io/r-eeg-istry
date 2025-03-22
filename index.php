@@ -113,6 +113,13 @@
                 $view_manage = new VIEW_MANAGEMENT();
                 $view_manage->view_render();
             }
+            elseif(isset($_REQUEST['manage_users']))
+            {
+                // management
+                include_once('views/view_management_users.inc.php');
+                $view_manage_users = new VIEW_MANAGEMENT_USERS();
+                $view_manage_users->view_render();
+            }
             else
             {
                 // people who did not decide yet
