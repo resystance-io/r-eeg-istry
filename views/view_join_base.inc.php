@@ -10,7 +10,6 @@ class VIEW_JOIN_BASE extends VIEW
             $prefill = $default;
             $_SESSION['meters']["$meter_key"]["$id"]['value'] = $default;
         }
-
         $_SESSION['meters']["$meter_key"]["$id"]['integrity'] = $integrity;
         print '<div style="padding:8px;' . $style . '">' . $caption . '<br><input type="text" name="' . $id . '_' . $meter_key . '" value="' . $prefill . '" id="' . $id . '_' . $meter_key . '" onfocus="this.select()" onfocusout="JaxonInteractives.update_meter_detail(' . "'" . $meter_key . "'" . ', ' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . '_' . $meter_key . "'" . ').value);" /></div>';
     }
@@ -96,29 +95,28 @@ class VIEW_JOIN_BASE extends VIEW
             {
                 print '
                     <script>
-                        function formatInput(input) {                        
+                        function formatInput(input) {      
+
                             // removes all non-numbers
-                            var number = input.value.replace(/\D/g, '');
+                            var number = input.value.replace(/\D/g, \'\');
                             
                             // limits to 9 digits
                             if (number.length > 9) {
                                 number = number.slice(0, 9);
                             }
                             
-                            // formating the value to xxx.xxx.xxx
-                            var formattedNumber = '';
+                            // formatting the value to xxx.xxx.xxx
+                            var formattedNumber = \'\';
                             for (var i = 0; i < number.length; i += 3) {
                                 if (i > 0) {
-                                    formattedNumber += '.';
+                                    formattedNumber += \'.\';
                                 }
                                 formattedNumber += number.slice(i, i + 3);
                             }
                             
                             // Update the input box with the modified value
-                            input.value = formattedValue;
+                            input.value = formattedNumber;
                         }
-                        
-                        input.value = formattedNumber;
                         
                         document.getElementById(\'' . $id . '\').addEventListener(\'input\', function() {
                             formatInput(this);

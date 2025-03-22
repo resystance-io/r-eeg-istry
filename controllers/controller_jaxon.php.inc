@@ -949,7 +949,7 @@ class Interactives
                 case 'hwinventoryid':
                     if(isset($value))
                     {
-                        if (preg_match('/^[A-Za-z0-9]{3}([:. ])[A-Za-z0-9]{3}([:. ])[A-Za-z0-9]{3}$/', $value))
+                        if (preg_match('/^[0-9]{3}([:. ])[0-9]{3}([:. ])[0-9]{3}$/', $value))
                         {
                             return true;
                         }
