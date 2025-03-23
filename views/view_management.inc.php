@@ -50,7 +50,7 @@ class VIEW_MANAGEMENT extends VIEW
 
         $column_configs = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARD_COLUMNS'], 'visible', 'y');
         $layout_columns = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARD_LAYOUT'], 'dashboard', $_SESSION['dashboard']['id'], NULL, 'sort', 'ASC');
-        print '<th>ID</th>';
+        print '<th>&nbsp;</th>';
 
         $columns = []; // store every column configuration we get for this dashboard layout to avoid multiple lookups
         $column_count = 0;
@@ -188,7 +188,7 @@ class VIEW_MANAGEMENT extends VIEW
         {
             print '<tr>';
 
-            print '<td>' . $registration['id'] . '</td>';
+            print '<td style="cursor:pointer" onclick="self.location.href=\'/?manage_registrations&registration=' . $registration['id'] . '\'"><i class="fa fa-folder-open"></td>';
             foreach($columns as $column)
             {
                 if($column['compute'] == '')

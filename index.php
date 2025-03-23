@@ -127,6 +127,13 @@
                 $view_manage_dashboards = new VIEW_MANAGEMENT_DASHBOARDS();
                 $view_manage_dashboards->view_render();
             }
+            elseif(isset($_REQUEST['manage_registrations']))
+            {
+                // management
+                include_once('views/view_management_registrations.inc.php');
+                $view_manage_registrations = new VIEW_MANAGEMENT_REGISTRATIONS();
+                $view_manage_registrations->view_render();
+            }
             else
             {
                 // people who did not decide yet
