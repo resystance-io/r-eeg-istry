@@ -58,7 +58,7 @@ class VIEW_MANAGEMENT extends VIEW
         {
             $column_config = array_values(array_filter($column_configs, function($column) use ($layout_column)
             {
-                return $column['name'] === $layout_column['column'];
+                return $column['name'] === $layout_column['data'];
             }));
             $columns[$column_count] = $column_config[0];
 

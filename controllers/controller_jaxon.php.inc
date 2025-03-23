@@ -864,12 +864,10 @@ class Interactives
         if($value != '')
         {
             $_SESSION['dashboard']['search'][$key] = $value;
-            $response->alert("value $value set to session");
         }
         else
         {
             unset($_SESSION['dashboard']['search'][$key]);
-            $response->alert("value unset from session");
         }
         $response->script("self.location.href='/?manage';");
         return $response;

@@ -38,6 +38,15 @@
     background-image: linear-gradient(lightslategray, darkgrey);
 }
 
+.green-gradient th:hover {
+    background-image: linear-gradient(darkseagreen, darkolivegreen);
+}
+
+td.lightup:hover {
+    background-color: white;
+    background-image: linear-gradient(whitesmoke, lightgrey);
+}
+
 th.navselected {
     background-image: linear-gradient(slategray, white);
     color: black;

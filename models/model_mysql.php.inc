@@ -82,7 +82,7 @@ class DATABASE_MODEL
 	public function execute_blind_query($query)
 	{
 		$last_insert_before = $this->db_link->lastInsertId();
-		//error_log("\n" . $query . "\n");
+		error_log("\n" . $query . "\n");
 		$this->db_link->query($query);
 		$last_insert_after = $this->db_link->lastInsertId();
 
@@ -104,7 +104,7 @@ class DATABASE_MODEL
 	public function execute_query($query)
 	{
 
-		//error_log($query);
+		error_log($query);
 		return $this->db_link->query($query);
 
 	}
