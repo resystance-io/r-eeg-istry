@@ -851,6 +851,30 @@ class Interactives
         return true;
     }
 
+    public function dashboard_set_search($key, $value)
+    {
+        if($_SESSION['dashboard']['search'][$key] == $value)
+        {
+            // this value is already set
+            $response = jaxon()->newResponse();
+            return $response;
+        }
+
+        $response = jaxon()->newResponse();
+        if($value != '')
+        {
+            $_SESSION['dashboard']['search'][$key] = $value;
+            $response->alert("value $value set to session");
+        }
+        else
+        {
+            unset($_SESSION['dashboard']['search'][$key]);
+            $response->alert("value unset from session");
+        }
+        $response->script("self.location.href='/?manage';");
+        return $response;
+    }
+
     private function validate_record($value, $integrity=null)
     {
         // validate a given record based on its integrity check definition and return upon success or failure

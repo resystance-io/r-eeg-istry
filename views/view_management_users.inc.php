@@ -15,7 +15,7 @@ class VIEW_MANAGEMENT_USERS extends VIEW
 
         <?php
 
-        print "<br />&nbsp;<br />&nbsp;<br />";
+        print "<br />";
 
         if(isset($_REQUEST['userid']) && $_REQUEST['userid'] != '')
         {

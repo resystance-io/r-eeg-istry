@@ -104,6 +104,7 @@ class DATABASE_MODEL
 	public function execute_query($query)
 	{
 
+		//error_log($query);
 		return $this->db_link->query($query);
 
 	}

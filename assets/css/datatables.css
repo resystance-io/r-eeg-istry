@@ -20,6 +20,35 @@
     border: 1px solid #e5e7eb;
 }
 
+.navigation {
+    width: 200px;
+}
+
+.navigation th {
+    padding: 8px;
+    text-align: center;
+    width: 200px;
+    border: 1px solid white;
+    background-image: linear-gradient(slategrey, lightslategray);
+    color: black;
+    cursor: pointer;
+}
+
+.navigation th:hover {
+    background-image: linear-gradient(lightslategray, darkgrey);
+}
+
+th.navselected {
+    background-image: linear-gradient(slategray, white);
+    color: black;
+    font-weight: bold;
+}
+
+th.navselected:hover {
+    background-image: linear-gradient(slategray, white);
+    color: black;
+}
+
 /* Frozen first column */
 .table td:nth-child(1),
 .table th:nth-child(1) {

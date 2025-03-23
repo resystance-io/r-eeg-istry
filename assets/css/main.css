@@ -562,6 +562,24 @@ label {
     -ms-transform: scale(1);
     transform: scale(1); } }
 
+input[type="text"].search {
+  height: 1.90em;
+  text-align:center;
+  font-family: "Roboto", sans-serif;
+  font-size: 14px;
+  color:steelblue;
+}
+
+select.search {
+  height: 1.90em;
+  text-align: center !important;
+  text-align-last:center !important;
+  font-family: "Roboto", sans-serif;
+  font-size: 14px;
+  color:steelblue;
+  padding: 0;
+}
+
 input[type="text"],
 input[type="password"],
 input[type="email"],
@@ -627,7 +645,8 @@ input[type="text"],
 input[type="password"],
 input[type="email"],
 select {
-  height: 2.60em; }
+  height: 2.60em;
+}
 
 textarea {
   padding: 0.75em 1em; }

@@ -120,6 +120,13 @@
                 $view_manage_users = new VIEW_MANAGEMENT_USERS();
                 $view_manage_users->view_render();
             }
+            elseif(isset($_REQUEST['manage_dashboards']))
+            {
+                // management
+                include_once('views/view_management_dashboards.inc.php');
+                $view_manage_dashboards = new VIEW_MANAGEMENT_DASHBOARDS();
+                $view_manage_dashboards->view_render();
+            }
             else
             {
                 // people who did not decide yet

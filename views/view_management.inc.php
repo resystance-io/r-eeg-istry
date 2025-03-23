@@ -5,6 +5,14 @@ class VIEW_MANAGEMENT extends VIEW
 {
     function view_render()
     {
+        if(isset($_REQUEST['sortkey']))
+        {
+            $_SESSION['dashboard']['sortkey'] = $_REQUEST['sortkey'];
+        }
+        if(isset($_REQUEST['dashboard']))
+        {
+            $_SESSION['dashboard']['id'] = $_REQUEST['dashboard'];
+        }
         ?>
 
         <header id="header">
@@ -13,7 +21,26 @@ class VIEW_MANAGEMENT extends VIEW
         </header>
 
         <?php
-        print "<br />&nbsp;<br />&nbsp;<br />";
+        print "<br />";
+
+        $dashboards = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARDS'], 'user_id', '1');
+
+        print '<table class="navigation">
+                <thead>
+                  <tr>';
+
+        foreach($dashboards as $dashboard)
+        {
+            if(isset($_SESSION['dashboard']['id']) && $_SESSION['dashboard']['id'] == $dashboard['id']) $navclass = 'navselected'; else $navclass = '';
+            print '<th class="' . $navclass . '" onclick="self.location.href=\'?manage&dashboard=' . $dashboard['id'] . '\'">' . $dashboard['name'] . '</th>';
+        }
+
+        print '   </tr>
+               </thead>
+             </table>
+             <br />
+        ';
+
         print '
             <div class="table-container">
               <table class="table">
@@ -21,13 +48,8 @@ class VIEW_MANAGEMENT extends VIEW
                   <tr>
         ';
 
-        if(isset($_REQUEST['sortkey']))
-        {
-            $_SESSION['dashboard']['sortkey'] = $_REQUEST['sortkey'];
-        }
-
         $column_configs = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARD_COLUMNS'], 'visible', 'y');
-        $layout_columns = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARD_LAYOUT'], 'user', '1', NULL, 'sort', 'ASC');
+        $layout_columns = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARD_LAYOUT'], 'dashboard', $_SESSION['dashboard']['id'], NULL, 'sort', 'ASC');
         print '<th>ID</th>';
 
         $columns = []; // store every column configuration we get for this dashboard layout to avoid multiple lookups
@@ -97,13 +119,49 @@ class VIEW_MANAGEMENT extends VIEW
 
         print '
                   </tr>
+                  <tr>
+        ';
+
+        print '<td><i class="fa fa-search"></i></td>';
+        foreach($columns as $column)
+        {
+            if($column['searchable'] == 'y' && $column['compute'] == null)
+            {
+                if($_SESSION['dashboard']['search'][$column['name']] != null) $search_value = $_SESSION['dashboard']['search'][$column['name']]; else $search_value = '';
+                print '<td>
+                            <input type="text" id="search-' . $column['name'] . '" onclick="this.select();" onfocusout="JaxonInteractives.dashboard_set_search(' . "'" . $column['name'] . "'" . ', document.getElementById(' . "'search-" . $column['name'] . "'" . ').value);" class="search" name="search-' . $column['name'] . '" value="' . $search_value . '">
+                            <script>
+                              input = document.getElementById("search-' . $column['name'] . '");
+                              input.addEventListener("keydown", function(event) {
+                                if (event.key === "Enter") {
+                                    JaxonInteractives.dashboard_set_search(' . "'" . $column['name'] . "'" . ', document.getElementById(' . "'search-" . $column['name'] . "'" . ').value);
+                                }
+                              });
+                            </script>
+                       </td>';
+            }
+            elseif($column['searchable'] == 'y' && $column['compute'] != null)
+            {
+                print '<td>';
+                if(isset($_SESSION['dashboard']['search'][$column['name']]))  $search_value = $_SESSION['dashboard']['search'][$column['name']]; else $search_value = null;
+                $this->render_computed_search_column($column['compute'], $column['name'], $search_value);
+                print '</td>';
+            }
+            else
+            {
+                print '<td>&nbsp;</td>';
+            }
+        }
+
+        print '
+                  </tr>
                 </thead>
                 <tbody>
         ';
 
-        if(isset($_REQUEST['sortkey']))
+        if(isset($_SESSION['dashboard']['sortkey']))
         {
-            $sortkey_arr = explode(';', $_REQUEST['sortkey']);
+            $sortkey_arr = explode(';', $_SESSION['dashboard']['sortkey']);
         }
         else
         {
@@ -111,7 +169,21 @@ class VIEW_MANAGEMENT extends VIEW
             $sortkey_arr[1] = null;
         }
 
-        $registrations = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], null, null, null, $sortkey_arr[0], $sortkey_arr[1]);
+        $search_string = '';
+        if(isset($_SESSION['dashboard']['search']))
+        {
+            foreach($_SESSION['dashboard']['search'] as $search_key => $search_value)
+            {
+                if($search_value != '')
+                {
+                    // only add this field if we have a proper search value
+                    if ($search_string != '') $search_string .= ' AND ';
+                    $search_string .= $search_key . ' LIKE "%' . $search_value . '%"';
+                }
+            }
+        }
+
+        $registrations = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_REGISTRATIONS'], 'deleted', 'n', NULL, $sortkey_arr[0], $sortkey_arr[1], $search_string);
         foreach($registrations as $registration)
         {
             print '<tr>';
@@ -139,6 +211,41 @@ class VIEW_MANAGEMENT extends VIEW
         ';
     }
 
+    function render_computed_search_column($compute_type, $column_name, $search_value=null)
+    {
+        switch($compute_type)
+        {
+            case 'eeg_short':
+                print '<select class="search" id="search-' . $column_name . '" name="search-' . $column_name . '" onchange="JaxonInteractives.dashboard_set_search(' . "'" . $column_name . "'" . ', document.getElementById(' . "'search-" . $column_name . "'" . ').value);">';
+                $options_arr = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_TENANTS'], 'shortname', null, null, 'shortname', 'ASC');
+
+                if($search_value == 'null') $selected = 'selected'; else $selected = '';
+                print '<option ' . $selected . ' value="">&nbsp;</option>';
+
+                foreach($options_arr as $option)
+                {
+                    if($search_value == $option['id'])  $selected = 'selected';     else    $selected = '';
+                    print '<option ' . $selected . ' value="' . $option['id'] . '">' . $option['shortname'] . '</option>';
+                }
+                print "</select>";
+                break;
+
+            case 'type':
+                print '<select class="search" id="search-' . $column_name . '" name="search-' . $column_name . '" onchange="JaxonInteractives.dashboard_set_search(' . "'" . $column_name . "'" . ', document.getElementById(' . "'search-" . $column_name . "'" . ').value);">';
+                $options_arr = ['individual' => 'Privatperson', 'company' => 'Unternehmen', 'agriculture' => 'Landwirtschaft'];
+
+                if($search_value == 'null') $selected = 'selected'; else $selected = '';
+                print '<option ' . $selected . ' value="">&nbsp;</option>';
+
+                foreach($options_arr as $key => $value)
+                {
+                    if($search_value == $key)  $selected = 'selected';     else    $selected = '';
+                    print '<option ' . $selected . ' value="' . $key . '">' . $value . '</option>';
+                }
+                print "</select>";
+                break;
+        }
+    }
     function lookup_computed_column($compute_type, $registration_arr)
     {
         switch($compute_type)
