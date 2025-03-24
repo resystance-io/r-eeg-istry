@@ -12,7 +12,14 @@ class VIEW_MANAGEMENT extends VIEW
         if(isset($_REQUEST['dashboard']))
         {
             $_SESSION['dashboard']['id'] = $_REQUEST['dashboard'];
+            $searchconfig = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARDS'], 'searchconfig', 'id', $_SESSION['dashboard']['id']);
+            unset($_SESSION['dashboard']['search']);
+            if($searchconfig != null)
+            {
+                $_SESSION['dashboard']['search'] = json_decode(base64_decode($searchconfig), true);
+            }
         }
+
         ?>
 
         <header id="header">

@@ -873,6 +873,30 @@ class Interactives
         return $response;
     }
 
+    public function dashboard_set_searchconfig($key, $value, $dashboard)
+    {
+        if($_SESSION['dashboard']['searchconfig'][$key] == $value)
+        {
+            // this value is already set
+            $response = jaxon()->newResponse();
+            return $response;
+        }
+
+        $response = jaxon()->newResponse();
+        if($value != '')
+        {
+            $_SESSION['dashboard']['searchconfig'][$key] = $value;
+        }
+        else
+        {
+            unset($_SESSION['dashboard']['searchconfig'][$key]);
+        }
+
+        $this->db->update_column_by_column_values($this->config->user['DBTABLE_DASHBOARDS'], 'searchconfig', base64_encode(json_encode($_SESSION['dashboard']['searchconfig'])), 'id', $dashboard);
+
+        return $response;
+    }
+
     private function validate_record($value, $integrity=null)
     {
         // validate a given record based on its integrity check definition and return upon success or failure

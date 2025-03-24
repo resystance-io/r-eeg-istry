@@ -145,6 +145,42 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
 
         print '
                   </tr>
+                  <tr>
+    ';
+
+        print '<td><i class="fa fa-search"></i></td>';
+        foreach($columns as $column)
+        {
+            if($column['searchable'] == 'y' && $column['compute'] == null)
+            {
+                if($_SESSION['dashboard']['searchconfig'][$column['name']] != null) $search_value = $_SESSION['dashboard']['searchconfig'][$column['name']]; else $search_value = '';
+                print '<td>
+                            <input type="text" id="search-' . $column['name'] . '" onclick="this.select();" onfocusout="JaxonInteractives.dashboard_set_search(' . "'" . $column['name'] . "'" . ', document.getElementById(' . "'search-" . $column['name'] . "'" . ').value);" class="search" name="search-' . $column['name'] . '" value="' . $search_value . '">
+                            <script>
+                                input = document.getElementById("search-' . $column['name'] . '");
+                                input.addEventListener("keydown", function(event) {
+                                  if (event.key === "Enter") {
+                                      JaxonInteractives.dashboard_set_searchconfig(' . "'" . $column['name'] . "'" . ', document.getElementById(' . "'search-" . $column['name'] . "'" . ').value);
+                                }
+                              });
+                            </script>
+                       </td>';
+            }
+            elseif($column['searchable'] == 'y' && $column['compute'] != null)
+            {
+                print '<td>';
+                if(isset($_SESSION['dashboard']['searchconfig'][$column['name']]))  $search_value = $_SESSION['dashboard']['searchconfig'][$column['name']]; else $search_value = null;
+                $this->render_computed_search_column($column['compute'], $column['name'], $search_value);
+                print '</td>';
+            }
+            else
+            {
+                print '<td>&nbsp;</td>';
+            }
+        }
+
+        print '
+                  </tr>
                 </thead>
                 <tbody>
         ';
@@ -221,6 +257,42 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
             </div>
         ';
 
+    }
+
+    function render_computed_search_column($compute_type, $column_name, $search_value=null)
+    {
+        switch($compute_type)
+        {
+            case 'eeg_short':
+                print '<select class="search" id="search-' . $column_name . '" name="search-' . $column_name . '" onchange="JaxonInteractives.dashboard_set_searchconfig(' . "'" . $column_name . "'" . ', document.getElementById(' . "'search-" . $column_name . "'" . ').value, ' . "'" . $_REQUEST['dashboard_id'] . "'" . ');">';
+                $options_arr = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_TENANTS'], 'shortname', null, null, 'shortname', 'ASC');
+
+                if($search_value == 'null') $selected = 'selected'; else $selected = '';
+                print '<option ' . $selected . ' value="">&nbsp;</option>';
+
+                foreach($options_arr as $option)
+                {
+                    if($search_value == $option['id'])  $selected = 'selected';     else    $selected = '';
+                    print '<option ' . $selected . ' value="' . $option['id'] . '">' . $option['shortname'] . '</option>';
+                }
+                print "</select>";
+                break;
+
+            case 'type':
+                print '<select class="search" id="search-' . $column_name . '" name="search-' . $column_name . '" onchange="JaxonInteractives.dashboard_set_searchconfig(' . "'" . $column_name . "'" . ', document.getElementById(' . "'search-" . $column_name . "'" . ').value, ' . "'" . $_REQUEST['dashboard_id'] . "'" . ');">';
+                $options_arr = ['individual' => 'Privatperson', 'company' => 'Unternehmen', 'agriculture' => 'Landwirtschaft'];
+
+                if($search_value == 'null') $selected = 'selected'; else $selected = '';
+                print '<option ' . $selected . ' value="">&nbsp;</option>';
+
+                foreach($options_arr as $key => $value)
+                {
+                    if($search_value == $key)  $selected = 'selected';     else    $selected = '';
+                    print '<option ' . $selected . ' value="' . $key . '">' . $value . '</option>';
+                }
+                print "</select>";
+                break;
+        }
     }
 
 }
