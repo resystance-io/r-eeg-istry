@@ -723,12 +723,16 @@ sorger!)<br />';
                     </header>
         ';
 
-        print "<h3>Verbraucher im Haushalt</h3>";
+        print "<h3>E-Auto(s)</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
         $car_count_arr = ['0' => 'Keine', '1' => '1', '2' => '2', '3' => '3', '4' => '4', 'F' => '5 oder mehr (Fuhrpark)'];
         $this->view_render_part_captioned_select("Anzahl der E-Autos im Haushalt", "electric_car_count", $car_count_arr, "generic_information", null, "width:600px;float:left;");
         $this->view_render_part_captioned_inputfield("Batteriekapazit&aumlt der Kfz in kWh", "electric_car_capacity", "generic_information", null, "width:600px", "(Bitte Gesamtsumme aller Kfz angeben)");
-        print "<br />";
+        $this->view_render_part_captioned_inputfield("Jahreskilometer der Kfz", "electric_car_mileage", "generic_information", null, "width:600px", "(Bitte Gesamtsumme aller Kfz angeben)");
+        print "</div><br />";
+
+        print "<h3>Warmwasser</h3>";
+        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
         $water_heating_arr = ['boiler' => 'Heizstab/Boiler', 'heatpump' => 'W&auml;rmepumpe', 'solar' => 'Solarthermie', 'district' => 'Fernw&auml;rme', 'other' => 'Sonstige'];
         $this->view_render_part_captioned_select("Wie bereitest Du Warmwasser im Sommer?", "water_heating_summer", $water_heating_arr, "generic_information", null, "width:600px;float:left;");
         print "</div><br />";
