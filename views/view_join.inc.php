@@ -667,7 +667,7 @@ sorger!)<br />';
             print "<h3>Statuten</h3>";
             print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
             $this->view_render_part_annotated_checkbox(
-                "Ich best&auml;tige die Kenntnisnahme der &nbsp; <a style=\"color:lightblue;text-decoration:none;\" href=\"/download/" . $bylaws_asset . "\" target=\"_blank\"><span class=\"fa fa-download\"></span> Statuten der EEG $this->tenant_info['shortname']</a>",
+                "Ich best&auml;tige die Kenntnisnahme der &nbsp; <a style=\"color:lightblue;text-decoration:none;\" href=\"/download/$bylaws_asset\" target=\"_blank\"><span class=\"fa fa-download\"></span> Statuten</a> der EEG " . $this->tenant_info['shortname'],
                 "bylaws_consent", "generic_information", "booltrue");
             print "</div><br />";
         }
@@ -678,7 +678,7 @@ sorger!)<br />';
             print "<h3>AGBs</h3>";
             print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
             $this->view_render_part_annotated_checkbox(
-                "Ich best&auml;tige die Kenntnisnahme der  &nbsp; <a style=\"color:lightblue;text-decoration:none;\" href=\"/download/" . $tos_asset . "\" target=\"_blank\"><span class=\"fa fa-download\"></span> Allgemeinen Gesch&auml;ftsbedingungen der EEG $this->tenant_info['shortname']</a>",
+                "Ich best&auml;tige die Kenntnisnahme der  &nbsp; <a style=\"color:lightblue;text-decoration:none;\" href=\"/download/$tos_asset\" target=\"_blank\"><span class=\"fa fa-download\"></span> Allgemeinen Gesch&auml;ftsbedingungen</a> der EEG " . $this->tenant_info['shortname'],
                 "tos_consent", "generic_information", "booltrue");
             print "</div><br />";
         }
@@ -689,7 +689,7 @@ sorger!)<br />';
             print "<h3>Datenschutz</h3>";
             print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
             $this->view_render_part_annotated_checkbox(
-                "Ich best&auml;tige die Kenntnisnahme der  &nbsp; <a style=\"color:lightblue;text-decoration:none;\" href=\"/download/" . $gdpr_asset . "\" target=\"_blank\"><span class=\"fa fa-download\"></span> Datenschutzerkl&auml;rung der EEG $this->tenant_info['shortname']</a>",
+                "Ich best&auml;tige die Kenntnisnahme der  &nbsp; <a style=\"color:lightblue;text-decoration:none;\" href=\"/download/$gdpr_asset\" target=\"_blank\"><span class=\"fa fa-download\"></span> Datenschutzerkl&auml;rung</a> der EEG " . $this->tenant_info['shortname'],
                 "gdpr_consent", "generic_information", "booltrue");
             print "</div><br />";
         }
@@ -697,16 +697,16 @@ sorger!)<br />';
         print "<h3>Netzbetreibervollmacht</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
         $this->view_render_part_annotated_checkbox(
-            "Ich erteile der EEG {%fullname%} f&uuml;r die Dauer der Mitgliedschaft zeitlich unbegrenzt die Vollmacht,<br />
+            "Ich erteile der EEG " . $this->tenant_info['shortname'] . " f&uuml;r die Dauer der Mitgliedschaft zeitlich unbegrenzt die Vollmacht,<br />
                         in meinem Namen s&auml;mtliche Schritte und Abstimmungen mit dem zust&auml;ndigen Netzbetreiber<br />
                         (Netz O&Ouml;) durchzuf&uuml;hren, die zur vollst&auml;ndigen Aktivierung und Deaktivierung der angef&uuml;hrten<br />
-                        Z&auml;hlpunkte in der EEG $this->tenant_info['shortname'] notwendig sind.<br />
+                        Z&auml;hlpunkte in der EEG " . $this->tenant_info['shortname'] . " notwendig sind.<br />
                         Dies betrifft insbesondere auch die Registrierung und Nutzung des E-Service-Portals der Netz O&Ouml;.",
             "network_consent", "generic_information", "booltrue");
 
-        $this->view_render_part_captioned_inputfield("Kundennummer beim zust&auml;ndigen Netzbetreiber", "network_customerid", "generic_information", "width:500px;padding-left:60px;");
+        $this->view_render_part_captioned_inputfield("Kundennummer beim zust&auml;ndigen Netzbetreiber", "network_customerid", "generic_information", "max-width:500px;padding-left:60px;");
         print "<br />";
-        $this->view_render_part_captioned_inputfield("Inventarnummer eines beliebigen Z&auml;hlers", "network_inventoryid", "generic_information", "hwinventoryid", "width:500px;padding-left:60px;", "xxx.xxx.xxx");
+        $this->view_render_part_captioned_inputfield("Inventarnummer eines beliebigen Z&auml;hlers", "network_inventoryid", "generic_information", "hwinventoryid", "width:500px;padding-left:10px;", "xxx.xxx.xxx");
 
 
         print "</div></div><br />";
