@@ -70,7 +70,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                 default:
                     print '
                         <header id="header">
-                            <p>Sch&ouml;n dass Du Dich f&uuml;r die Mitgliedschaft in unserer EEG interessierst.<br />Wir freuen uns &uuml;ber jedes neue Mitglied!<br /></p>
+                            <p>Sch&ouml;n, dass Du Dich f&uuml;r die Mitgliedschaft in unserer EEG interessierst.<br />Wir freuen uns &uuml;ber jedes neue Mitglied!<br /></p>
             
                             <p style="color:white">Bitte w&auml;hle die passende Beitrittsform:</p>
                         </header>
@@ -300,8 +300,8 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Umsatzsteuer ID (falls vorhanden)<br />';
         print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Firmenbuchnummer oder ZVR Zahl (falls vorhanden)<br />';
         print '<i class="fa fa-envelope"></i>&nbsp;&nbsp;&nbsp;&nbsp;Aktive E-Mail-Adresse f&uuml;r die Registrierung (und zum Erhalt der Rechnungen)<br />';
-        print '<i class="fa fa-piggy-bank"></i>&nbsp;&nbsp;&nbsp;&nbsp;Bankinformationen (IBAN und Name des Kontoinhabers)<br />';
-        print '<i class="fa fa-clipboard-check"></i>&nbsp;&nbsp;&nbsp;&nbsp;Befugnis, eine SEPA Lastschrift zu akzeptieren<br />';
+        print '<i class="fa fa-piggy-bank"></i>&nbsp;&nbsp;&nbsp;Bankinformationen (IBAN und Name des Kontoinhabers)<br />';
+        print '<i class="fa fa-clipboard-check"></i>&nbsp;&nbsp;&nbsp;&nbsp;Befugnis, eine SEPA-Lastschrift zu akzeptieren<br />';
         print "</div>";
 
         print "<br />"; "<br />";
@@ -318,8 +318,9 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         
         print "<h3>Netzbetreiber</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
-        print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Zugangsdaten f&uuml;r das Netzbetreiberportal (falls vorhanden)<br />';
-        print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Kundennummer beim Netzbetreiber (nicht vom Energieversorger) (falls vorhanden)<<br />';
+        print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Zugangsdaten f&uuml;r das Online-Portal des Netzbetreibers (z. B. Netz O&Ouml;, Linz Netz)<br />';
+        print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Falls vorhanden: Kundennummer beim Netzbetreiber (Achtung: nicht vom Energiever-
+sorger!)<br />';
         print "</div>";
 
         print "<br />"; "<br />";
@@ -386,9 +387,9 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         print "<h3>Allgemein</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
         print '<i class="fa fa-passport"></i>&nbsp;&nbsp;&nbsp;&nbsp;Ein g&uuml;ltiges Ausweisdokument (Reisepass, Personalausweis, F&uuml;hrerschein)<br />';
-        print '<i class="fa fa-envelope"></i>&nbsp;&nbsp;&nbsp;&nbsp;Aktive E-Mail-Adresse f&uuml;r die Registrierung (und zum Erhalt der Rechnungen)<br />';
-        print '<i class="fa fa-piggy-bank"></i>&nbsp;&nbsp;&nbsp;&nbsp;Bankinformationen (IBAN und Name des Kontoinhabers)<br />';
-        print '<i class="fa fa-clipboard-check"></i>&nbsp;&nbsp;&nbsp;&nbsp;Befugnis, eine SEPA Lastschrift zu akzeptieren<br />';
+        print '<i class="fa fa-envelope"></i>&nbsp;&nbsp;&nbsp;Aktive E-Mail-Adresse f&uuml;r die Registrierung (und zum Erhalt der Rechnungen)<br />';
+        print '<i class="fa fa-piggy-bank"></i>&nbsp;&nbsp;&nbsp;Bankinformationen (IBAN und Name des Kontoinhabers)<br />';
+        print '<i class="fa fa-clipboard-check"></i>&nbsp;&nbsp;&nbsp;&nbsp;Befugnis, eine SEPA-Lastschrift zu akzeptieren<br />';
         print "</div>";
 
         print "<br />"; "<br />";
@@ -405,8 +406,9 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         
         print "<h3>Netzbetreiber</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
-        print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Zugangsdaten f&uuml;r das Netzbetreiberportal (falls vorhanden)<br />';
-        print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Kundennummer beim Netzbetreiber (nicht vom Energieversorger) (falls vorhanden)<<br />';
+        print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Zugangsdaten f&uuml;r das Online-Portal des Netzbetreibers (z. B. Netz O&Ouml;, Linz Netz)<br />';
+        print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Falls vorhanden: Kundennummer beim Netzbetreiber (Achtung: nicht vom Energiever-
+sorger!)<br />';
         print "</div>";
 
         print "<br />"; "<br />";
@@ -475,8 +477,8 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
         print '<i class="fa fa-passport"></i>&nbsp;&nbsp;&nbsp;&nbsp;Ein g&uuml;ltiges Ausweisdokument (Reisepass, Personalausweis, F&uuml;hrerschein)<br />';
         print '<i class="fa fa-envelope"></i>&nbsp;&nbsp;&nbsp;&nbsp;Aktive E-Mail-Adresse f&uuml;r die Registrierung (und zum Erhalt der Rechnungen)<br />';
-        print '<i class="fa fa-piggy-bank"></i>&nbsp;&nbsp;&nbsp;&nbsp;Bankinformationen (IBAN und Name des Kontoinhabers)<br />';
-        print '<i class="fa fa-clipboard-check"></i>&nbsp;&nbsp;&nbsp;&nbsp;Befugnis, eine SEPA Lastschrift zu akzeptieren<br />';
+        print '<i class="fa fa-piggy-bank"></i>&nbsp;&nbsp;&nbsp;Bankinformationen (IBAN und Name des Kontoinhabers)<br />';
+        print '<i class="fa fa-clipboard-check"></i>&nbsp;&nbsp;&nbsp;&nbsp;Befugnis, eine SEPA-Lastschrift zu akzeptieren<br />';
         print "</div>";
 
         print "<br />"; "<br />";
@@ -493,8 +495,9 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
 
         print "<h3>Netzbetreiber</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
-        print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Zugangsdaten f&uuml;r das Netzbetreiberportal (falls vorhanden)<br />';
-        print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Kundennummer beim Netzbetreiber (nicht vom Energieversorger) (falls vorhanden)<<br />';
+        print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Zugangsdaten f&uuml;r das Online-Portal des Netzbetreibers (z. B. Netz O&Ouml;, Linz Netz)<br />';
+        print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Falls vorhanden: Kundennummer beim Netzbetreiber (Achtung: nicht vom Energiever-
+sorger!)<br />';
         print "</div>";
 
         print "<br />"; "<br />";
@@ -557,7 +560,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                     <br />
                     <header id="header">
                         <h2>Erg&auml;nzende Angaben</h2>
-                        <p>Bitte erg&auml;nze die Informationen zu den von dir angegebenen Z&auml;hlpunkten!</p>
+                        <p>Bitte erg&auml;nze die Informationen zu den von Dir angegebenen Z&auml;hlpunkten!</p>
                     </header>
         ';
 
@@ -622,7 +625,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                     <br />
                     <header id="header">
                         <h2>Zahlungsinformationen</h2>
-                        <p>Noch ein paar Infos zum Konto, bald ist es geschafft...</p>
+                        <p>Noch ein paar Infos zum Konto, bald ist es geschafft ...</p>
                     </header>
         ';
 
@@ -634,7 +637,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
 
         $this->view_render_part_captioned_inputfield("Name d. Kontoinhabers", "banking_name", "generic_information", "required");
         $this->view_render_part_captioned_inputfield("IBAN", "banking_iban", "generic_information", "iban");
-        $this->view_render_part_annotated_checkbox("Hiermit best&auml;tige ich die Richtigkeit der angegebenen Kontoinformationen<br />und erm&auml;chtige " . $shortname . " zum Bankeinzug im Rahmen der Leistungsabrechnung <br /> Creditor ID: " . $cid . ".", "banking_consent", "generic_information", "booltrue");
+        $this->view_render_part_annotated_checkbox("Hiermit best&auml;tige ich die Richtigkeit der angegebenen Kontoinformationen<br />und erm&auml;chtige " . $shortname . " zum Bankeinzug im Rahmen der Leistungsabrechnung. <br /> Creditor ID: " . $cid . ".", "banking_consent", "generic_information", "booltrue");
 
         print "</div></div><br />";
 
@@ -646,7 +649,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                     <br />
                     <header id="header">
                         <h2>Best&auml;tigungen &amp; Freigaben</h2>
-                        <p>Aus rechtlichen Gr&uuml;nden ben&ouml;tigen wir noch deine formale Zustimmung in den folgenden Bereichen:</p>
+                        <p>Aus rechtlichen Gr&uuml;nden ben&ouml;tigen wir noch Deine formale Zustimmung in den folgenden Bereichen:</p>
                     </header>
         ';
 
@@ -686,14 +689,14 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         print "<h3>Netzbetreibervollmacht</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
         $this->view_render_part_annotated_checkbox(
-            "Ich erteile der EEG VIERE f&uuml;r die Dauer der Mitgliedschaft zeitlich unbegrenzt die Vollmacht,<br />
+            "Ich erteile der EEG {%fullname%} f&uuml;r die Dauer der Mitgliedschaft zeitlich unbegrenzt die Vollmacht,<br />
                         in meinem Namen s&auml;mtliche Schritte und Abstimmungen mit dem zust&auml;ndigen Netzbetreiber<br />
                         (Netz O&Ouml;) durchzuf&uuml;hren, die zur vollst&auml;ndigen Aktivierung und Deaktivierung der angef&uuml;hrten<br />
                         Z&auml;hlpunkte in der EEG VIERE notwendig sind.<br />
                         Dies betrifft insbesondere auch die Registrierung und Nutzung des E-Service-Portals der Netz O&Ouml;.",
             "network_consent", "generic_information", "booltrue");
 
-        $this->view_render_part_captioned_inputfield("Kundennummer beim zust&auml;ndigen Netzbetreiber", "network_customerid", "generic_information", "required", "width:500px;padding-left:60px;");
+        $this->view_render_part_captioned_inputfield("Kundennummer beim zust&auml;ndigen Netzbetreiber", "network_customerid", "generic_information", "width:500px;padding-left:60px;");
         print "<br />";
         $this->view_render_part_captioned_inputfield("Inventarnummer eines beliebigen Z&auml;hlers", "network_inventoryid", "generic_information", "hwinventoryid", "width:500px;padding-left:60px;", "xxx.xxx.xxx");
 
@@ -708,18 +711,18 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                     <br />
                     <header id="header">
                         <h2>Freiwillige Angaben</h2>
-                        <p>Die folgenden Abfragen dienen nur zu statistischen Zwecken und k&ouml;nnen freiwillig beantwortet werden:</p>
+                        <p>Diese Daten sind wichtig, damit wir die Energiefl&uuml;sse in unserer EEG langfristig optimieren k&ouml;nnen.</p>
                     </header>
         ';
 
         print "<h3>Verbraucher im Haushalt</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
         $car_count_arr = ['0' => 'Keine', '1' => '1', '2' => '2', '3' => '3', '4' => '4', 'F' => '5 oder mehr (Fuhrpark)'];
-        $this->view_render_part_captioned_select("Anzahl der E-Autos im Haushalt", "electric_car_count", $car_count_arr, "generic_information", null, "width:400px;float:left;");
-        $this->view_render_part_captioned_inputfield("Batteriekapazit&aumlt der KFZ in kWh", "electric_car_capacity", "generic_information", null, "width:400px", "(Bei mehreren KFZ bitte Gesamtsumme angeben)");
+        $this->view_render_part_captioned_select("Anzahl der E-Autos im Haushalt", "electric_car_count", $car_count_arr, "generic_information", null, "width:600px;float:left;");
+        $this->view_render_part_captioned_inputfield("Batteriekapazit&aumlt der Kfz in kWh", "electric_car_capacity", "generic_information", null, "width:600px", "(Bei mehreren Kfz bitte Gesamtsumme angeben)");
         print "<br />";
         $water_heating_arr = ['boiler' => 'Heizstab/Boiler', 'heatpump' => 'W&auml;rmepumpe', 'solar' => 'Solarthermie', 'district' => 'Fernw&auml;rme', 'other' => 'Sonstige'];
-        $this->view_render_part_captioned_select("Wie bereitest du Warmwasser im Sommer?", "water_heating_summer", $water_heating_arr, "generic_information", null, "width:400px;float:left;");
+        $this->view_render_part_captioned_select("Wie bereitest Du Warmwasser im Sommer?", "water_heating_summer", $water_heating_arr, "generic_information", null, "width:600px;float:left;");
         print "</div><br />";
 
         print "</div></div><br />";
