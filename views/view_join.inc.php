@@ -667,7 +667,7 @@ sorger!)<br />';
             print "<h3>Statuten</h3>";
             print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
             $this->view_render_part_annotated_checkbox(
-                "Ich best&auml;tige die Kenntnisnahme der &nbsp; <a style=\"color:lightblue;text-decoration:none;\" href=\"/download/" . $bylaws_asset . "\" target=\"_blank\"><span class=\"fa fa-download\"></span> Statuten der EEG VIERE</a>",
+                "Ich best&auml;tige die Kenntnisnahme der &nbsp; <a style=\"color:lightblue;text-decoration:none;\" href=\"/download/" . $bylaws_asset . "\" target=\"_blank\"><span class=\"fa fa-download\"></span> Statuten der EEG $this->tenant_info['shortname']</a>",
                 "bylaws_consent", "generic_information", "booltrue");
             print "</div><br />";
         }
@@ -678,7 +678,7 @@ sorger!)<br />';
             print "<h3>AGBs</h3>";
             print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
             $this->view_render_part_annotated_checkbox(
-                "Ich best&auml;tige die Kenntnisnahme der  &nbsp; <a style=\"color:lightblue;text-decoration:none;\" href=\"/download/" . $tos_asset . "\" target=\"_blank\"><span class=\"fa fa-download\"></span> Allgemeinen Gesch&auml;ftsbedingungen der EEG VIERE</a>",
+                "Ich best&auml;tige die Kenntnisnahme der  &nbsp; <a style=\"color:lightblue;text-decoration:none;\" href=\"/download/" . $tos_asset . "\" target=\"_blank\"><span class=\"fa fa-download\"></span> Allgemeinen Gesch&auml;ftsbedingungen der EEG $this->tenant_info['shortname']</a>",
                 "tos_consent", "generic_information", "booltrue");
             print "</div><br />";
         }
@@ -689,7 +689,7 @@ sorger!)<br />';
             print "<h3>Datenschutz</h3>";
             print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
             $this->view_render_part_annotated_checkbox(
-                "Ich best&auml;tige die Kenntnisnahme der  &nbsp; <a style=\"color:lightblue;text-decoration:none;\" href=\"/download/" . $gdpr_asset . "\" target=\"_blank\"><span class=\"fa fa-download\"></span> Datenschutzerkl&auml;rung der EEG VIERE</a>",
+                "Ich best&auml;tige die Kenntnisnahme der  &nbsp; <a style=\"color:lightblue;text-decoration:none;\" href=\"/download/" . $gdpr_asset . "\" target=\"_blank\"><span class=\"fa fa-download\"></span> Datenschutzerkl&auml;rung der EEG $this->tenant_info['shortname']</a>",
                 "gdpr_consent", "generic_information", "booltrue");
             print "</div><br />";
         }
@@ -700,7 +700,7 @@ sorger!)<br />';
             "Ich erteile der EEG {%fullname%} f&uuml;r die Dauer der Mitgliedschaft zeitlich unbegrenzt die Vollmacht,<br />
                         in meinem Namen s&auml;mtliche Schritte und Abstimmungen mit dem zust&auml;ndigen Netzbetreiber<br />
                         (Netz O&Ouml;) durchzuf&uuml;hren, die zur vollst&auml;ndigen Aktivierung und Deaktivierung der angef&uuml;hrten<br />
-                        Z&auml;hlpunkte in der EEG VIERE notwendig sind.<br />
+                        Z&auml;hlpunkte in der EEG $this->tenant_info['shortname'] notwendig sind.<br />
                         Dies betrifft insbesondere auch die Registrierung und Nutzung des E-Service-Portals der Netz O&Ouml;.",
             "network_consent", "generic_information", "booltrue");
 
@@ -727,7 +727,7 @@ sorger!)<br />';
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
         $car_count_arr = ['0' => 'Keine', '1' => '1', '2' => '2', '3' => '3', '4' => '4', 'F' => '5 oder mehr (Fuhrpark)'];
         $this->view_render_part_captioned_select("Anzahl der E-Autos im Haushalt", "electric_car_count", $car_count_arr, "generic_information", null, "width:600px;float:left;");
-        $this->view_render_part_captioned_inputfield("Batteriekapazit&aumlt der Kfz in kWh", "electric_car_capacity", "generic_information", null, "width:600px", "(Bei mehreren Kfz bitte Gesamtsumme angeben)");
+        $this->view_render_part_captioned_inputfield("Batteriekapazit&aumlt der Kfz in kWh", "electric_car_capacity", "generic_information", null, "width:600px", "(Bitte Gesamtsumme aller Kfz angeben)");
         print "<br />";
         $water_heating_arr = ['boiler' => 'Heizstab/Boiler', 'heatpump' => 'W&auml;rmepumpe', 'solar' => 'Solarthermie', 'district' => 'Fernw&auml;rme', 'other' => 'Sonstige'];
         $this->view_render_part_captioned_select("Wie bereitest Du Warmwasser im Sommer?", "water_heating_summer", $water_heating_arr, "generic_information", null, "width:600px;float:left;");
