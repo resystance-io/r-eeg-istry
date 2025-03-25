@@ -222,11 +222,19 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                         $mail_template = str_replace('{%FIRSTNAME%}', $_SESSION['generic_information']['firstname']['value'], $mail_template);
                         $mail_template = str_replace('{%LASTNAME%}', $_SESSION['generic_information']['lastname']['value'], $mail_template);
                         $mail_template = str_replace('{%USEREMAIL%}', $_SESSION['generic_information']['email']['value'], $mail_template);
-                        $mail_template = str_replace('{%USERPASSWORD%}', $_SESSION['mnemonic'], $mail_template);
-                        $mail_template = str_replace('{%CONTACTEMAIL%}', $this->tenant_info['contact_email'], $mail_template);
-                        $mail_template = str_replace('{%CONTACTWEB%}', $this->tenant_info['contact_website'], $mail_template);
-                        $mail_template = str_replace('{%REEGISTRYWEB%}', $this->tenant_info['reegistry_website'], $mail_template);
+                        $mail_template = str_replace('{%MNEMONIC%}', $_SESSION['mnemonic'], $mail_template);
                         $mail_template = str_replace('{%REFERRER%}', $this->tenant_info['referrer'], $mail_template);
+                        $mail_template = str_replace('{%FULLNAME%}', $this->tenant_info['fullname'], $mail_template);
+                        $mail_template = str_replace('{%SHORTNAME%}', $this->tenant_info['shortname'], $mail_template);
+                        $mail_template = str_replace('{%SLOGAN%}', $this->tenant_info['slogan'], $mail_template);
+                        $mail_template = str_replace('{%DOWNLOAD_TOS%}', $this->tenant_info['reegistry_website'] . '/' . $this->tenant_info['download_tos'], $mail_template);
+                        $mail_template = str_replace('{%DOWNLOAD_BYLAWS%}', $this->tenant_info['reegistry_website'] . '/' . $this->tenant_info['download_bylaws'], $mail_template);
+                        $mail_template = str_replace('{%DOWNLOAD_GDPR%}', $this->tenant_info['reegistry_website'] . '/' . $this->tenant_info['download_gdpr'], $mail_template);
+                        $mail_template = str_replace('{%REEGISTRY_WEBSITE%}', $this->tenant_info['reegistry_website'], $mail_template);
+                        $mail_template = str_replace('{%CONTACT_WEBSITE%}', $this->tenant_info['contact_website'], $mail_template);
+                        $mail_template = str_replace('{%CONTACT_EMAIL%}', $this->tenant_info['contact_email'], $mail_template);
+                        $mail_template = str_replace('{%CREDITOR_ID%}', $this->tenant_info['creditor_id'], $mail_template);
+
 
 
                         $this->object_broker->instance['email']->subject = "Deine Anmeldung an der EEG " . $this->tenant_info['shortname'];
