@@ -361,7 +361,7 @@ sorger!)<br />';
 
         $this->view_render_part_captioned_inputfield("Firmenwortlaut", "company", "generic_information", "required", "width:400px;float:left");
         $this->view_render_part_captioned_inputfield("UID", "uid", "generic_information", null, "width:280px;float:left");
-        $tax_type_arr = ['yes' => 'Ja', 'no' => 'Nein'];
+        $tax_type_arr = ['y' => 'Ja', 'n' => 'Nein'];
         $this->view_render_part_captioned_select("Umsatzsteuerpflichtig", "salestax", $tax_type_arr, "generic_information", "boolean", "width:200px;float:left;");
         print "<div style=\"clear:both\"></div>";
         $this->view_render_part_captioned_inputfield("Stra&szlig;e", "street", "generic_information", "required", "width:760px;float:left;");
@@ -767,6 +767,7 @@ sorger!)<br />';
             $registration_array['registration_date'] = time();
             $registration_array['mnemonic'] = $hashed_mnemonic;
             $registration_array['type'] = $_SESSION['generic_information']['join_type'];
+            $registration_array['state'] = 'new';
 
             switch($_SESSION['generic_information']['join_type'])
             {

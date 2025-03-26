@@ -570,6 +570,14 @@ input[type="text"].search {
   color:steelblue;
 }
 
+input[type="text"].detail {
+  height: 1.90em;
+  text-align:left;
+  font-family: "Roboto", sans-serif;
+  font-size: 14px;
+  color:black;
+}
+
 select.search {
   height: 1.90em;
   text-align: center !important;
@@ -577,6 +585,16 @@ select.search {
   font-family: "Roboto", sans-serif;
   font-size: 14px;
   color:steelblue;
+  padding: 0;
+}
+
+select.detail {
+  height: 1.90em;
+  text-align: left !important;
+  text-align-last:left !important;
+  font-family: "Roboto", sans-serif;
+  font-size: 14px;
+  color:black;
   padding: 0;
 }
 

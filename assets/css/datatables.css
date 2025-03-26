@@ -1,6 +1,6 @@
 /* Scrollable container */
 .table-container {
-    border: 1px solid #e5e7eb;
+    border: 0px solid #e5e7eb;
     overflow: auto; /* Enables both horizontal and vertical scrolling */
     height: 500px; /* Limits table height for vertical scrolling */
 }
@@ -20,6 +20,18 @@
     border: 1px solid #e5e7eb;
 }
 
+td.detailheader
+{
+    text-align: right;
+    width: 300px;
+    vertical-align: middle;
+}
+
+td.detailcontent
+{
+    text-align: left;
+}
+
 .navigation {
     width: 200px;
 }
@@ -30,7 +42,7 @@
     width: 200px;
     border: 1px solid white;
     background-image: linear-gradient(slategrey, lightslategray);
-    color: black;
+    color: #223344;
     cursor: pointer;
 }
 
@@ -85,6 +97,7 @@ th.navselected:hover {
     position: sticky;
     top: 0; /* Makes the header stick to the top */
     z-index: 2; /* Keeps the header above the table body */
+    white-space: nowrap;
 }
 
 /* Styling for table body */

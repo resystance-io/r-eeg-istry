@@ -17,7 +17,15 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
 
         print "<br />";
 
-        if(isset($_REQUEST['dashboard_id']) && $_REQUEST['dashboard_id'] != '')
+        if(isset($_REQUEST['add']))
+        {
+            $this->view_render_create();
+        }
+        elseif(isset($_REQUEST['rmv']))
+        {
+            $this->view_render_delete();
+        }
+        elseif(isset($_REQUEST['dashboard_id']) && $_REQUEST['dashboard_id'] != '')
         {
             $this->view_render_dashboard($_REQUEST['dashboard_id']);
         }
@@ -118,7 +126,7 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
                   <tr>
         ';
 
-        print '<th>ID</th>';
+        print '<th style="width: 60px">&nbsp;</th>';
 
         $columns = []; // store every column configuration we get for this dashboard layout to avoid multiple lookups
         $column_count = 0;
@@ -225,14 +233,24 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
 
     function view_render_dashboards()
     {
+        print '<table class="navigation green-gradient" style="width:160px;">
+                <thead>
+                  <tr>
+                    <th class="" style="cursor:pointer" onclick="self.location.href=\'?manage_dashboards&add\'"><i class="fa fa-plus"></i>&nbsp;Neu</th>
+                  </tr>
+                </thead>
+               </table>
+               <br />
+        ';
+
         print '
             <div class="table-container">
               <table class="table">
                 <thead>
                   <tr>
-                    <th>ID</th>
+                    <th style="width:60px">&nbsp;</th>
                     <th>Bezeichnung</th>
-                    <th>Aktionen</th>
+                    <th style="width:120px">Aktionen</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -242,12 +260,12 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
         foreach($dashboards as $dashboard)
         {
             print '<tr>
-                    <td>' . $dashboard['id'] . '</td>
+                    <td><i class="fa fa-table"></i></td>
                     <td>' . $dashboard['name'] . '</td>
                     <td>
                         <a href="/?manage_dashboards&dashboard_id=' . $dashboard['id'] . '"><i class="fa fa-edit"></i></a>
                         &nbsp;&nbsp;&nbsp;
-                        <i class="fa fa-trash"></i>
+                        <a href="/?manage_dashboards&rmv&dashboard_id=' . $dashboard['id'] . '"><i class="fa fa-trash"></i></a>
                     </td>
                    </tr>';
         }
@@ -293,6 +311,61 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
                 print "</select>";
                 break;
         }
+    }
+
+    function view_render_create()
+    {
+        if(isset($_REQUEST['preaction']) && $_REQUEST['preaction'] == 'add')
+        {
+            $insert_arr = [
+                'user_id' => 1,
+                'name' => $_REQUEST['nicename'],
+            ];
+
+            $this->db->insert_row_with_array($this->config->user['DBTABLE_DASHBOARDS'], $insert_arr);
+            print '<script>self.location.href="/?manage_dashboards";</script>';
+        }
+
+        print "<h3>Neues Dashboard hinzuf&uuml;gen</h3>";
+        print "<form action=\"?manage_dashboards\" method=\"post\">";
+        print "<input type=\"hidden\" name=\"preaction\" value=\"add\">";
+        print "<input type=\"hidden\" name=\"add\" value=\"\">";
+        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">
+                <div style=\"padding:8px;line-height:40px;\">Bezeichnung<input type=\"text\" onfocus=\"this.select()\" name=\"nicename\" id=\"nicename\" value=\"Neues Dashboard\" /></div>
+                <div style=\"padding:8px;line-height:40px;\"><input type=\"submit\" value=\"Dashboard anlegen\" /></div>
+               </div>
+               </form>
+        ";
+
+    }
+
+    function view_render_delete()
+    {
+        if(isset($_REQUEST['preaction']) && $_REQUEST['preaction'] == 'rmv')
+        {
+            $this->db->delete_row_by_id($this->config->user['DBTABLE_DASHBOARDS'], $_REQUEST['dashboard_id']);
+            print '<script>self.location.href="/?manage_dashboards";</script>';
+        }
+
+        $dashboard_name = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARDS'], 'name', 'id', $_REQUEST['dashboard_id']);
+        print "<h3>Dashboard l&ouml;schen</h3>";
+        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
+        print "    
+                   Soll das Dashboard <b>$dashboard_name</b> tats&auml;chlich gel&ouml;scht werden?<br />
+                   Alle mit dem Dashboard verkn&uuml;pften Filter und Konfigurationen gehen dadurch verloren!<br />
+        ";
+        print "</div><br />";
+
+        print '<table class="navigation" style="width:400px;">
+                <thead>
+                  <tr>
+                    <th class="" style="cursor:pointer; width:200px;" onclick="self.location.href=\'?manage_dashboards&rmv&preaction=rmv&dashboard_id=' . $_REQUEST['dashboard_id'] . '\'"><i class="fa fa-trash"></i>&nbsp;&nbsp;Ja, ich bin sicher!</th>
+                    <th class="" style="cursor:pointer; width:200px;" onclick="self.location.href=\'?manage_dashboards\'"><i class="fa fa-stop"></i>&nbsp;&nbsp;Abbrechen</th>
+                  </tr>
+                </thead>
+               </table>
+               <br />
+        ';
     }
 
 }

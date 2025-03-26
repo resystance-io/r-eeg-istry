@@ -897,6 +897,26 @@ class Interactives
         return $response;
     }
 
+    public function dashboard_inline_update_init($div_id, $dbkey, $recordid)
+    {
+        $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], $dbkey, 'id', $recordid);
+        $input_field = "<INPUT type=\"text\" name=\"$dbkey\" id=\"$dbkey\" value=\"$dbvalue\" style=\"width:200px;float:left\" class=\"detail\"><i onclick=\"var dbkey='$dbkey'; JaxonInteractives.dashboard_inline_update_save('$div_id', '$dbkey', document.getElementById(dbkey).value, '$recordid');\" style=\"margin-top:6px; cursor:pointer\" class=\"fa fa-save fa-pull-right\"></i>";
+        $response = jaxon()->newResponse();
+        $response->assign($div_id, 'innerHTML', $input_field);
+
+        return $response;
+    }
+
+    public function dashboard_inline_update_save($div_id, $dbkey, $dbvalue, $recordid)
+    {
+        $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], $dbkey, $dbvalue, 'id', $recordid);
+        $input_field = "$dbvalue <i onclick=\"JaxonInteractives.dashboard_inline_update_init('$div_id', '$dbkey', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
+        $response = jaxon()->newResponse();
+        $response->assign($div_id, 'innerHTML', $input_field);
+
+        return $response;
+    }
+
     private function validate_record($value, $integrity=null)
     {
         // validate a given record based on its integrity check definition and return upon success or failure

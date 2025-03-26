@@ -48,13 +48,7 @@ class VIEW_MANAGEMENT_USERS extends VIEW
         print "    
                        
         ";
-        print "</div><br />";
 
-        print "<h3>Dashboards konfigurieren</h3>";
-        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
-        print "    
-                       
-        ";
         print "</div><br />";
     }
 

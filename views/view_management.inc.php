@@ -32,21 +32,38 @@ class VIEW_MANAGEMENT extends VIEW
 
         $dashboards = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARDS'], 'user_id', '1');
 
-        print '<table class="navigation">
+        print '<div class="table-container" style="height:46px;vertical-align:top">';
+        print '<table class="navigation" style="float:left">
                 <thead>
                   <tr>';
+
+        if(!isset($_SESSION['dashboard']['id']) || $_SESSION['dashboard']['id'] == '')
+        {
+            // if no dashboard is selected, default to the first one
+            $_SESSION['dashboard']['id'] = $dashboards[0]['id'];
+        }
 
         foreach($dashboards as $dashboard)
         {
             if(isset($_SESSION['dashboard']['id']) && $_SESSION['dashboard']['id'] == $dashboard['id']) $navclass = 'navselected'; else $navclass = '';
-            print '<th class="' . $navclass . '" onclick="self.location.href=\'?manage&dashboard=' . $dashboard['id'] . '\'">' . $dashboard['name'] . '</th>';
+            print '<th style="white-space:nowrap" class="' . $navclass . '" onclick="self.location.href=\'?manage&dashboard=' . $dashboard['id'] . '\'">&nbsp;<li class="fa fa-table"></li>&nbsp;' . $dashboard['name'] . '&nbsp;</th>';
         }
 
         print '   </tr>
                </thead>
              </table>
+        ';
+
+        print '<table class="navigation" style="float:right;width:60px;">
+                <thead>
+                  <tr>
+                    <th onclick="self.location.href=\'?manage_users\'"><li class="fa fa-cog"></li></th>
+                  </tr>
+               </thead>
+             </table>
              <br />
         ';
+        print '</div><br />';
 
         print '
             <div class="table-container">
@@ -57,7 +74,7 @@ class VIEW_MANAGEMENT extends VIEW
 
         $column_configs = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARD_COLUMNS'], 'visible', 'y');
         $layout_columns = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARD_LAYOUT'], 'dashboard', $_SESSION['dashboard']['id'], NULL, 'sort', 'ASC');
-        print '<th>&nbsp;</th>';
+        print '<th style="width:60px">&nbsp;</th>';
 
         $columns = []; // store every column configuration we get for this dashboard layout to avoid multiple lookups
         $column_count = 0;
@@ -129,7 +146,7 @@ class VIEW_MANAGEMENT extends VIEW
                   <tr>
         ';
 
-        print '<td><i class="fa fa-search"></i></td>';
+        print '<td><i class="fa fa-filter"></i></td>';
         foreach($columns as $column)
         {
             if($column['searchable'] == 'y' && $column['compute'] == null)
@@ -264,12 +281,21 @@ class VIEW_MANAGEMENT extends VIEW
                 $type_conversion = ['individual' => 'Privatperson', 'company' => 'Unternehmen', 'agriculture' => 'Landwirtschaft'];
                 return $type_conversion[$registration_arr['type']];
 
-            case 'salestax':
             case 'banking_consent':
             case 'network_consent':
             case 'bylaws_consent':
             case 'gdpr_consent':
             case 'tos_consent':
+                if($registration_arr[$compute_type] != NULL && is_numeric($registration_arr[$compute_type]))
+                {
+                    return "Ja";
+                }
+                else
+                {
+                    return "Nein";
+                }
+
+            case 'salestax':
                 $bool_conversion = ['y' => 'Ja', 'n' => 'Nein'];
                 if($registration_arr[$compute_type])
                 {
@@ -334,6 +360,39 @@ class VIEW_MANAGEMENT extends VIEW
                 {
                     return "Nein";
                 }
+
+            case 'sigma_supplying_meters':
+                $number_of_supplying_meters = $this->db->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_METERS'],'registration_id',$registration_arr['id'], $this->config->user['DBTABLE_METERS'] . ".meter_type = 'supplier'");
+                return $number_of_supplying_meters;
+
+            case 'sigma_consuming_meters':
+                $number_of_consuming_meters = $this->db->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_METERS'],'registration_id',$registration_arr['id'], $this->config->user['DBTABLE_METERS'] . ".meter_type = 'supplier'");
+                return $number_of_consuming_meters;
+
+            case 'sigma_supplying_kwh':
+                $supplying_meters_arr = $this->db->get_columns_by_column_value($this->config->user['DBTABLE_METERS'],'meter_power', 'registration_id', $registration_arr['id'], null, null, null, 'AND ' . $this->config->user['DBTABLE_METERS'] . ".meter_type = 'supplier'");
+                $total_meter_power = 0;
+                foreach($supplying_meters_arr as $meter_data)
+                {
+                    if(is_numeric($meter_data['meter_power']))
+                    {
+                        $total_meter_power += $meter_data['meter_power'];
+                    }
+                }
+                return $total_meter_power . ' kWh';
+
+
+            case 'sigma_storage_kwh':
+                $storages_arr = $this->db->get_columns_by_column_value($this->config->user['DBTABLE_STORAGES'],'storage_capacity', 'registration_id', $registration_arr['id']);
+                $total_capacity = 0;
+                foreach($storages_arr as $storage_data)
+                {
+                    if(is_numeric($storage_data['storage_capacity']))
+                    {
+                        $total_capacity += $storage_data['storage_capacity'];
+                    }
+                }
+                return $total_capacity . ' kWh';
         }
     }
 
