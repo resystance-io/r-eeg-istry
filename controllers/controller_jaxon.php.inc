@@ -1019,6 +1019,20 @@ class Interactives
                         {
                             return true;
                         }
+                        elseif($value == '' || $value == null)
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            // only throw an error if a provided information is obviously wrong,
+                            // empty values are allowed
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        return true;
                     }
                     break;
 
