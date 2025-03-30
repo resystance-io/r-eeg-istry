@@ -704,7 +704,7 @@ sorger!)<br />';
                         Dies betrifft insbesondere auch die Registrierung und Nutzung des E-Service-Portals der Netz O&Ouml;.",
             "network_consent", "generic_information", "booltrue");
 
-        $this->view_render_part_captioned_inputfield("Kundennummer beim zust&auml;ndigen Netzbetreiber", "network_customerid", "generic_information", "max-width:500px;padding-left:60px;");
+        $this->view_render_part_captioned_inputfield("Kundennummer beim zust&auml;ndigen Netzbetreiber", "network_customerid", "generic_information", null, "max-width:500px;padding-left:60px;");
         print "<br />";
         $this->view_render_part_captioned_inputfield("Inventarnummer eines beliebigen Z&auml;hlers", "network_inventoryid", "generic_information", "hwinventoryid", "width:500px;padding-left:10px;", "xxx.xxx.xxx");
 
