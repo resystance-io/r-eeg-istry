@@ -29,11 +29,13 @@
             <meta charset="utf-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
             <link rel="stylesheet" href="/assets/css/main.css" />
+            <link rel="stylesheet" href="/assets/css/AdminLTE.css" />
             <link rel="stylesheet" href="/assets/css/secondary.css" />
             <link rel="stylesheet" href="/assets/css/datatables.css" />
         </head>
 
-        <body class="is-preload">
+        <body class="is-preload" style="min-height: 100vh; display: flex; flex-direction: column;padding-bottom: 0px; padding-left: 0px; padding-right: 0px">
+            <div style="flex: 1; padding-left: 60px; padding-right: 60px;">
 
         <?php
             // there is a tenant id in our $_REQUEST superglobal. Let's check this for integrity
@@ -102,37 +104,52 @@
             elseif(isset($_REQUEST['debug']))
             {
                 // people that are trying to debug this madness
-                include_once('views/view_debug.inc.php');
-                $view_debug = new VIEW_DEBUG();
-                $view_debug->view_render();
+                if($view->view_handle_backend_login() === true)
+                {
+                    include_once('views/view_debug.inc.php');
+                    $view_debug = new VIEW_DEBUG();
+                    $view_debug->view_render();
+                }
             }
             elseif(isset($_REQUEST['manage']))
             {
                 // management
-                include_once('views/view_management.inc.php');
-                $view_manage = new VIEW_MANAGEMENT();
-                $view_manage->view_render();
+                if($view->view_handle_backend_login() === true)
+                {
+                    include_once('views/view_management.inc.php');
+                    $view_manage = new VIEW_MANAGEMENT();
+                    $view_manage->view_render();
+                }
             }
             elseif(isset($_REQUEST['manage_users']))
             {
                 // management
-                include_once('views/view_management_users.inc.php');
-                $view_manage_users = new VIEW_MANAGEMENT_USERS();
-                $view_manage_users->view_render();
+                if($view->view_handle_backend_login() === true)
+                {
+                    include_once('views/view_management_users.inc.php');
+                    $view_manage_users = new VIEW_MANAGEMENT_USERS();
+                    $view_manage_users->view_render();
+                }
             }
             elseif(isset($_REQUEST['manage_dashboards']))
             {
                 // management
-                include_once('views/view_management_dashboards.inc.php');
-                $view_manage_dashboards = new VIEW_MANAGEMENT_DASHBOARDS();
-                $view_manage_dashboards->view_render();
+                if($view->view_handle_backend_login() === true)
+                {
+                    include_once('views/view_management_dashboards.inc.php');
+                    $view_manage_dashboards = new VIEW_MANAGEMENT_DASHBOARDS();
+                    $view_manage_dashboards->view_render();
+                }
             }
             elseif(isset($_REQUEST['manage_registrations']))
             {
                 // management
-                include_once('views/view_management_registrations.inc.php');
-                $view_manage_registrations = new VIEW_MANAGEMENT_REGISTRATIONS();
-                $view_manage_registrations->view_render();
+                if($view->view_handle_backend_login() === true)
+                {
+                    include_once('views/view_management_registrations.inc.php');
+                    $view_manage_registrations = new VIEW_MANAGEMENT_REGISTRATIONS();
+                    $view_manage_registrations->view_render();
+                }
             }
             else
             {
@@ -144,10 +161,32 @@
 
         ?>
 
+        <br />
+
+        </div>
+
+        <?php
+            if(isset($_SESSION['backend_authenticated']) && $_SESSION['backend_authenticated'] != '')
+            {
+                $account_details = $view->db->get_rows_by_column_value($view->config->user['DBTABLE_DASHBOARD_USERS'], 'id', $_SESSION['backend_authenticated'], 1);
+                if(count($account_details) > 0)
+                {
+                    $account_details = $account_details[0];
+                    $pi_menu = "Angemeldet als: " . $account_details['firstname'] . " " . $account_details['lastname'] . " (" . $account_details['username'] . ")";
+                }
+            }
+            else
+            {
+                $pi_menu = "<a href=\"/?manage\">&#960;&nbsp;</a>";
+            }
+        ?>
+
+            <div class="" style="background-color: #151515; color: white; padding: 8px; width:100%; height: 40px; vertical-align: middle; text-align: right;">
+                <div style="float:left;font-face:Helvetica;font-size:10pt;color:dimgrey">R:EEG:ISTRY commit #b2aff1e</div><div style="float:right;font-face:Helvetica;font-size:10pt;color:dimgrey"><?php print $pi_menu; ?></div>
+            </div>
 
             <!-- Scripts -->
             <script src="assets/js/main.js"></script>
-
         </body>
 
         <!-- Jaxon CSS -->

@@ -562,7 +562,7 @@ label {
     -ms-transform: scale(1);
     transform: scale(1); } }
 
-input[type="text"].search {
+input[type="text"].filter {
   height: 1.90em;
   text-align:center;
   font-family: "Roboto", sans-serif;
@@ -578,7 +578,7 @@ input[type="text"].detail {
   color:black;
 }
 
-select.search {
+select.filter {
   height: 1.90em;
   text-align: center !important;
   text-align-last:center !important;

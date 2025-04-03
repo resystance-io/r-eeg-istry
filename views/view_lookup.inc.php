@@ -44,7 +44,6 @@ class VIEW_LOOKUP extends VIEW
         print 'Passwort:<br><input type="password" onfocus="this.select()" name="auth_mnemonic" id="auth_mnemonic" value="" onfocusout="JaxonInteractives.update_credential_cache(' . "'auth_mnemonic'" . ', document.getElementById(' . "'auth_mnemonic'" . ').value);" />';
         print "</div><br />";
         print '<button type="button" class="defaultbtn" id="btn_authenticate" onClick="JaxonInteractives.authenticate();">Einloggen</button>';
-
     }
 
     private function view_render_profile()

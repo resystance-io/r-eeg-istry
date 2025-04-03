@@ -49,9 +49,11 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
             $tenant_info = $tenant_info[0];
         }
 
+        print '<div style="float:left; margin-right:50px">'; // MAIN CONTENT LEFT: INFORMATION
+
         print '<h3>Status</h3>';
         print '
-              <table class="table" style="width:960px">
+              <table class="table" style="width:700px">
                 <tbody>
         ';
 
@@ -112,12 +114,12 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         print '<h3>Interne Informationen</h3>';
 
         print '
-              <table class="table" style="width:960px">
+              <table class="table" style="width:700px">
                 <tbody>
         ';
 
         print "<tr><td class=\"detailheader\">Umspannwerk:</td>";
-        print "<td class=\"detailcontent\">&nbsp;</td>";
+        print "<td id=\"detail_network_substation\" class=\"detailcontent\">" . $registration['network_substation'] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_init('detail_network_substation', 'network_substation', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td>";
         print "</tr>";
         print "<tr><td class=\"detailheader\">Anmeldenummer:</td>";
         print "<td class=\"detailcontent\">" . str_pad($registration['id'], 5, '0', STR_PAD_LEFT) . "</td>";
@@ -133,7 +135,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         print '<h3>Allgemeine Informationen</h3>';
 
         print '
-              <table class="table" style="width:960px">
+              <table class="table" style="width:700px">
                 <tbody>
         ';
 
@@ -185,7 +187,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
 
         print '<br />&nbsp;<br />';
         print '<h3>Optionale Information</h3>';
-        print "<table class=\"table\" style=\"width:960px\">";
+        print "<table class=\"table\" style=\"width:700px\">";
         print "<tr><td class=\"detailheader\">Anzahl d. E-Autos</td><td class=\"detailcontent\">" . $registration['electric_car_count'] . "</td></tr>";
         print "<tr><td class=\"detailheader\">E-Auto Gesamt-kWh</td><td class=\"detailcontent\">" . $registration['electric_car_capacity'] . "</td></tr>";
         print "<tr><td class=\"detailheader\">E-Auto Jahreskilometer</td><td class=\"detailcontent\">" . $registration['electric_car_mileage '] . "</td></tr>";
@@ -195,7 +197,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         print '<br />&nbsp;<br />';
 
         print '<h3>Bankverbindung</h3>';
-        print "<table class=\"table\" style=\"width:960px\">";
+        print "<table class=\"table\" style=\"width:700px\">";
         print "<tr><td class=\"detailheader\">Kontoinhaber*in:</td><td class=\"detailcontent\">" . $registration['banking_name'] . "</td></tr>";
         print "<tr><td class=\"detailheader\">Aktive IBAN:</td><td class=\"detailcontent\">" . $registration['banking_iban'] . "</td></tr>";
         print "<tr><td class=\"detailheader\">Einzugserm&auml;chtigung erteilt:</td><td class=\"detailcontent\">" . date("d.m.Y H:i:s", $registration['banking_consent']) . "</td></tr>";
@@ -203,7 +205,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
 
         print '<br />&nbsp;<br />';
         print '<h3>Zustimmungen</h3>';
-        print "<table class=\"table\" style=\"width:960px\">";
+        print "<table class=\"table\" style=\"width:700px\">";
         print "<tr><td class=\"detailheader\">Statuten akzeptiert:</td><td class=\"detailcontent\">" . date("d.m.Y H:i:s", $registration['bylaws_consent']) . "</td></tr>";
         print "<tr><td class=\"detailheader\">Datenschutzbestimmungen akzeptiert:</td><td class=\"detailcontent\">" . date("d.m.Y H:i:s", $registration['gdpr_consent']) . "</td></tr>";
         print "<tr><td class=\"detailheader\">AGB akzeptiert:</td><td class=\"detailcontent\">" . date("d.m.Y H:i:s", $registration['tos_consent']) . "</td></tr>";
@@ -214,8 +216,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         print '<h3>Registrierte Z&auml;hlpunkte</h3>';
 
         print '
-              <table class="table" style="width:960px">
-                <tbody>
+              <table class="table" style="width:700px">
         ';
 
         $meters = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_METERS'], 'registration_id', $registration['id']);
@@ -251,7 +252,9 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
 
         print '<br />&nbsp;<br />';
         print '<h3>Registrierte Energiespeicher</h3>';
-        print "<table>";
+        print '
+              <table class="table" style="width:700px">
+        ';
 
         $storages = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_STORAGES'], 'registration_id', $registration['id']);
         if ($storages == NULL || count($storages) == 0)
@@ -265,13 +268,77 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
             {
                 $storage_count++;
                 print "<tr class=\"profilemeterline\">
-                        <td class=\"profileheader\" style=\"text-align:left\">Speicher #$storage_count</td>
-                        <td>" . $storage['storage_capacity'] . " kWh</td>
+                            <td class=\"profileheader\" style=\"text-align:left\">Speicher #$storage_count</td>
+                            <td>" . $storage['storage_capacity'] . " kWh</td>
                        </tr>";
             }
         }
 
         print "</table>";
+        print '<br />&nbsp;<br />';
+        print '</div>'; // END OF MAIN CONTENT: LEFT
+        print '<div style="min-width:500px; float:left">';   // TIMELINE: RIGHT
+
+        print '<h3>Historie</h3>';
+
+        $notes = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARD_NOTES'], 'registration_id', $registration['id']);
+        if ($notes == NULL || count($notes) == 0)
+        {
+            print "Keine Historie<br />";
+        }
+        else
+        {
+            print '<ul class="timeline">';
+
+            foreach($notes as $note)
+            {
+                $author_nicename = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARD_USERS'], 'username', 'id', $note['user_id']);
+                $note_nicedate = date('d.m.Y H:i:s', $note['timestamp']);
+                if($author_nicename == NULL)
+                {
+                    $author_nicename = 'SYSTEM';
+                }
+
+                if($note['style'] == 'event')
+                {
+                    print '
+                            <li class="time-label" style="width:98%">
+                              <span class="bg-blue-gradient">
+                                &nbsp;' . $note['content'] . '&nbsp;
+                              </span>
+                            </li>
+                    ';
+                }
+                elseif($note['style'] == 'note')
+                {
+                    print '
+                                    <!-- timeline item -->
+                                    <li>
+                                      <i class="fa fa-envelope bg-blue"></i>
+                                      <div class="timeline-item" style="width:98%">
+                                        <span class="time"><i class="fa fa-clock-o"></i> ' . $note_nicedate . '</span>
+                                        <h3 class="timeline-header">Notiz von ' . $author_nicename . '</h3>
+                    ';
+
+                    print '                    
+                                        <div class="timeline-body">
+                                          ' . $note['content'] . '
+                                        </div>
+                                        <!--<div class="timeline-footer">
+                                          <a class="btn btn-danger btn-xs">Delete</a>
+                                        </div>-->
+                                      </div>
+                                    </li>
+                    ';
+                }
+            }
+
+            print '</ul>';
+
+        }
+        print '<br />&nbsp;<br />';
+        print '</div>'; // END OF TIMELINE: RIGHT
+
     }
 
 }

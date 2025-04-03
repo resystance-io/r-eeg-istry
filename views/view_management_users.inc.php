@@ -89,11 +89,12 @@ class VIEW_MANAGEMENT_USERS extends VIEW
             {
                 if($_REQUEST['password'] == $_REQUEST['password_repeat'])
                 {
+                    $salt = rand(1111111111111111, 9999999999999999);
                     $insert_arr = [
                         'firstname' => $_REQUEST['firstname'],
                         'lastname' => $_REQUEST['lastname'],
                         'username' => $_REQUEST['username'],
-                        'passphrase' => hash('sha256', $_REQUEST['password'])
+                        'passphrase' => hash('sha256', $_REQUEST['password'] . $salt) . ':' . $salt
                     ];
 
                     $this->db->insert_row_with_array($this->config->user['DBTABLE_DASHBOARD_USERS'], $insert_arr);

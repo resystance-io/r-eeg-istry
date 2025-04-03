@@ -1,7 +1,7 @@
 /* Scrollable container */
 .table-container {
     border: 0px solid #e5e7eb;
-    overflow: auto; /* Enables both horizontal and vertical scrolling */
+    <!--overflow: auto; /* Enables both horizontal and vertical scrolling */-->
     height: 500px; /* Limits table height for vertical scrolling */
 }
 
@@ -44,6 +44,10 @@ td.detailcontent
     background-image: linear-gradient(slategrey, lightslategray);
     color: #223344;
     cursor: pointer;
+}
+
+table.navigation {
+    margin-bottom: 8px;
 }
 
 .navigation th:hover {
@@ -132,4 +136,11 @@ th.navselected:hover {
     text-align: center;
     font-size: 14px;
     color: #9ca3af;
+}
+
+button.search {
+    height:30px;
+    vertical-align: middle;
+    line-height: 10px;
+    background-color: #223344;
 }

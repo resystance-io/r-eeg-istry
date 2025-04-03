@@ -7,6 +7,7 @@ class Interactives
 
     private $object_broker;
     private $config;
+    private $view;
     private $db;
 
     public function __construct()
@@ -19,6 +20,9 @@ class Interactives
 
         include_once('controllers/controller_db.php.inc');
         $this->db = $this->object_broker->instance['db'] = new CONTROLLER_DB($this->object_broker);
+
+        include_once('views/view.php.inc');
+        $this->view = $this->object_broker->instance['view'] = new VIEW();
     }
 
     public function __destruct()
@@ -70,6 +74,64 @@ class Interactives
             $response->alert("Bitte überprüfe die angegebenen Anmeldedaten");
             return $response;
         }
+    }
+
+    public function backend_authenticate()
+    {
+        // the management user wants to log on -
+        // check if username address and password match and authenticate the session on success
+
+        $username = $_SESSION['auth_backend_username'];
+        $password = $_SESSION['auth_backend_password'];
+
+        if(isset($_SESSION['auth_backend_username'])) unset($_SESSION['auth_backend_password']);
+
+        $hashed_mnemonic_provided = hash('sha256', $password);
+
+        $account_details = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARD_USERS'], 'username', $username, 1, null, null, 'deleted', 'n');
+        if(count($account_details) > 0)
+        {
+            $account_details = $account_details[0];
+
+            if(substr_count($account_details['passphrase'], ':') == 1)
+            {
+                $stored_password_salted = explode(':', $account_details['passphrase']);
+                $stored_password_hash = $stored_password_salted[0];
+                $stored_password_salt = $stored_password_salted[1];
+                $submitted_password_hash = hash('sha256', $password . $stored_password_salt);
+
+                if ($stored_password_hash === $submitted_password_hash)
+                {
+                    $_SESSION['backend_authenticated'] = $account_details['id'];
+                    session_regenerate_id(true);
+
+                    $response = jaxon()->newResponse();
+                    $response->script("window.location.href='/?manage';");
+                    return $response;
+                }
+                else
+                {
+                    $_SESSION['backend_authenticated'] = NULL;
+                    unset($_SESSION['backend_authenticated']);
+                    $response = jaxon()->newResponse();
+                    $response->alert("Bitte überprüfe die angegebenen Anmeldedaten (WAC)");
+                    return $response;
+                }
+            }
+            else
+            {
+                $response = jaxon()->newResponse();
+                $response->alert("Bitte überprüfe die angegebenen Anmeldedaten (AMC)");
+                return $response;
+            }
+        }
+        else
+        {
+            $response = jaxon()->newResponse();
+            $response->alert("Bitte überprüfe die angegebenen Anmeldedaten (ANF)");
+            return $response;
+        }
+
     }
 
     public function add_meter($meter_type, $prefix)
@@ -217,6 +279,21 @@ class Interactives
 
             case 'auth_mnemonic':
                 $_SESSION['auth_mnemonic'] = $value;
+                break;
+        }
+    }
+
+    public function update_backend_credential_cache($record, $value)
+    {
+        // write the provided login credentials to the current session's credentials cache
+        switch ($record)
+        {
+            case 'auth_username':
+                $_SESSION['auth_backend_username'] = $value;
+                break;
+
+            case 'auth_password':
+                $_SESSION['auth_backend_password'] = $value;
                 break;
         }
     }
@@ -851,6 +928,28 @@ class Interactives
         return true;
     }
 
+    public function dashboard_set_filter($key, $value)
+    {
+        if($_SESSION['dashboard']['filter'][$key] == $value)
+        {
+            // this value is already set
+            $response = jaxon()->newResponse();
+            return $response;
+        }
+
+        $response = jaxon()->newResponse();
+        if($value != '')
+        {
+            $_SESSION['dashboard']['filter'][$key] = $value;
+        }
+        else
+        {
+            unset($_SESSION['dashboard']['filter'][$key]);
+        }
+        $response->script("self.location.href='/?manage';");
+        return $response;
+    }
+
     public function dashboard_set_search($key, $value)
     {
         if($_SESSION['dashboard']['search'][$key] == $value)
@@ -861,21 +960,22 @@ class Interactives
         }
 
         $response = jaxon()->newResponse();
-        if($value != '')
+        if($value != '' && $key != '')
         {
+            unset($_SESSION['dashboard']['search']);
             $_SESSION['dashboard']['search'][$key] = $value;
         }
         else
         {
-            unset($_SESSION['dashboard']['search'][$key]);
+            unset($_SESSION['dashboard']['search']);
         }
         $response->script("self.location.href='/?manage';");
         return $response;
     }
 
-    public function dashboard_set_searchconfig($key, $value, $dashboard)
+    public function dashboard_set_filterconfig($key, $value, $dashboard)
     {
-        if($_SESSION['dashboard']['searchconfig'][$key] == $value)
+        if($_SESSION['dashboard']['filterconfig'][$key] == $value)
         {
             // this value is already set
             $response = jaxon()->newResponse();
@@ -885,14 +985,14 @@ class Interactives
         $response = jaxon()->newResponse();
         if($value != '')
         {
-            $_SESSION['dashboard']['searchconfig'][$key] = $value;
+            $_SESSION['dashboard']['filterconfig'][$key] = $value;
         }
         else
         {
-            unset($_SESSION['dashboard']['searchconfig'][$key]);
+            unset($_SESSION['dashboard']['filterconfig'][$key]);
         }
 
-        $this->db->update_column_by_column_values($this->config->user['DBTABLE_DASHBOARDS'], 'searchconfig', base64_encode(json_encode($_SESSION['dashboard']['searchconfig'])), 'id', $dashboard);
+        $this->db->update_column_by_column_values($this->config->user['DBTABLE_DASHBOARDS'], 'filterconfig', base64_encode(json_encode($_SESSION['dashboard']['filterconfig'])), 'id', $dashboard);
 
         return $response;
     }
@@ -909,6 +1009,8 @@ class Interactives
 
     public function dashboard_inline_update_save($div_id, $dbkey, $dbvalue, $recordid)
     {
+        $current_value = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], $dbkey, 'id', $recordid);
+        $this->view->record_note($recordid, 'event', 'modify', "Aktualisierung $dbkey: $current_value -> $dbvalue");
         $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], $dbkey, $dbvalue, 'id', $recordid);
         $input_field = "$dbvalue <i onclick=\"JaxonInteractives.dashboard_inline_update_init('$div_id', '$dbkey', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
         $response = jaxon()->newResponse();

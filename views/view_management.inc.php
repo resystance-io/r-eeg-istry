@@ -12,11 +12,11 @@ class VIEW_MANAGEMENT extends VIEW
         if(isset($_REQUEST['dashboard']))
         {
             $_SESSION['dashboard']['id'] = $_REQUEST['dashboard'];
-            $searchconfig = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARDS'], 'searchconfig', 'id', $_SESSION['dashboard']['id']);
-            unset($_SESSION['dashboard']['search']);
-            if($searchconfig != null)
+            $filterconfig = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARDS'], 'filterconfig', 'id', $_SESSION['dashboard']['id']);
+            unset($_SESSION['dashboard']['filter']);
+            if($filterconfig != null)
             {
-                $_SESSION['dashboard']['search'] = json_decode(base64_decode($searchconfig), true);
+                $_SESSION['dashboard']['filter'] = json_decode(base64_decode($filterconfig), true);
             }
         }
 
@@ -33,9 +33,21 @@ class VIEW_MANAGEMENT extends VIEW
         $dashboards = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARDS'], 'user_id', '1');
 
         print '<div class="table-container" style="height:46px;vertical-align:top">';
-        print '<table class="navigation" style="float:left">
+
+        print '<table class="navigation" style="float:right;width:160px;height:48px;">
                 <thead>
-                  <tr>';
+                  <tr class="navigation">
+                    <th onclick="self.location.href=\'?manage_users\'"><li class="fa fa-users"></li></th>
+                    <th onClick="self.location.href=\'?manage_dashboards\'"><li class="fa fa-table"></li></th>
+                    <th onClick="JaxonInteractives.deauthenticate();"><li class="fa fa-door-open"></li></th>
+                  </tr>
+               </thead>
+             </table>
+        ';
+
+        print '<table class="navigation" style="float:left; height:48px;">
+                <thead>
+                  <tr class="navigation">';
 
         if(!isset($_SESSION['dashboard']['id']) || $_SESSION['dashboard']['id'] == '')
         {
@@ -54,15 +66,57 @@ class VIEW_MANAGEMENT extends VIEW
              </table>
         ';
 
-        print '<table class="navigation" style="float:right;width:60px;">
+        print '<div style="width:20px; height:1px; float:left">&nbsp;</div>';
+        print '<div style="width:20px; height:1px; float:right">&nbsp;</div>';
+
+        print '<table class="navigation" style="float:right; width:600px; height:46px;">
                 <thead>
                   <tr>
-                    <th onclick="self.location.href=\'?manage_users\'"><li class="fa fa-cog"></li></th>
+                    <th style="width:45px;"><li class="fa fa-search"></li></th>
+                    <th>
+                        <select id="searchcolumn" name="searchcolumn" class="filter">
+                            <option value="">Suchen nach...</option>
+        ';
+
+        $searchable_fields = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARD_COLUMNS'], 'searchable', 'y');
+        $searchprefill = '';
+        foreach($searchable_fields as $searchable_field)
+        {
+            if(isset($_SESSION['dashboard']['search'][$searchable_field['name']]))
+            {
+                $selected = 'selected="selected"';
+                $searchprefill = $_SESSION['dashboard']['search'][$searchable_field['name']];
+            }
+            else
+            {
+                $selected = '';
+            }
+
+            print '<option ' . $selected . ' value="' . $searchable_field['name'] . '">' . $searchable_field['nicename'] . '</option>';
+        }
+
+        print '
+                        </select>
+                    </th>
+                    <th>
+                        <input type="text" id="searchvalue" name="searchvalue" value="' . $searchprefill . '" class="filter"/>
+                        <script>
+                          input = document.getElementById("searchvalue");
+                          input.addEventListener("keydown", function(event) {
+                            if (event.key === "Enter") {
+                                JaxonInteractives.dashboard_set_search(document.getElementById(' . "'searchcolumn'" . ').value, document.getElementById(' . "'searchvalue'" . ').value);
+                            }
+                          });
+                        </script>
+                    </th>
+                    <th style="width:60px">
+                        <button class="search" onclick="JaxonInteractives.dashboard_set_search(document.getElementById(' . "'searchcolumn'" . ').value, document.getElementById(' . "'searchvalue'" . ').value);">Suchen</button>
+                    </th>
                   </tr>
                </thead>
              </table>
-             <br />
         ';
+
         print '</div><br />';
 
         print '
@@ -149,26 +203,26 @@ class VIEW_MANAGEMENT extends VIEW
         print '<td><i class="fa fa-filter"></i></td>';
         foreach($columns as $column)
         {
-            if($column['searchable'] == 'y' && $column['compute'] == null)
+            if($column['filterable'] == 'y' && $column['compute'] == null)
             {
-                if($_SESSION['dashboard']['search'][$column['name']] != null) $search_value = $_SESSION['dashboard']['search'][$column['name']]; else $search_value = '';
+                if($_SESSION['dashboard']['filter'][$column['name']] != null) $filter_value = $_SESSION['dashboard']['filter'][$column['name']]; else $filter_value = '';
                 print '<td>
-                            <input type="text" id="search-' . $column['name'] . '" onclick="this.select();" onfocusout="JaxonInteractives.dashboard_set_search(' . "'" . $column['name'] . "'" . ', document.getElementById(' . "'search-" . $column['name'] . "'" . ').value);" class="search" name="search-' . $column['name'] . '" value="' . $search_value . '">
+                            <input type="text" id="filter-' . $column['name'] . '" onclick="this.select();" onfocusout="JaxonInteractives.dashboard_set_filter(' . "'" . $column['name'] . "'" . ', document.getElementById(' . "'filter-" . $column['name'] . "'" . ').value);" class="filter" name="filter-' . $column['name'] . '" value="' . $filter_value . '">
                             <script>
-                              input = document.getElementById("search-' . $column['name'] . '");
+                              input = document.getElementById("filter-' . $column['name'] . '");
                               input.addEventListener("keydown", function(event) {
                                 if (event.key === "Enter") {
-                                    JaxonInteractives.dashboard_set_search(' . "'" . $column['name'] . "'" . ', document.getElementById(' . "'search-" . $column['name'] . "'" . ').value);
+                                    JaxonInteractives.dashboard_set_filter(' . "'" . $column['name'] . "'" . ', document.getElementById(' . "'filter-" . $column['name'] . "'" . ').value);
                                 }
                               });
                             </script>
                        </td>';
             }
-            elseif($column['searchable'] == 'y' && $column['compute'] != null)
+            elseif($column['filterable'] == 'y' && $column['compute'] != null)
             {
                 print '<td>';
-                if(isset($_SESSION['dashboard']['search'][$column['name']]))  $search_value = $_SESSION['dashboard']['search'][$column['name']]; else $search_value = null;
-                $this->render_computed_search_column($column['compute'], $column['name'], $search_value);
+                if(isset($_SESSION['dashboard']['filter'][$column['name']]))  $filter_value = $_SESSION['dashboard']['filter'][$column['name']]; else $filter_value = null;
+                $this->render_computed_filter_column($column['compute'], $column['name'], $filter_value);
                 print '</td>';
             }
             else
@@ -193,21 +247,34 @@ class VIEW_MANAGEMENT extends VIEW
             $sortkey_arr[1] = null;
         }
 
-        $search_string = '';
-        if(isset($_SESSION['dashboard']['search']))
+        $filter_string = '';
+        if(isset($_SESSION['dashboard']['filter']))
         {
-            foreach($_SESSION['dashboard']['search'] as $search_key => $search_value)
+            foreach($_SESSION['dashboard']['filter'] as $filter_key => $filter_value)
             {
-                if($search_value != '')
+                if($filter_value != '')
                 {
-                    // only add this field if we have a proper search value
-                    if ($search_string != '') $search_string .= ' AND ';
-                    $search_string .= $search_key . ' LIKE "%' . $search_value . '%"';
+                    // only add this field if we have a proper filter value
+                    if ($filter_string != '') $filter_string .= ' AND ';
+                    $filter_string .= $filter_key . ' LIKE "%' . $filter_value . '%"';
                 }
             }
         }
 
-        $registrations = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_REGISTRATIONS'], 'deleted', 'n', NULL, $sortkey_arr[0], $sortkey_arr[1], $search_string);
+        if(isset($_SESSION['dashboard']['search']))
+        {
+            foreach($_SESSION['dashboard']['search'] as $search_key => $search_value)
+            {
+                if($search_value != '' && $search_key != '')
+                {
+                    // only add this field if we have a proper search value
+                    if ($filter_string != '') $filter_string .= ' AND ';
+                    $filter_string .= $search_key . ' LIKE "%' . $search_value . '%"';
+                }
+            }
+        }
+
+        $registrations = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_REGISTRATIONS'], 'deleted', 'n', NULL, $sortkey_arr[0], $sortkey_arr[1], $filter_string);
         foreach($registrations as $registration)
         {
             print '<tr>';
@@ -235,35 +302,35 @@ class VIEW_MANAGEMENT extends VIEW
         ';
     }
 
-    function render_computed_search_column($compute_type, $column_name, $search_value=null)
+    function render_computed_filter_column($compute_type, $column_name, $filter_value=null)
     {
         switch($compute_type)
         {
             case 'eeg_short':
-                print '<select class="search" id="search-' . $column_name . '" name="search-' . $column_name . '" onchange="JaxonInteractives.dashboard_set_search(' . "'" . $column_name . "'" . ', document.getElementById(' . "'search-" . $column_name . "'" . ').value);">';
+                print '<select class="filter" id="filter-' . $column_name . '" name="filter-' . $column_name . '" onchange="JaxonInteractives.dashboard_set_filter(' . "'" . $column_name . "'" . ', document.getElementById(' . "'filter-" . $column_name . "'" . ').value);">';
                 $options_arr = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_TENANTS'], 'shortname', null, null, 'shortname', 'ASC');
 
-                if($search_value == 'null') $selected = 'selected'; else $selected = '';
+                if($filter_value == 'null') $selected = 'selected'; else $selected = '';
                 print '<option ' . $selected . ' value="">&nbsp;</option>';
 
                 foreach($options_arr as $option)
                 {
-                    if($search_value == $option['id'])  $selected = 'selected';     else    $selected = '';
+                    if($filter_value == $option['id'])  $selected = 'selected';     else    $selected = '';
                     print '<option ' . $selected . ' value="' . $option['id'] . '">' . $option['shortname'] . '</option>';
                 }
                 print "</select>";
                 break;
 
             case 'type':
-                print '<select class="search" id="search-' . $column_name . '" name="search-' . $column_name . '" onchange="JaxonInteractives.dashboard_set_search(' . "'" . $column_name . "'" . ', document.getElementById(' . "'search-" . $column_name . "'" . ').value);">';
+                print '<select class="filter" id="filter-' . $column_name . '" name="filter-' . $column_name . '" onchange="JaxonInteractives.dashboard_set_filter(' . "'" . $column_name . "'" . ', document.getElementById(' . "'filter-" . $column_name . "'" . ').value);">';
                 $options_arr = ['individual' => 'Privatperson', 'company' => 'Unternehmen', 'agriculture' => 'Landwirtschaft'];
 
-                if($search_value == 'null') $selected = 'selected'; else $selected = '';
+                if($filter_value == 'null') $selected = 'selected'; else $selected = '';
                 print '<option ' . $selected . ' value="">&nbsp;</option>';
 
                 foreach($options_arr as $key => $value)
                 {
-                    if($search_value == $key)  $selected = 'selected';     else    $selected = '';
+                    if($filter_value == $key)  $selected = 'selected';     else    $selected = '';
                     print '<option ' . $selected . ' value="' . $key . '">' . $value . '</option>';
                 }
                 print "</select>";

@@ -156,29 +156,29 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
                   <tr>
     ';
 
-        print '<td><i class="fa fa-search"></i></td>';
+        print '<td><i class="fa fa-filter"></i></td>';
         foreach($columns as $column)
         {
-            if($column['searchable'] == 'y' && $column['compute'] == null)
+            if($column['filterable'] == 'y' && $column['compute'] == null)
             {
-                if($_SESSION['dashboard']['searchconfig'][$column['name']] != null) $search_value = $_SESSION['dashboard']['searchconfig'][$column['name']]; else $search_value = '';
+                if($_SESSION['dashboard']['filterconfig'][$column['name']] != null) $filter_value = $_SESSION['dashboard']['filterconfig'][$column['name']]; else $filter_value = '';
                 print '<td>
-                            <input type="text" id="search-' . $column['name'] . '" onclick="this.select();" onfocusout="JaxonInteractives.dashboard_set_search(' . "'" . $column['name'] . "'" . ', document.getElementById(' . "'search-" . $column['name'] . "'" . ').value);" class="search" name="search-' . $column['name'] . '" value="' . $search_value . '">
+                            <input type="text" id="filter-' . $column['name'] . '" onclick="this.select();" onfocusout="JaxonInteractives.dashboard_set_filter(' . "'" . $column['name'] . "'" . ', document.getElementById(' . "'filter-" . $column['name'] . "'" . ').value);" class="filter" name="filter-' . $column['name'] . '" value="' . $filter_value . '">
                             <script>
-                                input = document.getElementById("search-' . $column['name'] . '");
+                                input = document.getElementById("filter-' . $column['name'] . '");
                                 input.addEventListener("keydown", function(event) {
                                   if (event.key === "Enter") {
-                                      JaxonInteractives.dashboard_set_searchconfig(' . "'" . $column['name'] . "'" . ', document.getElementById(' . "'search-" . $column['name'] . "'" . ').value);
+                                      JaxonInteractives.dashboard_set_filterconfig(' . "'" . $column['name'] . "'" . ', document.getElementById(' . "'filter-" . $column['name'] . "'" . ').value);
                                 }
                               });
                             </script>
                        </td>';
             }
-            elseif($column['searchable'] == 'y' && $column['compute'] != null)
+            elseif($column['filterable'] == 'y' && $column['compute'] != null)
             {
                 print '<td>';
-                if(isset($_SESSION['dashboard']['searchconfig'][$column['name']]))  $search_value = $_SESSION['dashboard']['searchconfig'][$column['name']]; else $search_value = null;
-                $this->render_computed_search_column($column['compute'], $column['name'], $search_value);
+                if(isset($_SESSION['dashboard']['filterconfig'][$column['name']]))  $filter_value = $_SESSION['dashboard']['filterconfig'][$column['name']]; else $filter_value = null;
+                $this->render_computed_filter_column($column['compute'], $column['name'], $filter_value);
                 print '</td>';
             }
             else
@@ -233,10 +233,20 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
 
     function view_render_dashboards()
     {
+        if(isset($_REQUEST['userid']))
+        {
+            $link_uid = '&userid=' . $_REQUEST['userid'];
+            $user_id = $_REQUEST['userid'];
+        }
+        else
+        {
+            $link_uid = '';
+            $user_id = $_SESSION['backend_authenticated'];
+        }
         print '<table class="navigation green-gradient" style="width:160px;">
                 <thead>
                   <tr>
-                    <th class="" style="cursor:pointer" onclick="self.location.href=\'?manage_dashboards&add\'"><i class="fa fa-plus"></i>&nbsp;Neu</th>
+                    <th class="" style="cursor:pointer" onclick="self.location.href=\'?manage_dashboards&add' . $link_uid . '\'"><i class="fa fa-plus"></i>&nbsp;Neu</th>
                   </tr>
                 </thead>
                </table>
@@ -256,16 +266,16 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
                 <tbody>
         ';
 
-        $dashboards = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARDS'], 'user_id', $_REQUEST['userid']);
+        $dashboards = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARDS'], 'user_id', $user_id);
         foreach($dashboards as $dashboard)
         {
             print '<tr>
                     <td><i class="fa fa-table"></i></td>
                     <td>' . $dashboard['name'] . '</td>
                     <td>
-                        <a href="/?manage_dashboards&dashboard_id=' . $dashboard['id'] . '"><i class="fa fa-edit"></i></a>
+                        <a href="/?manage_dashboards&dashboard_id=' . $dashboard['id'] . $link_uid . '"><i class="fa fa-edit"></i></a>
                         &nbsp;&nbsp;&nbsp;
-                        <a href="/?manage_dashboards&rmv&dashboard_id=' . $dashboard['id'] . '"><i class="fa fa-trash"></i></a>
+                        <a href="/?manage_dashboards&rmv&dashboard_id=' . $dashboard['id'] . $link_uid . '"><i class="fa fa-trash"></i></a>
                     </td>
                    </tr>';
         }
@@ -277,35 +287,35 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
 
     }
 
-    function render_computed_search_column($compute_type, $column_name, $search_value=null)
+    function render_computed_filter_column($compute_type, $column_name, $filter_value=null)
     {
         switch($compute_type)
         {
             case 'eeg_short':
-                print '<select class="search" id="search-' . $column_name . '" name="search-' . $column_name . '" onchange="JaxonInteractives.dashboard_set_searchconfig(' . "'" . $column_name . "'" . ', document.getElementById(' . "'search-" . $column_name . "'" . ').value, ' . "'" . $_REQUEST['dashboard_id'] . "'" . ');">';
+                print '<select class="filter" id="filter-' . $column_name . '" name="filter-' . $column_name . '" onchange="JaxonInteractives.dashboard_set_filterconfig(' . "'" . $column_name . "'" . ', document.getElementById(' . "'filter-" . $column_name . "'" . ').value, ' . "'" . $_REQUEST['dashboard_id'] . "'" . ');">';
                 $options_arr = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_TENANTS'], 'shortname', null, null, 'shortname', 'ASC');
 
-                if($search_value == 'null') $selected = 'selected'; else $selected = '';
+                if($filter_value == 'null') $selected = 'selected'; else $selected = '';
                 print '<option ' . $selected . ' value="">&nbsp;</option>';
 
                 foreach($options_arr as $option)
                 {
-                    if($search_value == $option['id'])  $selected = 'selected';     else    $selected = '';
+                    if($filter_value == $option['id'])  $selected = 'selected';     else    $selected = '';
                     print '<option ' . $selected . ' value="' . $option['id'] . '">' . $option['shortname'] . '</option>';
                 }
                 print "</select>";
                 break;
 
             case 'type':
-                print '<select class="search" id="search-' . $column_name . '" name="search-' . $column_name . '" onchange="JaxonInteractives.dashboard_set_searchconfig(' . "'" . $column_name . "'" . ', document.getElementById(' . "'search-" . $column_name . "'" . ').value, ' . "'" . $_REQUEST['dashboard_id'] . "'" . ');">';
+                print '<select class="filter" id="filter-' . $column_name . '" name="filter-' . $column_name . '" onchange="JaxonInteractives.dashboard_set_filterconfig(' . "'" . $column_name . "'" . ', document.getElementById(' . "'filter-" . $column_name . "'" . ').value, ' . "'" . $_REQUEST['dashboard_id'] . "'" . ');">';
                 $options_arr = ['individual' => 'Privatperson', 'company' => 'Unternehmen', 'agriculture' => 'Landwirtschaft'];
 
-                if($search_value == 'null') $selected = 'selected'; else $selected = '';
+                if($filter_value == 'null') $selected = 'selected'; else $selected = '';
                 print '<option ' . $selected . ' value="">&nbsp;</option>';
 
                 foreach($options_arr as $key => $value)
                 {
-                    if($search_value == $key)  $selected = 'selected';     else    $selected = '';
+                    if($filter_value == $key)  $selected = 'selected';     else    $selected = '';
                     print '<option ' . $selected . ' value="' . $key . '">' . $value . '</option>';
                 }
                 print "</select>";
@@ -317,19 +327,36 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
     {
         if(isset($_REQUEST['preaction']) && $_REQUEST['preaction'] == 'add')
         {
+            if(isset($_REQUEST['userid']))
+            {
+                $user_id = $_REQUEST['userid'];
+                $userid_link = '&userid=' . $_REQUEST['userid'];
+            }
+            else
+            {
+                $user_id = $_SESSION['backend_authenticated'];
+                $userid_link = '';
+            }
+
             $insert_arr = [
-                'user_id' => 1,
+                'user_id' => $user_id,
                 'name' => $_REQUEST['nicename'],
             ];
 
             $this->db->insert_row_with_array($this->config->user['DBTABLE_DASHBOARDS'], $insert_arr);
-            print '<script>self.location.href="/?manage_dashboards";</script>';
+            print '<script>self.location.href="/?manage_dashboards' . $userid_link . '";</script>';
         }
+
 
         print "<h3>Neues Dashboard hinzuf&uuml;gen</h3>";
         print "<form action=\"?manage_dashboards\" method=\"post\">";
-        print "<input type=\"hidden\" name=\"preaction\" value=\"add\">";
-        print "<input type=\"hidden\" name=\"add\" value=\"\">";
+        print "    <input type=\"hidden\" name=\"preaction\" value=\"add\">";
+        print "    <input type=\"hidden\" name=\"add\" value=\"\">";
+        if(isset($_REQUEST['userid']))
+        {
+            print " <input type=\"hidden\" name=\"userid\" value=\"" . $_REQUEST['userid'] . "\">";
+        }
+
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">
                 <div style=\"padding:8px;line-height:40px;\">Bezeichnung<input type=\"text\" onfocus=\"this.select()\" name=\"nicename\" id=\"nicename\" value=\"Neues Dashboard\" /></div>
                 <div style=\"padding:8px;line-height:40px;\"><input type=\"submit\" value=\"Dashboard anlegen\" /></div>
@@ -341,10 +368,19 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
 
     function view_render_delete()
     {
+        if(isset($_REQUEST['userid']))
+        {
+            $userid_link = '&userid=' . $_REQUEST['userid'];
+        }
+        else
+        {
+            $userid_link = '';
+        }
+
         if(isset($_REQUEST['preaction']) && $_REQUEST['preaction'] == 'rmv')
         {
             $this->db->delete_row_by_id($this->config->user['DBTABLE_DASHBOARDS'], $_REQUEST['dashboard_id']);
-            print '<script>self.location.href="/?manage_dashboards";</script>';
+            print '<script>self.location.href="/?manage_dashboards' . $userid_link . '";</script>';
         }
 
         $dashboard_name = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARDS'], 'name', 'id', $_REQUEST['dashboard_id']);
@@ -359,8 +395,8 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
         print '<table class="navigation" style="width:400px;">
                 <thead>
                   <tr>
-                    <th class="" style="cursor:pointer; width:200px;" onclick="self.location.href=\'?manage_dashboards&rmv&preaction=rmv&dashboard_id=' . $_REQUEST['dashboard_id'] . '\'"><i class="fa fa-trash"></i>&nbsp;&nbsp;Ja, ich bin sicher!</th>
-                    <th class="" style="cursor:pointer; width:200px;" onclick="self.location.href=\'?manage_dashboards\'"><i class="fa fa-stop"></i>&nbsp;&nbsp;Abbrechen</th>
+                    <th class="" style="cursor:pointer; width:200px;" onclick="self.location.href=\'?manage_dashboards&rmv&preaction=rmv&dashboard_id=' . $_REQUEST['dashboard_id'] . $userid_link . '\'"><i class="fa fa-trash"></i>&nbsp;&nbsp;Ja, ich bin sicher!</th>
+                    <th class="" style="cursor:pointer; width:200px;" onclick="self.location.href=\'?manage_dashboards' . $userid_link . '\'"><i class="fa fa-stop"></i>&nbsp;&nbsp;Abbrechen</th>
                   </tr>
                 </thead>
                </table>

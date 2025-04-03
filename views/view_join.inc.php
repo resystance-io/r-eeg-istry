@@ -211,6 +211,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                 print '</div>';
                 print '<div style="clear:both"></div>';
                 print '</div>';
+                print '<br />&nbsp;<br />';
             }
             else
             {

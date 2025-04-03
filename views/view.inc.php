@@ -42,6 +42,53 @@ class VIEW
         $this->mail->smtpPassword = $this->config->user['MAIL_MTA_PASS'];
         $this->mail->smtpOptions = $this->config->user['MAIL_OPTIONS'];
     }
+
+    public function view_handle_backend_login()
+    {
+        if(isset($_SESSION['backend_authenticated']) && $_SESSION['backend_authenticated'] != '')
+        {
+            $user_deleted = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARD_USERS'], 'deleted', 'id', $_SESSION['backend_authenticated']);
+            if($user_deleted === 'y')
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        if(isset($_SESSION['auth_backend_username']) && isset($_SESSION['auth_backend_username']) != "")
+        {
+            $username_prefill = $_SESSION['auth_backend_username'];
+        }
+        else
+        {
+            $username_prefill = "";
+        }
+
+        print "<h1>Login</h1>";
+        print "<div class=\"form-container\" style=\"width: 600px;\">";
+        print 'Benutzername:<br><input type="text" onfocus="this.select()" name="auth_username" id="auth_username" value="' . $username_prefill . '" onfocusout="JaxonInteractives.update_backend_credential_cache(' . "'auth_username'" . ', document.getElementById(' . "'auth_username'" . ').value);" />';
+        print '<br />';
+        print 'Passwort:<br><input type="password" onfocus="this.select()" name="auth_password" id="auth_password" value="" onfocusout="JaxonInteractives.update_backend_credential_cache(' . "'auth_password'" . ', document.getElementById(' . "'auth_password'" . ').value);" />';
+        print "</div><br />";
+        print '<button type="button" class="defaultbtn" id="btn_authenticate" onClick="JaxonInteractives.backend_authenticate();">Einloggen</button>';
+    }
+
+    public function record_note($registration_id, $style, $category, $content)
+    {
+        $insert_arr = [
+            'registration_id' => $registration_id,
+            'timestamp' => date(time()),
+            'style' => $style,
+            'category' => $category,
+            'content' => $content
+        ];
+        if(isset($_SESSION['backend_authenticated']))   $insert_arr['user_id'] = $_SESSION['backend_authenticated'];
+
+        $this->db->insert_row_with_array($this->config->user['DBTABLE_DASHBOARD_NOTES'], $insert_arr);
+    }
 }
 
 ?>
