@@ -144,3 +144,36 @@ button.search {
     line-height: 10px;
     background-color: #223344;
 }
+
+.dataTables_paginate {
+    float: right;
+    text-align: right;
+    padding-top: 20px;
+}
+
+div.dataTables_paginate ul.paginationlist {
+    white-space: nowrap;
+    padding: 6px;
+    border-radius: 5px;
+}
+
+.dataTables_paginate .paginate_button {
+    box-sizing: border-box;
+    display: inline-block;
+    min-width: 40px;
+    max-width: 40px;
+    text-align: center;
+    cursor: pointer;
+    color: #fff !important;
+    border: 1px solid white;
+    border-radius: 5px;
+}
+
+.dataTables_paginate .paginate_button:hover {
+    background-color: #454545;
+}
+
+li.pageactive {
+    background-image: linear-gradient(slategrey , lightslategray);
+    border: 1px solid transparent;
+}

@@ -997,6 +997,14 @@ class Interactives
         return $response;
     }
 
+    public function dashboard_select_pagination_page($page)
+    {
+        $_SESSION['dashboard']['page'] = $page;
+        $response = jaxon()->newResponse();
+        $response->script("window.location.href='/?manage';");
+        return $response;
+    }
+
     public function dashboard_inline_update_init($div_id, $dbkey, $recordid)
     {
         $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], $dbkey, 'id', $recordid);

@@ -274,7 +274,28 @@ class VIEW_MANAGEMENT extends VIEW
             }
         }
 
-        $registrations = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_REGISTRATIONS'], 'deleted', 'n', NULL, $sortkey_arr[0], $sortkey_arr[1], $filter_string);
+        $registrations_count = $this->db->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_REGISTRATIONS'], 'deleted','n', $filter_string);
+
+        if($registrations_count > $this->config->user['page_size'])
+        {
+            $page_count = ceil($registrations_count / $this->config->user['page_size']);
+        }
+        else
+        {
+            $page_count = 1;
+        }
+
+        if(isset($_SESSION['dashboard']['page']) && $_SESSION['dashboard']['page'] <= $page_count)
+        {
+            $start_index = ($_SESSION['dashboard']['page'] - 1) * $this->config->user['page_size'];
+        }
+        else
+        {
+            $_SESSION['dashboard']['page'] = 1;
+            $start_index = 0;
+        }
+
+        $registrations = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_REGISTRATIONS'], 'deleted', 'n', $start_index . ',' . $this->config->user['page_size'], $sortkey_arr[0], $sortkey_arr[1], $filter_string);
         foreach($registrations as $registration)
         {
             print '<tr>';
@@ -298,7 +319,43 @@ class VIEW_MANAGEMENT extends VIEW
         print '
                 </tbody>
               </table>
+        ';
+
+        if($registrations_count > $this->config->user['page_size'])
+        {
+            print '
+                  <div class="dataTables_paginate">
+                        <ul class="paginationlist">
+            ';
+
+            for ($page_selector = 1; $page_selector <= $page_count; $page_selector++)
+            {
+                if (isset($_SESSION['dashboard']['page']) && $_SESSION['dashboard']['page'] == $page_selector)
+                {
+                    print "
+                                <li class=\"paginate_button pageactive\">
+                                    $page_selector
+                                </li>
+                    ";
+                } else
+                {
+                    print "
+                                <li class=\"paginate_button\" onclick=\"JaxonInteractives.dashboard_select_pagination_page($page_selector)\">
+                                    $page_selector
+                                </li>
+                    ";
+                }
+            }
+
+            print '      
+                        </ul>
+                  </div>
+            ';
+        }
+
+        print '
             </div>
+            &nbsp;<br />&nbsp;<br />&nbsp;<br />
         ';
     }
 
