@@ -1019,6 +1019,40 @@ class Interactives
         return $response;
     }
 
+    public function dashboard_inline_update_state_init($div_id, $recordid)
+    {
+        $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'state', 'id', $recordid);
+        $input_field = "<div style=\"float:left\">
+                        <select name=\"state\" id=\"state\" class=\"detail\" style=\"width:280px\">";
+
+        $available_states = $this->db->get_enum_array($this->config->user['DBTABLE_REGISTRATIONS'], 'state');
+        $state_nice = ['new' => 'Neu', 'onboarding' => "Onboarding", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert"];
+        foreach($available_states as $available_state)
+        {
+            if($dbvalue == $available_state) $selected = 'selected="selected"'; else $selected = '';
+            $input_field .= "<option value=\"" . $available_state . "\" $selected>" . $state_nice[$available_state] . "</option>";
+        }
+
+        $input_field .= "            </select>
+                        </div>
+                        <div style=\"float:right\">
+                            <button class=\"search bg-green-gradient\" onclick=\"\"><i class=\"fa fa-check\"></i></button>
+                            <button class=\"search bg-red-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_state_cancel('detail_state', '$recordid');\"><i class=\"fa fa-ban\"></i></button>
+                        </div>";
+
+        $response = jaxon()->newResponse();
+        $response->assign($div_id, 'innerHTML', $input_field);
+
+        return $response;
+    }
+
+    public function dashboard_inline_update_state_cancel($div_id, $recordid)
+    {
+        $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'state', 'id', $recordid);
+        $state_nice = ['new' => 'Neu', 'onboarding' => "Onboarding", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert"];
+        $div_content = $state_nice[$dbvalue] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_state_init('detail_state', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
+    }
+
     private function validate_record($value, $integrity=null)
     {
         // validate a given record based on its integrity check definition and return upon success or failure

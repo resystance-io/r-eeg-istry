@@ -80,23 +80,6 @@ class CONTROLLER_DB
 		return $this->db->prepare($query);
 	}
 
-
-	// ---------------------------------------------------------------------------------
-	// ::DESCRIPT: -
-	// ::RETURNS: -
-	// ---------------------------------------------------------------------------------
-
-	/*public function get_id_by_field_value($table,$haystack,$needle,$order=NULL,$ordermethod=NULL)
-	{
-
-		if($ordermethod==NULL) $ordermethod = 'ASC';
-		if($order!=NULL) $order = "ORDER BY $table.$order $ordermethod";
-
-		list($selection) = mysql_fetch_row($this->execute_query("SELECT $table.id FROM $table WHERE $table.$haystack = \"$needle\" $order LIMIT 1"));
-		return $selection;
-
-	}*/
-
 	public function get_column_by_column_value($table, $field, $reference_field, $reference_value)
 	{
 
@@ -278,7 +261,7 @@ class CONTROLLER_DB
 
 		if($extended_where_clause!=NULL) $extended_where_clause = "AND $extended_where_clause";
 
-		$ret = $this->execute_query("SELECT COUNT($table.id) FROM $table $joinstatement WHERE $table.$haystack = \"$needle\" $extended_where_clause");
+		$ret = $this->db->execute_query("SELECT COUNT($table.id) FROM $table $joinstatement WHERE $table.$haystack = \"$needle\" $extended_where_clause");
 		return $ret->fetchColumn();
 	}
 
@@ -292,7 +275,7 @@ class CONTROLLER_DB
 		$this->db->execute_blind_query("DELETE from $table where $table.id = \"$id\" LIMIT 1");
 	}
 
-// ---------------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------------
 	// ::DESCRIPT: deletes rows by given field value
 	// ::RETURNS: 1 || 0
 	// ---------------------------------------------------------------------------------
@@ -305,7 +288,19 @@ class CONTROLLER_DB
 	{
 
 		if($extended_where_clause!=NULL) $extended_where_clause = "AND $extended_where_clause";
-		return $this->execute_blind_query("DELETE FROM $table WHERE $table.$referencefield = \"$referencevalue\" $extended_where_clause ");
+		return $this->db->execute_blind_query("DELETE FROM $table WHERE $table.$referencefield = \"$referencevalue\" $extended_where_clause ");
+	}
+
+	// ---------------------------------------------------------------------------------
+	// ::DESCRIPT: returns enum content array from field
+	// ::RETURNS: 1 || 0
+	// ---------------------------------------------------------------------------------
+
+	public function get_enum_array($table, $field)
+	{
+		$get_enum_ret = $this->db->execute_query("SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = \"$table\" AND COLUMN_NAME = \"$field\"");
+		$get_enum_arr = $get_enum_ret->fetch(PDO::FETCH_ASSOC);
+		return explode(",", str_replace("'", "", substr($get_enum_arr['COLUMN_TYPE'], 5, (strlen($get_enum_arr['COLUMN_TYPE'])-6))));
 	}
 
 	/*
@@ -800,23 +795,7 @@ class CONTROLLER_DB
 	{
 		return $this->execute_query("DELETE from $table where $table.$referencefield = \"$referencevalue\"");
 	}
-	
-	
 
-	
-	// ---------------------------------------------------------------------------------
-	// ::DESCRIPT: returns enum content array from field
-	// ::RETURNS: 1 || 0
-	// ---------------------------------------------------------------------------------
-
-	public function get_enum_array($table,$field)
-	{
-	
-		$get_enum_ret = $this->execute_query("SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = \"$table\" AND COLUMN_NAME = \"$field\"");
-		$get_enum_arr = mysql_fetch_array($get_enum_ret);
-		return explode(",", str_replace("'", "", substr($get_enum_arr['COLUMN_TYPE'], 5, (strlen($get_enum_arr['COLUMN_TYPE'])-6))));
-	
-	}
 	*/
 }
 

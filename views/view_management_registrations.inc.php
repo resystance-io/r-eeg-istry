@@ -7,7 +7,6 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
     {
         ?>
 
-        <!--<input type="button" value="JAXON FOO TEST" onclick="jaxon_foo()" /><br />-->
         <header id="header">
             <h1>R:EEG:ISTRY | Management</h1>
             <p>Registrierung anzeigen<br /></p>
@@ -29,7 +28,6 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
 
     function view_render_registration($registration_id)
     {
-
         $registrations = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'id', $_REQUEST['registration']);
         if ($registrations == NULL || count($registrations) == 0)
         {
@@ -38,28 +36,54 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         }
         $registration = $registrations[0];
 
-        $tenant_info = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_TENANTS'], 'id', $registration['tenant']);
-        if ($tenant_info == NULL || count($tenant_info) == 0)
+        if($registration['tenant'] != NULL)
         {
-            print '<h3>Fehler:</h3><br />Die Eigenschaften der EEG konnten nicht abgerufen werden.<br />Bitte kontaktiere den Support';
-            return false;
+            $tenant_info = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_TENANTS'], 'id', $registration['tenant']);
+            if ($tenant_info == NULL || count($tenant_info) == 0)
+            {
+                print '<h3>Fehler:</h3><br />Die Eigenschaften der EEG konnten nicht abgerufen werden.<br />Bitte kontaktiere den Support';
+                return false;
+            } else
+            {
+                $tenant_info = $tenant_info[0];
+            }
         }
         else
         {
-            $tenant_info = $tenant_info[0];
+            // tenant not yet chosen
+            $tenant_info = NULL;
         }
 
         print '<div style="float:left; margin-right:50px">'; // MAIN CONTENT LEFT: INFORMATION
 
+        switch ($registration['type'])
+        {
+            case 'individual':
+                print '<h2><li class="fa fa-user"></li>&nbsp;&nbsp;' . $registration['title'] . " " . $registration['firstname'] . " " . $registration['lastname'] . " " . $registration['postnomen'] . '</h2>';
+                break;
+
+            case 'agriculture':
+                print '<h2><li class="fa fa-tractor"></li>&nbsp;&nbsp;' . $registration['title'] . " " . $registration['firstname'] . " " . $registration['lastname'] . " " . $registration['postnomen'] . '</h2>';
+                break;
+
+            case 'company':
+                print '<h2><li class="fa fa-building"></li>&nbsp;&nbsp;' . $registration['company_name'] . '</h2>';
+                break;
+        }
         print '<h3>Status</h3>';
         print '
               <table class="table" style="width:700px">
                 <tbody>
         ';
 
-        print "<tr><td class=\"detailheader\">Status:</td><td class=\"detailcontent\">soon</td>";
-        //print "<td id=\"detail_status\" class=\"detailcontent\">" . $registration['member_id'] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_init('detail_member_id', 'member_id', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td>";
-        print "</tr>";
+        $state_nice = ['new' => 'Neu', 'onboarding' => "Onboarding", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert"];
+        print "<tr>
+                <td class=\"detailheader\">Status:</td>
+                <td class=\"detailcontent\" id=\"detail_state\">
+                       " . $state_nice[$registration['state']] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_state_init('detail_state', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>
+                </td>
+               </tr>
+        ";
 
         print "<tr>
                 <td class=\"detailheader\">EEG / Mandant:</td>
@@ -225,12 +249,12 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
             if ($meter['meter_type'] == 'consumer')
             {
                 $meter_nice = "Verbrauch";
-                $meter_type_shortcode = "Abn";
+                $meter_type_shortcode = "ABN";
             } 
             else
             {
                 $meter_nice = "Einspeisung";
-                $meter_type_shortcode = "Erz";
+                $meter_type_shortcode = "ERZ";
             }
             
             if ($meter['meter_participation'] != null) $meter_participation = 'Faktor: ' . $meter['meter_participation'] . '%'; else $meter_participation = '';
@@ -238,8 +262,8 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
             if ($meter['meter_feedlimit'] != null) $meter_feedlimit = ', R&uuml;ckspeiselimit: ' . $meter['meter_feedlimit'] . ' kVA'; else $meter_feedlimit = '';
 
             print "<tr class=\"profilemeterline\">
-                    <td class=\"profilemeter\" style=\"width:100px;text-align:center;vertical-align:middle;font-size:14pt;font-weight:bold\">
-                    " . $tenant_info['meter_prefix_short'] . $meter_type_shortcode . $meter['id'] . "
+                    <td class=\"profilemeter\" style=\"width:100px;text-align:center;vertical-align:middle;font-size:12pt;font-weight:bold\">
+                    " . $tenant_info['meter_prefix_short'] . $meter_type_shortcode . $meter['meter_oid'] . "
                     </td>
                     <td class=\"profilemeter\" style=\"text-align:left\">
                         <span class=\"metertype\">$meter_nice ($meter_participation$meter_power$meter_feedlimit)</span><br />
@@ -279,6 +303,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         print '</div>'; // END OF MAIN CONTENT: LEFT
         print '<div style="min-width:500px; float:left">';   // TIMELINE: RIGHT
 
+        print '<h2>&nbsp;</h2>';
         print '<h3>Historie</h3>';
 
         $notes = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARD_NOTES'], 'registration_id', $registration['id']);

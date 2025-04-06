@@ -67,13 +67,16 @@ class VIEW
             $username_prefill = "";
         }
 
-        print "<h1>Login</h1>";
-        print "<div class=\"form-container\" style=\"width: 600px;\">";
+        print "<div style=\"text-align: center\">";
+        print "<h2>R:EEG:ISTRY</h2>";
+        print "<div class=\"form-control\" style=\"width: 300px; margin-left: auto; margin-right: auto\">";
         print 'Benutzername:<br><input type="text" onfocus="this.select()" name="auth_username" id="auth_username" value="' . $username_prefill . '" onfocusout="JaxonInteractives.update_backend_credential_cache(' . "'auth_username'" . ', document.getElementById(' . "'auth_username'" . ').value);" />';
         print '<br />';
         print 'Passwort:<br><input type="password" onfocus="this.select()" name="auth_password" id="auth_password" value="" onfocusout="JaxonInteractives.update_backend_credential_cache(' . "'auth_password'" . ', document.getElementById(' . "'auth_password'" . ').value);" />';
         print "</div><br />";
-        print '<button type="button" class="defaultbtn" id="btn_authenticate" onClick="JaxonInteractives.backend_authenticate();">Einloggen</button>';
+        print '<button type="button" class="thinbtn" id="btn_authenticate" onClick="JaxonInteractives.backend_authenticate();"><i class="fa fa-bolt"></i></button>';
+        print "</div>";
+
     }
 
     public function record_note($registration_id, $style, $category, $content)

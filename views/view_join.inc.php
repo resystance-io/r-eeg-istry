@@ -257,7 +257,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                                 <script>
                                     function confirmStartover()
                                     {
-                                      if (confirm("Wir konnten Deine Zugangsdaten leider nicht an deine eMail Adresse senden. Bitte stelle sicher, dass du die eingeblendeten Zugangsdaten erfolgreich notiert hast."))
+                                      if (confirm("Wir konnten Deine Zugangsdaten leider nicht an Deine eMail Adresse senden. Bitte stelle sicher, dass Du die eingeblendeten Zugangsdaten erfolgreich notiert hast."))
                                       {
                                             window.location.href="/";
                                       }
@@ -764,7 +764,12 @@ sorger!)<br />';
 
         if($mnemonic_count == 0)
         {
-            $registration_array['tenant'] = $_SESSION['tenant'];
+            if($this->config->user['defer_tenant_assignment'] === true)
+            {
+                // assign the tenant based on either the ID chosen by the visitor
+                // or the default tenant configured as fallback ID
+                $registration_array['tenant'] = $_SESSION['tenant'];
+            }
             $registration_array['registration_date'] = time();
             $registration_array['mnemonic'] = $hashed_mnemonic;
             $registration_array['type'] = $_SESSION['generic_information']['join_type'];
@@ -859,7 +864,7 @@ sorger!)<br />';
                     $meter_array['meter_participation'] = $meter_object['participation']['value'];
                     $meter_array['meter_feedlimit'] = $meter_object['feedlimit']['value'];
 
-                    $meter_autoinc_id = $this->object_broker->instance['db']->insert_row_with_array($this->config->user['DBTABLE_METERS'], $meter_array);
+                    $this->object_broker->instance['db']->insert_row_with_array($this->config->user['DBTABLE_METERS'], $meter_array);
                 }
             }
 
@@ -871,7 +876,7 @@ sorger!)<br />';
                     $storage_array['storage_uuid'] = $storage_key;
                     $storage_array['storage_capacity'] = $storage_object['value'];
 
-                    $storage_autoinc_id = $this->object_broker->instance['db']->insert_row_with_array($this->config->user['DBTABLE_STORAGES'], $storage_array);
+                    $this->object_broker->instance['db']->insert_row_with_array($this->config->user['DBTABLE_STORAGES'], $storage_array);
                 }
             }
 
