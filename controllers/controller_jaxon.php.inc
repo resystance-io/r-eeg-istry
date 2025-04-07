@@ -1005,6 +1005,15 @@ class Interactives
         return $response;
     }
 
+    public function dashboard_select_page_size($page_size)
+    {
+        $_SESSION['dashboard']['page_size'] = $page_size;
+        $this->db->update_column_by_column_values($this->config->user['DBTABLE_DASHBOARD_USERS'], 'result_page_size', $page_size, 'id', $_SESSION['backend_authenticated']);
+        $response = jaxon()->newResponse();
+        $response->script("window.location.href='/?manage';");
+        return $response;
+    }
+
     public function dashboard_inline_update_init($div_id, $dbkey, $recordid)
     {
         $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], $dbkey, 'id', $recordid);

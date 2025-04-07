@@ -147,8 +147,38 @@ button.search {
 
 .dataTables_paginate {
     float: right;
-    text-align: right;
+    text-align: center;
     padding-top: 20px;
+}
+
+.dataTables_pagesize {
+    width: 190px;
+    font-size: 14px;
+    box-sizing: border-box;
+    display: inline-block;
+    float: left;
+    text-align: center;
+    margin-top: 20px;
+    color: #fff !important;
+    border: 1px solid white;
+    border-radius: 5px;
+    white-space: nowrap;
+    cursor: default;
+}
+
+.dataTables_pagesize select {
+    height: 30px;
+    font-size: 14px;
+    text-align: center;
+    background: transparent;
+    border: none;
+    color: white;
+    width: 60px;
+    float:left;
+    padding: 0px;
+    margin: 0px;
+    cursor: pointer;
+
 }
 
 div.dataTables_paginate ul.paginationlist {

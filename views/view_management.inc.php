@@ -274,11 +274,25 @@ class VIEW_MANAGEMENT extends VIEW
             }
         }
 
+        if(isset($_SESSION['dashboard']['page_size']))
+        {
+            $page_size = $_SESSION['dashboard']['page_size'];
+        }
+        else
+        {
+            $page_size = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARD_USERS'], 'result_page_size', 'id', $_SESSION['backend_authenticated']);
+            if($page_size == null)
+            {
+                $page_size = $this->config->user['default_page_size'];
+                $_SESSION['dashboard']['page_size'] = $page_size;
+                $this->db->update_column_by_column_values($this->config->user['DBTABLE_DASHBOARD_USERS'], 'result_page_size', $page_size, 'id', $_SESSION['backend_authenticated']);
+            }
+        }
         $registrations_count = $this->db->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_REGISTRATIONS'], 'deleted','n', $filter_string);
 
-        if($registrations_count > $this->config->user['page_size'])
+        if($registrations_count > $page_size)
         {
-            $page_count = ceil($registrations_count / $this->config->user['page_size']);
+            $page_count = ceil($registrations_count / $page_size);
         }
         else
         {
@@ -287,7 +301,7 @@ class VIEW_MANAGEMENT extends VIEW
 
         if(isset($_SESSION['dashboard']['page']) && $_SESSION['dashboard']['page'] <= $page_count)
         {
-            $start_index = ($_SESSION['dashboard']['page'] - 1) * $this->config->user['page_size'];
+            $start_index = ($_SESSION['dashboard']['page'] - 1) * $page_size;
         }
         else
         {
@@ -295,7 +309,7 @@ class VIEW_MANAGEMENT extends VIEW
             $start_index = 0;
         }
 
-        $registrations = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_REGISTRATIONS'], 'deleted', 'n', $start_index . ',' . $this->config->user['page_size'], $sortkey_arr[0], $sortkey_arr[1], $filter_string);
+        $registrations = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_REGISTRATIONS'], 'deleted', 'n', $start_index . ',' . $page_size, $sortkey_arr[0], $sortkey_arr[1], $filter_string);
         foreach($registrations as $registration)
         {
             print '<tr>';
@@ -321,7 +335,32 @@ class VIEW_MANAGEMENT extends VIEW
               </table>
         ';
 
-        if($registrations_count > $this->config->user['page_size'])
+        print '
+                <div class="dataTables_pagesize">
+                    <select onchange="JaxonInteractives.dashboard_select_page_size(this.value)">
+        ';
+
+        if($page_size == 5) $selected = "selected=\"selected\""; else $selected = "";
+        print "         <option value=\"5\" $selected>5</option>";
+        if($page_size == 10) $selected = "selected=\"selected\""; else $selected = "";
+        print "         <option value=\"10\" $selected>10</option>";
+        if($page_size == 20) $selected = "selected=\"selected\""; else $selected = "";
+        print "         <option value=\"20\" $selected>20</option>";
+        if($page_size == 30) $selected = "selected=\"selected\""; else $selected = "";
+        print "         <option value=\"30\" $selected>30</option>";
+        if($page_size == 40) $selected = "selected=\"selected\""; else $selected = "";
+        print "         <option value=\"40\" $selected>40</option>";
+        if($page_size == 50) $selected = "selected=\"selected\""; else $selected = "";
+        print "         <option value=\"50\" $selected>50</option>";
+        if($page_size == 100) $selected = "selected=\"selected\""; else $selected = "";
+        print "         <option value=\"100\" $selected>100</option>";
+
+        print '
+                    </select><div style="margin-top:1px;">Ergebnisse / Seite</div>
+                </div>
+        ';
+
+        if($registrations_count > $page_size)
         {
             print '
                   <div class="dataTables_paginate">
