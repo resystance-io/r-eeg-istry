@@ -21,7 +21,7 @@ class Interactives
         include_once('controllers/controller_db.php.inc');
         $this->db = $this->object_broker->instance['db'] = new CONTROLLER_DB($this->object_broker);
 
-        include_once('views/view.php.inc');
+        include_once('views/view.inc.php');
         $this->view = $this->object_broker->instance['view'] = new VIEW();
     }
 
@@ -1068,6 +1068,10 @@ class Interactives
         $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'state', 'id', $recordid);
         $state_nice = ['new' => 'Neu', 'onboarding' => "Onboarding", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert"];
         $div_content = $state_nice[$dbvalue] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_state_init('detail_state', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
+
+        $response = jaxon()->newResponse();
+        $response->assign($div_id, 'innerHTML', $div_content);
+        return $response;
     }
 
     private function validate_record($value, $integrity=null)
