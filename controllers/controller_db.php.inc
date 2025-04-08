@@ -234,7 +234,7 @@ class CONTROLLER_DB
 
 	}
 
-	public function get_rows_by_column_value_extended($table, $reference_field=NULL, $reference_value=NULL, $limit=NULL, $order=NULL, $ordermethod=NULL, $extended_where_clause=NULL)
+	public function get_rows_by_column_value_extended($table, $reference_field=NULL, $reference_value=NULL, $limit=NULL, $order=NULL, $ordermethod=NULL, $extended_where_clause=NULL, $extended_operator='AND')
 	{
 		if($reference_field && $reference_value)	$reference = "WHERE $reference_field = \"$reference_value\"";	else	$reference = NULL;
 		if($limit) $limit = "LIMIT $limit";
@@ -242,7 +242,7 @@ class CONTROLLER_DB
 		if($order) $order = "ORDER BY $table.$order $ordermethod";
 
 		if($extended_where_clause)
-			$extended_where_clause = "AND $extended_where_clause";
+			$extended_where_clause = "$extended_operator $extended_where_clause";
 
 		$sql = "SELECT * FROM $table $reference $extended_where_clause $order $limit";
 		$ret = $this->db->execute_query($sql);

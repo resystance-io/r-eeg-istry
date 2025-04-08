@@ -27,6 +27,56 @@ body {
     box-sizing: border-box;
 }
 
+.mainbtnyellow {
+    cursor: pointer;
+    border: 0px solid rgb(255, 255, 255);
+    font-size: 18px;
+    font-weight: bold;
+    color: black !important;
+    display: inline-block;
+    padding: 60px 60px;
+    transition: 0.5s;
+    width: 400px;
+    height: 200px;
+    margin: 10px;
+    box-shadow: rgb(0, 0, 0) 0px 0px 0px 0px;
+    border-radius: 3px;
+    background: rgb(68, 161, 255);
+    justify-content: center;
+    align-items: center;
+    flex-direction: row-reverse;
+    --hover-color: #ffffff;
+    --hover-bgc: #fff87c;
+    --hover-borderc: #ffffff;
+    --hover-borderSize: 0px;
+    box-sizing: border-box;
+}
+
+.mainbtnred {
+    cursor: pointer;
+    border: 0px solid rgb(255, 255, 255);
+    font-size: 18px;
+    font-weight: bold;
+    color: black !important;
+    display: inline-block;
+    padding: 60px 60px;
+    transition: 0.5s;
+    width: 400px;
+    height: 200px;
+    margin: 10px;
+    box-shadow: rgb(0, 0, 0) 0px 0px 0px 0px;
+    border-radius: 3px;
+    background: rgb(68, 161, 255);
+    justify-content: center;
+    align-items: center;
+    flex-direction: row-reverse;
+    --hover-color: #ffffff;
+    --hover-bgc: #ff7c8b;
+    --hover-borderc: #ffffff;
+    --hover-borderSize: 0px;
+    box-sizing: border-box;
+}
+
 .defaultbtn {
     cursor: pointer;
     border: 0px solid rgb(255, 255, 255);
@@ -246,4 +296,62 @@ span.metertype {
     display: block;
 }
 
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0px;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
 
+/* Modal Header */
+.modal-header {
+    padding: 4px 16px;
+    margin: 0;
+    background-color: rgba(255, 100, 65, 0.95);
+    color: black;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+/* Modal Body */
+.modal-body {
+    color: black;
+    padding: 4px 16px;
+    background-color: rgb(255, 219, 227);
+}
+
+/* Modal Footer */
+.modal-footer {
+    padding: 4px 16px;
+    background-color: rgba(255, 100, 65, 0.95);
+    color: black;
+    text-align: right;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+/* Modal Content */
+.modal-content {
+    color: black;
+    position: relative;
+    top: 80px;
+    background-color: rgba(255, 240, 179, 0.14);
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 60%;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+    animation-name: animatetop;
+    animation-duration: 0.4s;
+    border-radius: 10px;
+}
+
+.modal-content h3 {
+    margin: 0;
+}

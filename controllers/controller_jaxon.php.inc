@@ -997,6 +997,14 @@ class Interactives
         return $response;
     }
 
+    public function dashboard_set_colorconfig($value, $dashboard)
+    {
+        $this->db->update_column_by_column_values($this->config->user['DBTABLE_DASHBOARDS'], 'colorconfig', $value, 'id', $dashboard);
+        $response = jaxon()->newResponse();
+        $response->script("window.location.href='/?manage_dashboards&dashboard_id=" . $dashboard ."';");
+        return $response;
+    }
+
     public function dashboard_select_pagination_page($page)
     {
         $_SESSION['dashboard']['page'] = $page;
@@ -1043,18 +1051,21 @@ class Interactives
                         <select name=\"state\" id=\"state\" class=\"detail\" style=\"width:280px\">";
 
         $available_states = $this->db->get_enum_array($this->config->user['DBTABLE_REGISTRATIONS'], 'state');
-        $state_nice = ['new' => 'Neu', 'onboarding' => "Onboarding", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert"];
+        $state_nice = ['new' => 'Neu', 'onboarding' => "Onboarding", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert", 'refused' => "Abgelehnt"];
         foreach($available_states as $available_state)
         {
+            if($available_state == 'new' && $dbvalue != 'new')  $disabled = 'disabled'; else $disabled = '';
+            if($available_state != 'new' && $dbvalue == 'refused')  $disabled = 'disabled';
+            if($available_state == 'refused' && $dbvalue != 'new')  $disabled = 'disabled';
             if($dbvalue == $available_state) $selected = 'selected="selected"'; else $selected = '';
-            $input_field .= "<option value=\"" . $available_state . "\" $selected>" . $state_nice[$available_state] . "</option>";
+            $input_field .= "<option value=\"" . $available_state . "\" $selected $disabled>" . $state_nice[$available_state] . "</option>";
         }
 
         $input_field .= "            </select>
                         </div>
                         <div style=\"float:right\">
-                            <button class=\"search bg-green-gradient\" onclick=\"\"><i class=\"fa fa-check\"></i></button>
-                            <button class=\"search bg-red-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_state_cancel('detail_state', '$recordid');\"><i class=\"fa fa-ban\"></i></button>
+                            <button class=\"search bg-green-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_state_save(document.getElementById('state').value, $recordid)\"><i class=\"fa fa-check\"></i></button>
+                            <button class=\"search bg-red-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_state_cancel('detail_state', $recordid);\"><i class=\"fa fa-ban\"></i></button>
                         </div>";
 
         $response = jaxon()->newResponse();
@@ -1063,13 +1074,193 @@ class Interactives
         return $response;
     }
 
+    public function dashboard_inline_update_state_save($dbvalue, $recordid)
+    {
+        $current_value = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'state', 'id', $recordid);
+        $current_tenant = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'tenant', 'id', $recordid);
+
+        if($current_value == 'new')
+        {
+            if($dbvalue != 'refused' && $dbvalue != 'new' && $current_tenant != null)
+            {
+                // we have a noteworthy new state and a tenant was already selected,
+                // therefore we're ready to assign new meter OIDs
+
+                $associated_meters = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_METERS'], 'registration_id', $recordid);
+                foreach($associated_meters as $meter)
+                {
+                    $highest_meter_row = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_METERS'],
+                        NULL,
+                        NULL,
+                        1,
+                        'meter_oid',
+                        'DESC',
+                        $this->config->user['DBTABLE_REGISTRATIONS'] . '.tenant = "' . $dbvalue . '" AND ' . $this->config->user['DBTABLE_METERS'] . '.meter_type = "' . $meter['meter_type'] . '"',
+                        'INNER JOIN ' . $this->config->user['DBTABLE_REGISTRATIONS'] . ' ON (' . $this->config->user['DBTABLE_METERS'] . '.registration_id = ' . $this->config->user['DBTABLE_REGISTRATIONS'] . '.id) WHERE');
+                    if(count($highest_meter_row) > 0)
+                    {
+                        $highest_meter_row = $highest_meter_row[0];
+                        $next_meter_oid = $highest_meter_row['meter_oid'] + 1;
+                    }
+                    else
+                    {
+                        $next_meter_oid = 1;
+                    }
+
+                    $this->db->update_column_by_column_values($this->config->user['DBTABLE_METERS'], 'meter_oid', $next_meter_oid, 'id', $meter['id']);
+                }
+            }
+        }
+
+        $this->view->record_note($recordid, 'event', 'modify', "Aktualisierung Status: $current_value -> $dbvalue");
+        $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'state', $dbvalue, 'id', $recordid);
+        $response = jaxon()->newResponse();
+        $response->script("window.location.href='/?manage_registrations&registration=$recordid';");
+        return $response;
+    }
+
     public function dashboard_inline_update_state_cancel($div_id, $recordid)
     {
         $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'state', 'id', $recordid);
-        $state_nice = ['new' => 'Neu', 'onboarding' => "Onboarding", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert"];
+        $state_nice = ['new' => 'Neu', 'onboarding' => "Onboarding", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert", 'refused' => "Abgelehnt"];
         $div_content = $state_nice[$dbvalue] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_state_init('detail_state', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
 
         $response = jaxon()->newResponse();
+        $response->assign($div_id, 'innerHTML', $div_content);
+        return $response;
+    }
+
+    public function dashboard_inline_update_tenant_init($div_id, $recordid)
+    {
+        $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'tenant', 'id', $recordid);
+        $input_field = "<div style=\"float:left\">
+                        <select name=\"tenant\" id=\"tenant\" class=\"detail\" style=\"width:280px\">";
+
+        $tenants = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_TENANTS'], 'enabled', 'y');
+
+        if($dbvalue == null)
+        {
+            $input_field .= "<option value=\"-\" selected=\"selected\">Bitte w&auml;hlen</option>";
+        }
+
+        foreach($tenants as $tenant)
+        {
+            if($dbvalue == $tenant['id']) $selected = 'selected="selected"'; else $selected = '';
+            $input_field .= "<option value=\"" . $tenant['id'] . "\" $selected>" . $tenant['shortname'] . "</option>";
+        }
+
+        $input_field .= "            </select>
+                        </div>
+                        <div style=\"float:right\">
+                            <button class=\"search bg-green-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_tenant_save(document.getElementById('tenant').value, '$recordid')\"><i class=\"fa fa-check\"></i></button>
+                            <button class=\"search bg-red-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_tenant_cancel('detail_tenant', '$recordid');\"><i class=\"fa fa-ban\"></i></button>
+                        </div>";
+
+        $response = jaxon()->newResponse();
+        $response->assign($div_id, 'innerHTML', $input_field);
+        return $response;
+    }
+
+    public function dashboard_inline_update_tenant_save($dbvalue, $recordid, $confirm=false)
+    {
+        $response = jaxon()->newResponse();
+        $current_value = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'tenant', 'id', $recordid);
+        $current_state = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'state', 'id', $recordid);
+
+        if($dbvalue == '-')
+        {
+            $response->script("window.location.href='/?manage_registrations&registration=$recordid';");
+            return $response;
+        }
+
+        if($current_state == 'new' || $current_state == 'refused')
+        {
+            $current_value_nice = $this->db->get_column_by_column_value($this->config->user['DBTABLE_TENANTS'], 'shortname', 'id', $current_value);
+            $new_value_nice = $this->db->get_column_by_column_value($this->config->user['DBTABLE_TENANTS'], 'shortname', 'id', $dbvalue);
+            $this->view->record_note($recordid, 'event', 'modify', "Aktualisierung Tenant: $current_value_nice -> $new_value_nice");
+            $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'tenant', $dbvalue, 'id', $recordid);
+            $response->script("window.location.href='/?manage_registrations&registration=$recordid';");
+        }
+        else
+        {
+            if($current_value != $dbvalue)
+            {
+                if($confirm === true || ($current_value == null && $current_state != 'new' && $current_state != 'refused'))
+                {
+                    $current_value_nice = $this->db->get_column_by_column_value($this->config->user['DBTABLE_TENANTS'], 'shortname', 'id', $current_value);
+                    $new_value_nice = $this->db->get_column_by_column_value($this->config->user['DBTABLE_TENANTS'], 'shortname', 'id', $dbvalue);
+                    $this->view->record_note($recordid, 'event', 'modify', "Aktualisierung Tenant: $current_value_nice -> $new_value_nice");
+                    $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'tenant', $dbvalue, 'id', $recordid);
+
+                    $associated_meters = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_METERS'], 'registration_id', $recordid);
+                    foreach($associated_meters as $meter)
+                    {
+                        $highest_meter_row = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_METERS'],
+                                                                            NULL,
+                                                                            NULL,
+                                                                                    1,
+                                                                                  'meter_oid',
+                                                                             'DESC',
+                                                                    $this->config->user['DBTABLE_REGISTRATIONS'] . '.tenant = "' . $dbvalue . '" AND ' . $this->config->user['DBTABLE_METERS'] . '.meter_type = "' . $meter['meter_type'] . '"',
+                                                                        'INNER JOIN ' . $this->config->user['DBTABLE_REGISTRATIONS'] . ' ON (' . $this->config->user['DBTABLE_METERS'] . '.registration_id = ' . $this->config->user['DBTABLE_REGISTRATIONS'] . '.id) WHERE');
+                        if(count($highest_meter_row) > 0)
+                        {
+                            $highest_meter_row = $highest_meter_row[0];
+                            $next_meter_oid = $highest_meter_row['meter_oid'] + 1;
+                        }
+                        else
+                        {
+                            $next_meter_oid = 1;
+                        }
+
+                        $this->db->update_column_by_column_values($this->config->user['DBTABLE_METERS'], 'meter_oid', $next_meter_oid, 'id', $meter['id']);
+                    }
+
+                    $response->script("window.location.href='/?manage_registrations&registration=$recordid';");
+                }
+                else
+                {
+                    $footer_actions = "
+                        <button class=\"search bg-green-gradient\" style=\"border: white 1px solid\" onclick=\"JaxonInteractives.dashboard_inline_update_tenant_save('$dbvalue', '$recordid', true);\"><i class=\"fa fa-check-circle\"></i></button>
+                        <button class=\"search bg-red-gradient\" style=\"border: white 1px solid\" onclick=\"JaxonInteractives.dashboard_inline_update_tenant_cancel('detail_tenant', '$recordid');\"><i class=\"fa fa-ban\"></i></button>
+                    ";
+
+                    $associated_meter_count = $this->db->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_METERS'], 'registration_id', $recordid);
+
+                    $response->assign('modalheadline', 'innerHTML', "&nbsp;Achtung!");
+                    $response->assign('modalbody', 'innerHTML',
+                        "<b style=\"color:black\">Dieses Mitglied ist bereits einer EEG zugeordnet.</b><br />" .
+                        "Durch diese &Auml;nderung erhalten $associated_meter_count Z&auml;hlpunkt(e) neue IDs<br />" .
+                        "und werden einem neuen Umspannwerk zugeordnet.");
+                    $response->assign('modalfooter', 'innerHTML', $footer_actions);
+
+                    $response->assign('modal', 'style.display', 'inline');
+                }
+            }
+            else
+            {
+                $response->script("window.location.href='/?manage_registrations&registration=$recordid';");
+            }
+        }
+        return $response;
+    }
+
+    public function dashboard_inline_update_tenant_cancel($div_id, $recordid)
+    {
+        $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'tenant', 'id', $recordid);
+        if($dbvalue == null)
+        {
+            $tenant_nice = 'Nicht zugewiesen';
+        }
+        else
+        {
+            $tenant_nice = $this->db->get_column_by_column_value($this->config->user['DBTABLE_TENANTS'], 'fullname', 'id', $dbvalue);
+        }
+
+        $div_content = $tenant_nice . "<i onclick=\"JaxonInteractives.dashboard_inline_update_tenant_init('detail_tenant', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
+
+        $response = jaxon()->newResponse();
+        $response->assign('modal', 'style.display', 'none');
         $response->assign($div_id, 'innerHTML', $div_content);
         return $response;
     }

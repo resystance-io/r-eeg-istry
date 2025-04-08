@@ -17,7 +17,7 @@
 .table td {
     padding: 8px;
     text-align: center;
-    border: 1px solid #e5e7eb;
+    border: 1px solid white;
 }
 
 td.detailheader
@@ -74,15 +74,6 @@ th.navselected:hover {
     color: black;
 }
 
-/* Frozen first column */
-.table td:nth-child(1),
-.table th:nth-child(1) {
-    background: white; /* Highlighted background for frozen column */
-    position: sticky;
-    left: 0; /* Ensures the column stays on the left */
-    z-index: 5; /* Keeps the column above other cells */
-    color: black;
-}
 .table th:nth-child(1) {
     background-image: linear-gradient(lightslategrey, lightblue);
     width: 160px;
@@ -111,25 +102,187 @@ th.navselected:hover {
 
 /* Zebra striping for rows */
 .table tr:nth-child(odd) {
-    background-color: whitesmoke;
     color: black;
 }
 .table tr:nth-child(even) {
-    background-color: white;
     color: black;
 }
 
 /* Hover effect for rows */
 .table tr:hover {
-    background-color: rgba(14, 116, 144, 0.1);
-    color: white;
+    font-weight: bold;
+    border: 1px solid black;
 }
 
-/* Hover effect for columns */
-.table td:hover {
-    background-color: rgba(14, 116, 144, 0.1);
-    color: white;
+
+
+
+.statenew td{
+    background-color: #F9D978;
+    transition: background 2s ease;
+    cursor: pointer;
 }
+.statenew td:nth-child(1){
+    color: #F9D978;
+    background-color: transparent;
+    transition: background 2s ease;
+}
+
+.statenew:hover td:nth-child(1){
+    color: black;
+}
+
+.statenew:hover td{
+    background-color: #D9B958;
+    transition: background 0.3s ease;
+}
+
+
+
+.stateonboarding td{
+    background-color: #BCFFF9;
+    transition: background 0.3s ease;
+    cursor: pointer;
+}
+.stateonboarding td:nth-child(1){
+    color: #BCFFF9;
+    background-color: transparent;
+    transition: background 0.3s ease;
+}
+
+.stateonboarding:hover td:nth-child(1){
+    color: black;
+}
+
+.stateonboarding:hover td{
+    background-color: #9CDFD9;
+    transition: background 0.3s ease;
+}
+
+
+
+.stateactive td{
+    background-color: #CBFFBC;
+    transition: background 0.3s ease;
+    cursor: pointer;
+}
+.stateactive td:nth-child(1){
+    color: #CBFFBC;
+    background-color: transparent;
+    transition: background 0.3s ease;
+}
+
+.stateactive:hover td:nth-child(1){
+    color: black;
+}
+
+.stateactive:hover td{
+    background-color: #ABDF9C;
+    transition: background 0.3s ease;
+}
+
+
+
+.statesuspended td{
+    background-color: #FFD6BC;
+    transition: background 0.3s ease;
+    cursor: pointer;
+}
+.statesuspended td:nth-child(1){
+    color: #FFD6BC;
+    background-color: transparent;
+    transition: background 0.3s ease;
+}
+
+.statesuspended:hover td:nth-child(1){
+    color: black;
+}
+
+.statesuspended:hover td{
+    background-color: #FFD6BC;
+    transition: background 0.3s ease;
+}
+
+
+
+.statedeactivated td{
+    background-color: #FFAAAA;
+    transition: background 0.3s ease;
+    cursor: pointer;
+}
+.statedeactivated td:nth-child(1){
+    color: #FFAAAA;
+    background-color: transparent;
+    transition: background 0.3s ease;
+}
+
+.statedeactivated:hover td:nth-child(1){
+    color: black;
+}
+
+.statedeactivated:hover td{
+    background-color: #FFAAAA;
+    transition: background 0.3s ease;
+}
+
+
+
+.staterefused td{
+    background-color: #9F9F9F;
+    transition: background 0.3s ease;
+    cursor: pointer;
+}
+.staterefused td:nth-child(1){
+    color: #9F9F9F;
+    background-color: transparent;
+    transition: background 0.3s ease;
+}
+
+.staterefused:hover td:nth-child(1){
+    color: black;
+}
+
+.staterefused:hover td{
+    background-color: #7F7F7F;
+    transition: background 0.3s ease;
+}
+
+
+
+.stategray:nth-child(even) td{
+    background-color: #fefefe;
+    transition: background 0.3s ease;
+    cursor: pointer;
+}
+
+.stategray:nth-child(odd) td{
+    background-color: #eeeeee;
+    transition: background 0.3s ease;
+    cursor: pointer;
+}
+
+.stategray td:nth-child(1){
+    background-color: #fefefe;
+    transition: background 0.3s ease;
+    cursor: pointer;
+}
+
+.stategray td:nth-child(1){
+    color: #fefefe;
+    background-color: transparent;
+    transition: background 0.3s ease;
+}
+
+.stategray:hover td:nth-child(1){
+    color: black;
+}
+
+.stategray:hover td{
+    background-color: #dedede;
+    transition: background 0.3s ease;
+}
+
+
 
 /* No data row styling */
 .no-data {

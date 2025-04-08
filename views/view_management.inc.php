@@ -9,9 +9,11 @@ class VIEW_MANAGEMENT extends VIEW
         {
             $_SESSION['dashboard']['sortkey'] = $_REQUEST['sortkey'];
         }
+
         if(isset($_REQUEST['dashboard']))
         {
             $_SESSION['dashboard']['id'] = $_REQUEST['dashboard'];
+            $_SESSION['dashboard']['colorconfig'] = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARDS'], 'colorconfig', 'id', $_SESSION['dashboard']['id']);
             $filterconfig = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARDS'], 'filterconfig', 'id', $_SESSION['dashboard']['id']);
             unset($_SESSION['dashboard']['filter']);
             if($filterconfig != null)
@@ -197,10 +199,10 @@ class VIEW_MANAGEMENT extends VIEW
 
         print '
                   </tr>
-                  <tr>
+                  <tr style="background-color:transparent">
         ';
 
-        print '<td><i class="fa fa-filter"></i></td>';
+        print '<td style="background-color:transparent;color:white;"><i class="fa fa-filter"></i></td>';
         foreach($columns as $column)
         {
             if($column['filterable'] == 'y' && $column['compute'] == null)
@@ -312,14 +314,69 @@ class VIEW_MANAGEMENT extends VIEW
         $registrations = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_REGISTRATIONS'], 'deleted', 'n', $start_index . ',' . $page_size, $sortkey_arr[0], $sortkey_arr[1], $filter_string);
         foreach($registrations as $registration)
         {
-            print '<tr>';
+            switch ($registration['state'])
+            {
+                case 'new':
+                    $color = '#91DAE6';
+                    $icon = 'fa-circle';
+                    $class = 'statenew';
+                    break;
 
-            print '<td style="cursor:pointer" onclick="self.location.href=\'/?manage_registrations&registration=' . $registration['id'] . '\'"><i class="fa fa-folder-open"></td>';
-            foreach($columns as $column)
+                case 'onboarding':
+                    $color = '#A99DEC';
+                    $icon = 'fa-hourglass-half';
+                    $class = 'stateonboarding';
+                    break;
+
+                case 'active':
+                    $color = '#B3DB82';
+                    $icon = 'fa-play';
+                    $class = 'stateactive';
+                    break;
+
+                case 'suspended':
+                    $color = '#EE9D70';
+                    $icon = 'fa-pause';
+                    $class = 'statesuspended';
+                    break;
+
+                case 'deactivated':
+                    $color = '#ED6C89';
+                    $icon = 'fa-stop';
+                    $class = 'statedeactivated';
+                    break;
+
+                case 'refused':
+                    $color = '#9F9F9F';
+                    $icon = 'fa-ban';
+                    $class = 'staterefused';
+                    break;
+            }
+
+            if(isset($_SESSION['dashboard']['colorconfig']) && $_SESSION['dashboard']['colorconfig'] == 'n')
+            {
+                $class = 'stategray';
+            }
+
+            print '<tr class="' . $class . '" onclick="self.location.href=\'/?manage_registrations&registration=' . $registration['id'] . '\'">';
+
+            print '<td><i class="fa ' . $icon . '"></td>';
+            foreach($columns as $rowindex => $column)
             {
                 if($column['compute'] == '')
                 {
-                    print '<td>' . $registration[$column['name']] . '</td>';
+                    if((($column['name'] == 'firstname' && isset($columns[$rowindex + 1]) && $columns[$rowindex + 1]['name'] == 'lastname') || ($column['name'] == 'lastname' && isset($columns[$rowindex + 1]) && $columns[$rowindex + 1]['name'] == 'firstname')) && $registration['type'] == 'company')
+                    {   // this is a given name tuple arrangement, and we loaded a company. Let's merge these columns and load the company name for convenience
+                        print '<td colspan="2">' . $registration['company_name'] . '</td>';
+                    }
+                    elseif((($column['name'] == 'firstname' && isset($columns[$rowindex - 1]) && $columns[$rowindex - 1]['name'] == 'lastname') || ($column['name'] == 'lastname' && isset($columns[$rowindex - 1]) && $columns[$rowindex - 1]['name'] == 'firstname')) && $registration['type'] == 'company')
+                    {   // it's still a given name tuple, but this is the second column. Suppress this.
+                        print '';
+                    }
+                    else
+                    {
+                        print '<td>' . $registration[$column['name']] . '</td>';
+                    }
                 }
                 else
                 {
@@ -431,6 +488,21 @@ class VIEW_MANAGEMENT extends VIEW
                 }
                 print "</select>";
                 break;
+
+            case 'state':
+                print '<select class="filter" id="filter-' . $column_name . '" name="filter-' . $column_name . '" onchange="JaxonInteractives.dashboard_set_filter(' . "'" . $column_name . "'" . ', document.getElementById(' . "'filter-" . $column_name . "'" . ').value);">';
+                $options_arr = ['new' => 'Neu', 'onboarding' => "Onboarding", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert", 'refused' => "Abgelehnt"];
+
+                if($filter_value == 'null') $selected = 'selected'; else $selected = '';
+                print '<option ' . $selected . ' value="">&nbsp;</option>';
+
+                foreach($options_arr as $key => $value)
+                {
+                    if($filter_value == $key)  $selected = 'selected';     else    $selected = '';
+                    print '<option ' . $selected . ' value="' . $key . '">' . $value . '</option>';
+                }
+                print "</select>";
+                break;
         }
     }
     function lookup_computed_column($compute_type, $registration_arr)
@@ -443,6 +515,10 @@ class VIEW_MANAGEMENT extends VIEW
             case 'type':
                 $type_conversion = ['individual' => 'Privatperson', 'company' => 'Unternehmen', 'agriculture' => 'Landwirtschaft'];
                 return $type_conversion[$registration_arr['type']];
+
+            case 'state':
+                $state_conversion = ['new' => 'Neu', 'onboarding' => "Onboarding", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert", 'refused' => "Abgelehnt"];
+                return $state_conversion[$registration_arr['state']];
 
             case 'banking_consent':
             case 'network_consent':

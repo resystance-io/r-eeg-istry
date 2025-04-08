@@ -60,6 +60,10 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
 
         }
 
+        $dashboard_filterconfig = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARDS'], 'filterconfig', 'id', $dashboard_id);
+        $dashboard_filterconfig = json_decode(base64_decode($dashboard_filterconfig), true);
+        $_SESSION['dashboard']['filterconfig'] = $dashboard_filterconfig;
+
         if(isset($_REQUEST['column']) && isset($_REQUEST['move']))
         {
             switch($_REQUEST['move'])
@@ -114,6 +118,7 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
         }
 
         $dashboard_name = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARDS'], 'name', 'id', $dashboard_id);
+        $dashboard_colorconfig = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARDS'], 'colorconfig', 'id', $dashboard_id);
         $column_configs = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARD_COLUMNS'], 'visible', 'y');
         $layout_columns = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARD_LAYOUT'], 'dashboard', $dashboard_id, NULL, 'sort', 'ASC');
 
@@ -156,7 +161,7 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
                   <tr>
     ';
 
-        print '<td><i class="fa fa-filter"></i></td>';
+        print '<td style="color:white"><i class="fa fa-filter"></i></td>';
         foreach($columns as $column)
         {
             if($column['filterable'] == 'y' && $column['compute'] == null)
@@ -177,7 +182,7 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
             elseif($column['filterable'] == 'y' && $column['compute'] != null)
             {
                 print '<td>';
-                if(isset($_SESSION['dashboard']['filterconfig'][$column['name']]))  $filter_value = $_SESSION['dashboard']['filterconfig'][$column['name']]; else $filter_value = null;
+                $filter_value = $_SESSION['dashboard']['filterconfig'][$column['name']] ?? null;
                 $this->render_computed_filter_column($column['compute'], $column['name'], $filter_value);
                 print '</td>';
             }
@@ -193,25 +198,39 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
                 <tbody>
         ';
 
-        print '<tr>';
-        print '    <td>Fixiert</td>';
+        print '<tr class="stategray">';
+        print '    <td>&nbsp;</td>';
 
-        $column_count = 1;
-        foreach($columns as $column)
+        foreach($columns as $column_count => $column)
         {
             print '<td class="lightup" style="text-align:center">';
-            if($column_count > 1)   print '            <a style="color:black" href="/?manage_dashboards&dashboard_id=' . $dashboard_id. '&column=' . $column['layout_id'] . '&move=left"><i style="margin-top:4px;font-size:14pt" class="fa fa-caret-left fa-pull-left"></i></a>';
+            if($column_count > 0)   print '            <a style="color:black" href="/?manage_dashboards&dashboard_id=' . $dashboard_id. '&column=' . $column['layout_id'] . '&move=left"><i style="margin-top:4px;font-size:14pt" class="fa fa-caret-left fa-pull-left"></i></a>';
             print '            <a style="color:darkred" href="/?manage_dashboards&dashboard_id=' . $dashboard_id. '&column=' . $column['layout_id'] . '&move=trash"><i class="fa fa-trash"></i></a>';
-            if($column_count < count($columns))   print '            <a style="color:black" href="/?manage_dashboards&dashboard_id=' . $dashboard_id. '&column=' . $column['layout_id'] . '&move=right"><i style="margin-top:4px;font-size:14pt" class="fa fa-caret-right fa-pull-right"></i></a>';
+            if($column_count < count($columns) - 1)   print '            <a style="color:black" href="/?manage_dashboards&dashboard_id=' . $dashboard_id. '&column=' . $column['layout_id'] . '&move=right"><i style="margin-top:4px;font-size:14pt" class="fa fa-caret-right fa-pull-right"></i></a>';
             print '</td>';
-            $column_count++;
         }
 
         print '</tr>';
         print '
                 </tbody>
               </table>
-              <br />
+        ';
+
+        print '
+                <div class="dataTables_pagesize" style="float:left">
+                    <div style="margin-top:1px;padding-left:8px;float:left">Farbschema: </div>
+                    <select onchange="JaxonInteractives.dashboard_set_colorconfig(this.value, ' . "'" . $_REQUEST['dashboard_id'] . "'" . ');"">
+        ';
+
+        if($dashboard_colorconfig == 'y') $selected = "selected=\"selected\""; else $selected = "";
+        print "         <option value=\"y\" $selected>Monokai</option>";
+
+        if($dashboard_colorconfig == 'n') $selected = "selected=\"selected\""; else $selected = "";
+        print "         <option value=\"n\" $selected>Gray</option>";
+
+        print '
+                    </select>
+                </div><br />&nbsp;<br />&nbsp;<br />&nbsp;<br />
         ';
 
         print "<h4>Verf&uuml;gbare Felder</h4>";
@@ -269,7 +288,7 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
         $dashboards = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARDS'], 'user_id', $user_id);
         foreach($dashboards as $dashboard)
         {
-            print '<tr>
+            print '<tr class="stategray">
                     <td><i class="fa fa-table"></i></td>
                     <td>' . $dashboard['name'] . '</td>
                     <td>
@@ -309,6 +328,21 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
             case 'type':
                 print '<select class="filter" id="filter-' . $column_name . '" name="filter-' . $column_name . '" onchange="JaxonInteractives.dashboard_set_filterconfig(' . "'" . $column_name . "'" . ', document.getElementById(' . "'filter-" . $column_name . "'" . ').value, ' . "'" . $_REQUEST['dashboard_id'] . "'" . ');">';
                 $options_arr = ['individual' => 'Privatperson', 'company' => 'Unternehmen', 'agriculture' => 'Landwirtschaft'];
+
+                if($filter_value == 'null') $selected = 'selected'; else $selected = '';
+                print '<option ' . $selected . ' value="">&nbsp;</option>';
+
+                foreach($options_arr as $key => $value)
+                {
+                    if($filter_value == $key)  $selected = 'selected';     else    $selected = '';
+                    print '<option ' . $selected . ' value="' . $key . '">' . $value . '</option>';
+                }
+                print "</select>";
+                break;
+
+            case 'state':
+                print '<select class="filter" id="filter-' . $column_name . '" name="filter-' . $column_name . '" onchange="JaxonInteractives.dashboard_set_filterconfig(' . "'" . $column_name . "'" . ', document.getElementById(' . "'filter-" . $column_name . "'" . ').value, ' . "'" . $_REQUEST['dashboard_id'] . "'" . ');">';
+                $options_arr = ['new' => 'Neu', 'onboarding' => "Onboarding", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert", 'refused' => "Abgelehnt"];
 
                 if($filter_value == 'null') $selected = 'selected'; else $selected = '';
                 print '<option ' . $selected . ' value="">&nbsp;</option>';

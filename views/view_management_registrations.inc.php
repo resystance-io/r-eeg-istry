@@ -43,7 +43,8 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
             {
                 print '<h3>Fehler:</h3><br />Die Eigenschaften der EEG konnten nicht abgerufen werden.<br />Bitte kontaktiere den Support';
                 return false;
-            } else
+            }
+            else
             {
                 $tenant_info = $tenant_info[0];
             }
@@ -51,7 +52,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         else
         {
             // tenant not yet chosen
-            $tenant_info = NULL;
+            $tenant_info['fullname'] = 'Nicht zugewiesen';
         }
 
         print '<div style="float:left; margin-right:50px">'; // MAIN CONTENT LEFT: INFORMATION
@@ -76,7 +77,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                 <tbody>
         ';
 
-        $state_nice = ['new' => 'Neu', 'onboarding' => "Onboarding", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert"];
+        $state_nice = ['new' => 'Neu', 'onboarding' => "Onboarding", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert", 'refused' => "Abgelehnt"];
         print "<tr>
                 <td class=\"detailheader\">Status:</td>
                 <td class=\"detailcontent\" id=\"detail_state\">
@@ -87,7 +88,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
 
         print "<tr>
                 <td class=\"detailheader\">EEG / Mandant:</td>
-                <td class=\"detailcontent\">" . $tenant_info['fullname'] . "</td>
+                <td class=\"detailcontent\" id=\"detail_tenant\">" . $tenant_info['fullname'] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_tenant_init('detail_tenant', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td>
                </tr>
         ";
 
@@ -143,7 +144,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         ';
 
         print "<tr><td class=\"detailheader\">Umspannwerk:</td>";
-        print "<td id=\"detail_network_substation\" class=\"detailcontent\">" . $registration['network_substation'] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_init('detail_network_substation', 'network_substation', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td>";
+        print "<td id=\"detail_network_substation\" class=\"detailcontent\">" . $tenant_info['network_substation_id'] . " | " . $tenant_info['network_substation_name'] . "</td>";
         print "</tr>";
         print "<tr><td class=\"detailheader\">Anmeldenummer:</td>";
         print "<td class=\"detailcontent\">" . str_pad($registration['id'], 5, '0', STR_PAD_LEFT) . "</td>";
@@ -261,9 +262,18 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
             if ($meter['meter_power'] != null) $meter_power = ', Leistung: ' . $meter['meter_power'] . ' kWp'; else $meter_power = '';
             if ($meter['meter_feedlimit'] != null) $meter_feedlimit = ', R&uuml;ckspeiselimit: ' . $meter['meter_feedlimit'] . ' kVA'; else $meter_feedlimit = '';
 
+            if($registration['tenant'] == null || $registration['state'] == 'new' || $registration['state'] == 'refused')
+            {
+                $meter_short_id = '<i class="fa fa-question-circle"></i>';
+            }
+            else
+            {
+                $meter_short_id = $tenant_info['meter_prefix_short'] . $meter_type_shortcode . $meter['meter_oid'];
+            }
+
             print "<tr class=\"profilemeterline\">
                     <td class=\"profilemeter\" style=\"width:100px;text-align:center;vertical-align:middle;font-size:12pt;font-weight:bold\">
-                    " . $tenant_info['meter_prefix_short'] . $meter_type_shortcode . $meter['meter_oid'] . "
+                        $meter_short_id
                     </td>
                     <td class=\"profilemeter\" style=\"text-align:left\">
                         <span class=\"metertype\">$meter_nice ($meter_participation$meter_power$meter_feedlimit)</span><br />
@@ -306,7 +316,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         print '<h2>&nbsp;</h2>';
         print '<h3>Historie</h3>';
 
-        $notes = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARD_NOTES'], 'registration_id', $registration['id']);
+        $notes = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARD_NOTES'], 'registration_id', $registration['id'], NULL,  'timestamp', 'DESC');
         if ($notes == NULL || count($notes) == 0)
         {
             print "Keine Historie<br />";

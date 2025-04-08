@@ -161,7 +161,21 @@
 
         ?>
 
-        <br />
+            <br />
+
+            <div id="modal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 id="modalheadline" style="color:black;">{%headline%}</h3>
+                    </div>
+                    <div class="modal-body" id="modalbody">
+                        {%body%}
+                    </div>
+                    <div class="modal-footer" id="modalfooter">
+                        {%footer%}
+                    </div>
+                </div>
+            </div>
 
         </div>
 
@@ -182,7 +196,7 @@
         ?>
 
             <div class="" style="background-color: #151515; color: white; padding: 8px; width:100%; height: 40px; vertical-align: middle; text-align: right;">
-                <div style="float:left;font-face:Helvetica;font-size:10pt;color:dimgrey">R:EEG:ISTRY commit #b2aff1e</div><div style="float:right;font-face:Helvetica;font-size:10pt;color:dimgrey"><?php print $pi_menu; ?></div>
+                <div style="float:left;font-family:Helvetica;font-size:10pt;color:dimgrey">R:EEG:ISTRY commit #b2aff1e</div><div style="float:right;font-family:Helvetica;font-size:10pt;color:dimgrey"><?php print $pi_menu; ?></div>
             </div>
 
             <!-- Scripts -->
