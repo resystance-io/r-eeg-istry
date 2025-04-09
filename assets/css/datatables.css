@@ -118,14 +118,14 @@ th.navselected:hover {
 
 
 .statenew td{
-    background-color: #F9D978;
+    background-color: #F9D978CC;
     transition: background 2s ease;
     cursor: pointer;
 }
 .statenew td:nth-child(1){
     color: #F9D978;
     background-color: transparent;
-    transition: background 2s ease;
+    transition: background 0.5s ease;
 }
 
 .statenew:hover td:nth-child(1){
@@ -133,21 +133,21 @@ th.navselected:hover {
 }
 
 .statenew:hover td{
-    background-color: #D9B958;
-    transition: background 0.3s ease;
+    background-color: #F9D978;
+    transition: background 0.5s ease;
 }
 
 
 
 .stateonboarding td{
-    background-color: #BCFFF9;
-    transition: background 0.3s ease;
+    background-color: #BCFFF9CC;
+    transition: background 2s ease;
     cursor: pointer;
 }
 .stateonboarding td:nth-child(1){
     color: #BCFFF9;
     background-color: transparent;
-    transition: background 0.3s ease;
+    transition: background 0.5s ease;
 }
 
 .stateonboarding:hover td:nth-child(1){
@@ -155,21 +155,21 @@ th.navselected:hover {
 }
 
 .stateonboarding:hover td{
-    background-color: #9CDFD9;
-    transition: background 0.3s ease;
+    background-color: #BCDFF9;
+    transition: background 0.5s ease;
 }
 
 
 
 .stateactive td{
-    background-color: #CBFFBC;
-    transition: background 0.3s ease;
+    background-color: #CBFFBCCC;
+    transition: background 2s ease;
     cursor: pointer;
 }
 .stateactive td:nth-child(1){
     color: #CBFFBC;
     background-color: transparent;
-    transition: background 0.3s ease;
+    transition: background 0.5s ease;
 }
 
 .stateactive:hover td:nth-child(1){
@@ -177,21 +177,21 @@ th.navselected:hover {
 }
 
 .stateactive:hover td{
-    background-color: #ABDF9C;
-    transition: background 0.3s ease;
+    background-color: #CBFFBC;
+    transition: background 0.5s ease;
 }
 
 
 
 .statesuspended td{
-    background-color: #FFD6BC;
-    transition: background 0.3s ease;
+    background-color: #FFD6BCCC;
+    transition: background 2s ease;
     cursor: pointer;
 }
 .statesuspended td:nth-child(1){
     color: #FFD6BC;
     background-color: transparent;
-    transition: background 0.3s ease;
+    transition: background 0.5s ease;
 }
 
 .statesuspended:hover td:nth-child(1){
@@ -199,21 +199,21 @@ th.navselected:hover {
 }
 
 .statesuspended:hover td{
-    background-color: #FFD6BC;
-    transition: background 0.3s ease;
+    background-color: #FFD6DC;
+    transition: background 0.5s ease;
 }
 
 
 
 .statedeactivated td{
-    background-color: #FFAAAA;
-    transition: background 0.3s ease;
+    background-color: #FFAAAACC;
+    transition: background 2s ease;
     cursor: pointer;
 }
 .statedeactivated td:nth-child(1){
     color: #FFAAAA;
     background-color: transparent;
-    transition: background 0.3s ease;
+    transition: background 0.5s ease;
 }
 
 .statedeactivated:hover td:nth-child(1){
@@ -221,21 +221,21 @@ th.navselected:hover {
 }
 
 .statedeactivated:hover td{
-    background-color: #FFAAAA;
-    transition: background 0.3s ease;
+    background-color: #FFCCCC;
+    transition: background 0.5s ease;
 }
 
 
 
 .staterefused td{
-    background-color: #9F9F9F;
-    transition: background 0.3s ease;
+    background-color: #9F9F9FCC;
+    transition: background 2s ease;
     cursor: pointer;
 }
 .staterefused td:nth-child(1){
     color: #9F9F9F;
     background-color: transparent;
-    transition: background 0.3s ease;
+    transition: background 0.5s ease;
 }
 
 .staterefused:hover td:nth-child(1){
@@ -243,34 +243,34 @@ th.navselected:hover {
 }
 
 .staterefused:hover td{
-    background-color: #7F7F7F;
-    transition: background 0.3s ease;
+    background-color: #BFBFBF;
+    transition: background 0.5s ease;
 }
 
 
 
 .stategray:nth-child(even) td{
-    background-color: #fefefe;
-    transition: background 0.3s ease;
+    background-color: #fefefecc;
+    transition: background 2s ease;
     cursor: pointer;
 }
 
 .stategray:nth-child(odd) td{
     background-color: #eeeeee;
-    transition: background 0.3s ease;
+    transition: background 2s ease;
     cursor: pointer;
 }
 
 .stategray td:nth-child(1){
     background-color: #fefefe;
-    transition: background 0.3s ease;
+    transition: background 1s ease;
     cursor: pointer;
 }
 
 .stategray td:nth-child(1){
     color: #fefefe;
     background-color: transparent;
-    transition: background 0.3s ease;
+    transition: background 0.5s ease;
 }
 
 .stategray:hover td:nth-child(1){
@@ -279,7 +279,7 @@ th.navselected:hover {
 
 .stategray:hover td{
     background-color: #dedede;
-    transition: background 0.3s ease;
+    transition: background 0.5s ease;
 }
 
 

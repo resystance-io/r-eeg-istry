@@ -1079,6 +1079,8 @@ class Interactives
         $current_value = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'state', 'id', $recordid);
         $current_tenant = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'tenant', 'id', $recordid);
 
+        $response = jaxon()->newResponse();
+
         if($current_value == 'new')
         {
             if($dbvalue != 'refused' && $dbvalue != 'new' && $current_tenant != null)
@@ -1095,16 +1097,18 @@ class Interactives
                         1,
                         'meter_oid',
                         'DESC',
-                        $this->config->user['DBTABLE_REGISTRATIONS'] . '.tenant = "' . $dbvalue . '" AND ' . $this->config->user['DBTABLE_METERS'] . '.meter_type = "' . $meter['meter_type'] . '"',
+                        $this->config->user['DBTABLE_REGISTRATIONS'] . '.tenant = "' . $current_tenant . '" AND ' . $this->config->user['DBTABLE_METERS'] . '.meter_type = "' . $meter['meter_type'] . '"',
                         'INNER JOIN ' . $this->config->user['DBTABLE_REGISTRATIONS'] . ' ON (' . $this->config->user['DBTABLE_METERS'] . '.registration_id = ' . $this->config->user['DBTABLE_REGISTRATIONS'] . '.id) WHERE');
                     if(count($highest_meter_row) > 0)
                     {
                         $highest_meter_row = $highest_meter_row[0];
                         $next_meter_oid = $highest_meter_row['meter_oid'] + 1;
+                        $response->alert('Meters were already present for this tenant. Increased Meter OID is ' . $next_meter_oid);
                     }
                     else
                     {
                         $next_meter_oid = 1;
+                        $response->alert('This is the first meter for this tenant. New Meter OID is ' . $next_meter_oid);
                     }
 
                     $this->db->update_column_by_column_values($this->config->user['DBTABLE_METERS'], 'meter_oid', $next_meter_oid, 'id', $meter['id']);
@@ -1114,7 +1118,6 @@ class Interactives
 
         $this->view->record_note($recordid, 'event', 'modify', "Aktualisierung Status: $current_value -> $dbvalue");
         $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'state', $dbvalue, 'id', $recordid);
-        $response = jaxon()->newResponse();
         $response->script("window.location.href='/?manage_registrations&registration=$recordid';");
         return $response;
     }
@@ -1207,10 +1210,13 @@ class Interactives
                         {
                             $highest_meter_row = $highest_meter_row[0];
                             $next_meter_oid = $highest_meter_row['meter_oid'] + 1;
+                            $response->alert('Meters were already present for this tenant. Increased Meter OID is ' . $next_meter_oid);
                         }
                         else
                         {
                             $next_meter_oid = 1;
+                            $response->alert('This is the first meter for this tenant. Meter OID is ' . $next_meter_oid);
+
                         }
 
                         $this->db->update_column_by_column_values($this->config->user['DBTABLE_METERS'], 'meter_oid', $next_meter_oid, 'id', $meter['id']);

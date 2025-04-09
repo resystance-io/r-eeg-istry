@@ -78,7 +78,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         ';
 
         $state_nice = ['new' => 'Neu', 'onboarding' => "Onboarding", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert", 'refused' => "Abgelehnt"];
-        print "<tr>
+        print "<tr class=\"stategray\">
                 <td class=\"detailheader\">Status:</td>
                 <td class=\"detailcontent\" id=\"detail_state\">
                        " . $state_nice[$registration['state']] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_state_init('detail_state', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>
@@ -86,19 +86,19 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                </tr>
         ";
 
-        print "<tr>
+        print "<tr class=\"stategray\">
                 <td class=\"detailheader\">EEG / Mandant:</td>
                 <td class=\"detailcontent\" id=\"detail_tenant\">" . $tenant_info['fullname'] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_tenant_init('detail_tenant', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td>
                </tr>
         ";
 
-        print "<tr>
+        print "<tr class=\"stategray\">
                     <td class=\"detailheader\">Anmeldung &uuml;bermittelt:</td>
                     <td class=\"detailcontent\">" . date("d.m.Y", $registration['registration_date']) . "</td>
                </tr>
         ";
 
-        print "<tr><td class=\"detailheader\">EEG-Beitritt best&auml;tigt:</td>";
+        print "<tr class=\"stategray\"><td class=\"detailheader\">EEG-Beitritt best&auml;tigt:</td>";
         {
             if ($registration['migration_date'] != null)
             {
@@ -112,7 +112,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         print "</tr>";
 
 
-        print "<tr><td class=\"detailheader\">Beginn der Belieferung:</td>";
+        print "<tr class=\"stategray\"><td class=\"detailheader\">Beginn der Belieferung:</td>";
         {
             if ($registration['delivery_date'] != null)
             {
@@ -125,7 +125,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         }
         print "</tr>";
 
-        print "<tr><td class=\"detailheader\">Letzte &Auml;nderung:</td>";
+        print "<tr class=\"stategray\"><td class=\"detailheader\">Letzte &Auml;nderung:</td>";
         print "<td>&nbsp;</td>";
         print "</tr>";
 
@@ -143,14 +143,16 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                 <tbody>
         ';
 
-        print "<tr><td class=\"detailheader\">Umspannwerk:</td>";
-        print "<td id=\"detail_network_substation\" class=\"detailcontent\">" . $tenant_info['network_substation_id'] . " | " . $tenant_info['network_substation_name'] . "</td>";
+        if($registration['tenant'] != null) $network_substation = $tenant_info['network_substation_id'] . " | " . $tenant_info['network_substation_name'];  else $network_substation = 'Noch nicht zugeordnet';
+        print "<tr class=\"stategray\"><td class=\"detailheader\">Umspannwerk:</td>";
+        print "<td id=\"detail_network_substation\" class=\"detailcontent\">" . $network_substation . "</td>";
         print "</tr>";
-        print "<tr><td class=\"detailheader\">Anmeldenummer:</td>";
+        print "<tr class=\"stategray\"><td class=\"detailheader\">Anmeldenummer:</td>";
         print "<td class=\"detailcontent\">" . str_pad($registration['id'], 5, '0', STR_PAD_LEFT) . "</td>";
         print "</tr>";
-        print "<tr><td class=\"detailheader\">Mitgliedsnummer:</td>";
-        print "<td id=\"detail_member_id\" class=\"detailcontent\">" . $registration['member_id'] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_init('detail_member_id', 'member_id', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td>";
+        if($registration['member_id'] != null)  $member_id = $registration['member_id']; else $member_id = 'Noch nicht zugewiesen';
+        print "<tr class=\"stategray\"><td class=\"detailheader\">Mitgliedsnummer:</td>";
+        print "<td id=\"detail_member_id\" class=\"detailcontent\">$member_id<i onclick=\"JaxonInteractives.dashboard_inline_update_init('detail_member_id', 'member_id', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td>";
         print "</tr>";
 
         print "</tbody></table>";
@@ -165,76 +167,78 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         ';
 
         $identity_type_arr = ['passport' => 'Reisepass', 'idcard' => 'Personalausweis', 'driverslicense' => 'F&uuml;hrerschein', 'commerceid' => 'Firmenbuchnummer', 'associationid' => 'Vereinsregister'];
-        $tax_type_arr = ['yes' => 'Ja', 'no' => 'Nein'];
+        $tax_type_arr = ['y' => 'Ja', 'n' => 'Nein'];
 
         switch ($registration['type'])
         {
             case 'individual':
-                print "<tr><td class=\"detailheader\">Mitgliedsform</td><td class=\"detailcontent\">Privatperson</td></tr>";
-                print "<tr><td class=\"detailheader\">Titel</td><td class=\"detailcontent\">" . $registration['title'] . "</td></tr>";
-                print "<tr><td class=\"detailheader\">Vorname</td><td class=\"detailcontent\">" . $registration['firstname'] . "</td></tr>";
-                print "<tr><td class=\"detailheader\">Nachname</td><td class=\"detailcontent\">" . $registration['lastname'] . "</td></tr>";
-                print "<tr><td class=\"detailheader\">Postnomen</td><td class=\"detailcontent\">" . $registration['postnomen'] . "</td></tr>";
-                print "<tr><td class=\"detailheader\">Geburtsdatum</td><td class=\"detailcontent\">" . $registration['birthdate'] . "</td></tr>";
-                print "<tr><td class=\"detailheader\">Identit&auml;tsbest&auml;tigung via</td><td class=\"detailcontent\">" . $identity_type_arr[$registration['idprovider']] . "</td></tr>";
-                print "<tr><td class=\"detailheader\">Nummer des Identit&auml;tsdokumentes</td><td class=\"detailcontent\">" . $registration['idvalue'] . "</td></tr>";
+                print "<tr class=\"stategray\"><td class=\"detailheader\">Mitgliedsform</td><td class=\"detailcontent\">Privatperson</td></tr>";
+                print "<tr class=\"stategray\"><td class=\"detailheader\">Titel</td><td class=\"detailcontent\">" . $registration['title'] . "</td></tr>";
+                print "<tr class=\"stategray\"><td class=\"detailheader\">Vorname</td><td class=\"detailcontent\">" . $registration['firstname'] . "</td></tr>";
+                print "<tr class=\"stategray\"><td class=\"detailheader\">Nachname</td><td class=\"detailcontent\">" . $registration['lastname'] . "</td></tr>";
+                print "<tr class=\"stategray\"><td class=\"detailheader\">Postnomen</td><td class=\"detailcontent\">" . $registration['postnomen'] . "</td></tr>";
+                print "<tr class=\"stategray\"><td class=\"detailheader\">Geburtsdatum</td><td class=\"detailcontent\">" . $registration['birthdate'] . "</td></tr>";
+                print "<tr class=\"stategray\"><td class=\"detailheader\">Identit&auml;tsbest&auml;tigung via</td><td class=\"detailcontent\">" . $identity_type_arr[$registration['idprovider']] . "</td></tr>";
+                print "<tr class=\"stategray\"><td class=\"detailheader\">Nummer des Identit&auml;tsdokumentes</td><td class=\"detailcontent\">" . $registration['idvalue'] . "</td></tr>";
                 break;
 
             case 'agriculture':
-                print "<tr><td class=\"detailheader\">Mitgliedsform</td><td class=\"detailcontent\">Landwirtschaft</td></tr>";
-                print "<tr><td class=\"detailheader\">Titel</td><td class=\"detailcontent\">" . $registration['title'] . "</td></tr>";
-                print "<tr><td class=\"detailheader\">Vorname</td><td class=\"detailcontent\">" . $registration['firstname'] . "</td></tr>";
-                print "<tr><td class=\"detailheader\">Nachname</td><td class=\"detailcontent\">" . $registration['lastname'] . "</td></tr>";
-                print "<tr><td class=\"detailheader\">Postnomen</td><td class=\"detailcontent\">" . $registration['postnomen'] . "</td></tr>";
-                print "<tr><td class=\"detailheader\">Geburtsdatum</td><td class=\"detailcontent\">" . $registration['birthdate'] . "</td></tr>";
-                print "<tr><td class=\"detailheader\">Identit&auml;tsbest&auml;tigung via</td><td class=\"detailcontent\">" . $identity_type_arr[$registration['idprovider']] . "</td></tr>";
-                print "<tr><td class=\"detailheader\">Nummer des Identit&auml;tsdokumentes</td><td class=\"detailcontent\">" . $registration['idvalue'] . "</td></tr>";
+                print "<tr class=\"stategray\"><td class=\"detailheader\">Mitgliedsform</td><td class=\"detailcontent\">Landwirtschaft</td></tr>";
+                print "<tr class=\"stategray\"><td class=\"detailheader\">Titel</td><td class=\"detailcontent\">" . $registration['title'] . "</td></tr>";
+                print "<tr class=\"stategray\"><td class=\"detailheader\">Vorname</td><td class=\"detailcontent\">" . $registration['firstname'] . "</td></tr>";
+                print "<tr class=\"stategray\"><td class=\"detailheader\">Nachname</td><td class=\"detailcontent\">" . $registration['lastname'] . "</td></tr>";
+                print "<tr class=\"stategray\"><td class=\"detailheader\">Postnomen</td><td class=\"detailcontent\">" . $registration['postnomen'] . "</td></tr>";
+                print "<tr class=\"stategray\"><td class=\"detailheader\">Geburtsdatum</td><td class=\"detailcontent\">" . $registration['birthdate'] . "</td></tr>";
+                print "<tr class=\"stategray\"><td class=\"detailheader\">Identit&auml;tsbest&auml;tigung via</td><td class=\"detailcontent\">" . $identity_type_arr[$registration['idprovider']] . "</td></tr>";
+                print "<tr class=\"stategray\"><td class=\"detailheader\">Nummer des Identit&auml;tsdokumentes</td><td class=\"detailcontent\">" . $registration['idvalue'] . "</td></tr>";
                 break;
 
             case 'company':
-                print "<tr><td class=\"detailheader\">Mitgliedsform</td><td class=\"detailcontent\">Unternehmen</td></tr>";
-                print "<tr><td class=\"detailheader\">Firmenwortlaut</td><td class=\"detailcontent\">" . $registration['company_name'] . "</td></tr>";
-                print "<tr><td class=\"detailheader\">UID</td><td class=\"detailcontent\">" . $registration['uid'] . "</td></tr>";
-                print "<tr><td class=\"detailheader\">Umsatzsteuerpflichtig</td><td class=\"detailcontent\">" . $tax_type_arr[$registration['salestax']] . "</td></tr>";
-                print "<tr><td class=\"detailheader\">Firmenbuch oder ZVR?</td><td class=\"detailcontent\">" . $identity_type_arr[$registration['idprovider']] . "</td></tr>";
-                print "<tr><td class=\"detailheader\">(FB-/ZVR) Nummer</td><td class=\"detailcontent\">" . $registration['idvalue'] . "</td></tr>";
+                print "<tr class=\"stategray\"><td class=\"detailheader\">Mitgliedsform</td><td class=\"detailcontent\">Unternehmen</td></tr>";
+                print "<tr class=\"stategray\"><td class=\"detailheader\">Firmenwortlaut</td><td class=\"detailcontent\">" . $registration['company_name'] . "</td></tr>";
+                print "<tr class=\"stategray\"><td class=\"detailheader\">UID</td><td class=\"detailcontent\">" . $registration['uid'] . "</td></tr>";
+                print "<tr class=\"stategray\"><td class=\"detailheader\">Umsatzsteuerpflichtig</td><td class=\"detailcontent\">" . $tax_type_arr[$registration['salestax']] . "</td></tr>";
+                print "<tr class=\"stategray\"><td class=\"detailheader\">Firmenbuch oder ZVR?</td><td class=\"detailcontent\">" . $identity_type_arr[$registration['idprovider']] . "</td></tr>";
+                print "<tr class=\"stategray\"><td class=\"detailheader\">(FB-/ZVR) Nummer</td><td class=\"detailcontent\">" . $registration['idvalue'] . "</td></tr>";
                 break;
         }
 
-        print "<tr><td class=\"detailheader\">Stra&szlig;e</td><td class=\"detailcontent\">" . $registration['street'] . ' ' . $registration['number'] . "</td></tr>";
-        print "<tr><td class=\"detailheader\">Ort</td><td class=\"detailcontent\">" . $registration['zip'] . ' ' . $registration['city'] . "</td></tr>";
-        print "<tr><td class=\"detailheader\">Telefonnummer</td><td class=\"detailcontent\">" . $registration['phone'] . "</td></tr>";
-        print "<tr><td class=\"detailheader\">E-Mail-Adresse</td><td class=\"detailcontent\">" . $registration['email'] . "</td></tr>";
-        print "<tr><td class=\"detailheader\">Kundennummer Netzbetreiber</td><td class=\"detailcontent\">" . $registration['network_customerid'] . "</td></tr>";
-        print "<tr><td class=\"detailheader\">Inventarnummer eines Z&auml;hlers</td><td class=\"detailcontent\">" . $registration['network_inventoryid'] . "</td></tr>";
+        print "<tr class=\"stategray\"><td class=\"detailheader\">Stra&szlig;e</td><td class=\"detailcontent\">" . $registration['street'] . ' ' . $registration['number'] . "</td></tr>";
+        print "<tr class=\"stategray\"><td class=\"detailheader\">PLZ / Ort</td><td class=\"detailcontent\">" . $registration['zip'] . ' ' . $registration['city'] . "</td></tr>";
+        print "<tr class=\"stategray\"><td class=\"detailheader\">Telefonnummer</td><td class=\"detailcontent\">" . $registration['phone'] . "</td></tr>";
+        print "<tr class=\"stategray\"><td class=\"detailheader\">E-Mail-Adresse</td><td class=\"detailcontent\">" . $registration['email'] . "</td></tr>";
+        print "<tr class=\"stategray\"><td class=\"detailheader\">Kundennummer Netzbetreiber</td><td class=\"detailcontent\">" . $registration['network_customerid'] . "</td></tr>";
+        print "<tr class=\"stategray\"><td class=\"detailheader\">Inventarnummer eines Z&auml;hlers</td><td class=\"detailcontent\">" . $registration['network_inventoryid'] . "</td></tr>";
 
         print "</tbody></table>";
 
         print '<br />&nbsp;<br />';
         print '<h3>Optionale Information</h3>';
         print "<table class=\"table\" style=\"width:700px\">";
-        print "<tr><td class=\"detailheader\">Anzahl d. E-Autos</td><td class=\"detailcontent\">" . $registration['electric_car_count'] . "</td></tr>";
-        print "<tr><td class=\"detailheader\">E-Auto Gesamt-kWh</td><td class=\"detailcontent\">" . $registration['electric_car_capacity'] . "</td></tr>";
-        print "<tr><td class=\"detailheader\">E-Auto Jahreskilometer</td><td class=\"detailcontent\">" . $registration['electric_car_mileage '] . "</td></tr>";
-        print "<tr><td class=\"detailheader\">Hei&szlig;wasserbereitung (Sommer)</td><td class=\"detailcontent\">" . $registration['water_heating_summer'] . "</td></tr>";
+        print "<tr class=\"stategray\"><td class=\"detailheader\">Anzahl d. E-Autos</td><td class=\"detailcontent\">" . $registration['electric_car_count'] . "</td></tr>";
+        print "<tr class=\"stategray\"><td class=\"detailheader\">E-Auto Gesamt-kWh</td><td class=\"detailcontent\">" . $registration['electric_car_capacity'] . "</td></tr>";
+        print "<tr class=\"stategray\"><td class=\"detailheader\">E-Auto Jahreskilometer</td><td class=\"detailcontent\">" . $registration['electric_car_mileage '] . "</td></tr>";
+
+        $water_heating_arr = ['boiler' => 'Boiler', 'heatpump' => 'W&auml;rmepumpe', 'solar' => 'Solarthermie', 'district' => 'Fernw&auml;rme', 'other' => 'Andere'];
+        print "<tr class=\"stategray\"><td class=\"detailheader\">Hei&szlig;wasserbereitung (Sommer)</td><td class=\"detailcontent\">" . $water_heating_arr[$registration['water_heating_summer']] . "</td></tr>";
         print "</tbody></table>";
 
         print '<br />&nbsp;<br />';
 
         print '<h3>Bankverbindung</h3>';
         print "<table class=\"table\" style=\"width:700px\">";
-        print "<tr><td class=\"detailheader\">Kontoinhaber*in:</td><td class=\"detailcontent\">" . $registration['banking_name'] . "</td></tr>";
-        print "<tr><td class=\"detailheader\">Aktive IBAN:</td><td class=\"detailcontent\">" . $registration['banking_iban'] . "</td></tr>";
-        print "<tr><td class=\"detailheader\">Einzugserm&auml;chtigung erteilt:</td><td class=\"detailcontent\">" . date("d.m.Y H:i:s", $registration['banking_consent']) . "</td></tr>";
+        print "<tr class=\"stategray\"><td class=\"detailheader\">Kontoinhaber*in:</td><td class=\"detailcontent\">" . $registration['banking_name'] . "</td></tr>";
+        print "<tr class=\"stategray\"><td class=\"detailheader\">Aktive IBAN:</td><td class=\"detailcontent\">" . $registration['banking_iban'] . "</td></tr>";
+        print "<tr class=\"stategray\"><td class=\"detailheader\">Einzugserm&auml;chtigung erteilt:</td><td class=\"detailcontent\">" . date("d.m.Y H:i:s", $registration['banking_consent']) . "</td></tr>";
         print "</table>";
 
         print '<br />&nbsp;<br />';
         print '<h3>Zustimmungen</h3>';
         print "<table class=\"table\" style=\"width:700px\">";
-        print "<tr><td class=\"detailheader\">Statuten akzeptiert:</td><td class=\"detailcontent\">" . date("d.m.Y H:i:s", $registration['bylaws_consent']) . "</td></tr>";
-        print "<tr><td class=\"detailheader\">Datenschutzbestimmungen akzeptiert:</td><td class=\"detailcontent\">" . date("d.m.Y H:i:s", $registration['gdpr_consent']) . "</td></tr>";
-        print "<tr><td class=\"detailheader\">AGB akzeptiert:</td><td class=\"detailcontent\">" . date("d.m.Y H:i:s", $registration['tos_consent']) . "</td></tr>";
-        print "<tr><td class=\"detailheader\">Netzbetreibervollmacht erteilt:</td><td class=\"detailcontent\">" . date("d.m.Y H:i:s", $registration['network_consent']) . "</td></tr>";
+        print "<tr class=\"stategray\"><td class=\"detailheader\">Statuten akzeptiert:</td><td class=\"detailcontent\">" . date("d.m.Y H:i:s", $registration['bylaws_consent']) . "</td></tr>";
+        print "<tr class=\"stategray\"><td class=\"detailheader\">Datenschutzbestimmungen akzeptiert:</td><td class=\"detailcontent\">" . date("d.m.Y H:i:s", $registration['gdpr_consent']) . "</td></tr>";
+        print "<tr class=\"stategray\"><td class=\"detailheader\">AGB akzeptiert:</td><td class=\"detailcontent\">" . date("d.m.Y H:i:s", $registration['tos_consent']) . "</td></tr>";
+        print "<tr class=\"stategray\"><td class=\"detailheader\">Netzbetreibervollmacht erteilt:</td><td class=\"detailcontent\">" . date("d.m.Y H:i:s", $registration['network_consent']) . "</td></tr>";
         print "</table>";
 
         print '<br />&nbsp;<br />';
@@ -271,7 +275,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                 $meter_short_id = $tenant_info['meter_prefix_short'] . $meter_type_shortcode . $meter['meter_oid'];
             }
 
-            print "<tr class=\"profilemeterline\">
+            print "<tr class=\"stategray profilemeterline\">
                     <td class=\"profilemeter\" style=\"width:100px;text-align:center;vertical-align:middle;font-size:12pt;font-weight:bold\">
                         $meter_short_id
                     </td>
@@ -293,7 +297,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         $storages = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_STORAGES'], 'registration_id', $registration['id']);
         if ($storages == NULL || count($storages) == 0)
         {
-            print "<tr><td class=\"detailheader\">Keine Energiespeicher registriert</td></tr>";
+            print "<tr class=\"stategray\"><td class=\"\">Keine Energiespeicher registriert</td></tr>";
         }
         else
         {
@@ -301,8 +305,8 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
             foreach($storages as $storage)
             {
                 $storage_count++;
-                print "<tr class=\"profilemeterline\">
-                            <td class=\"profileheader\" style=\"text-align:left\">Speicher #$storage_count</td>
+                print "<tr class=\"stategray profilemeterline\">
+                            <td class=\"profileheader\" style=\"text-align:left\">&nbsp;<i class=\"fa fa-battery-half\"></i> &nbsp; Speicher #$storage_count</td>
                             <td>" . $storage['storage_capacity'] . " kWh</td>
                        </tr>";
             }
