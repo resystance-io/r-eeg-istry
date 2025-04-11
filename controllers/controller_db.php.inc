@@ -209,6 +209,50 @@ class CONTROLLER_DB
 		$this->db->execute_blind_query($sql);
 	}
 
+	public function get_rows($table, $inner_joins=null, $selectors=null, $limit=NULL, $order=NULL)
+	{
+		if(is_array($inner_joins))
+		{
+			$joins = '';
+			foreach($inner_joins as $inner_join)
+			{
+				$joins .= ' INNER JOIN ' . $inner_join[0] . ' ON ' . $inner_join[1] . ' = ' . $inner_join[2];
+			}
+		}
+		elseif($inner_joins != null)
+		{	// this can not be not-an-array, since we need data for the ON-clause for this to work,
+			// fail hard and early!
+			throw new Exception('inner_joins must be array or null');
+		}
+
+		$selects = 'WHERE';
+		if(is_array($selectors))
+		{
+			foreach($selectors as $selector)
+			{
+				if($selects != 'WHERE') $selects .= ' AND ';
+				$selects .= ' ' . $selector;
+			}
+		}
+		elseif($selectors != null)
+		{
+			$selects .= $selectors;
+		}
+		elseif($selectors != null)
+		{	// this can not be not-an-array, since we need data for the ON-clause for this to work,
+			// fail hard and early!
+			throw new Exception('selectors must be array or null');
+		}
+
+		if($limit) $limit = "LIMIT $limit";
+		if($order) $order = "ORDER BY $order";
+
+		$sql = "SELECT * FROM $table $joins $selects $order $limit";
+		$ret = $this->db->execute_query($sql);
+
+		return $ret->fetchAll(PDO::FETCH_ASSOC);
+	}
+
 	public function get_rows_by_column_value($table, $reference_field=NULL, $reference_value=NULL, $limit=NULL, $order=NULL, $ordermethod=NULL, $reference_field_2=NULL, $reference_value_2=NULL, $reference_field_3=NULL, $reference_value_3=NULL, $reference_field_4=NULL, $reference_value_4=NULL)
 	{
 		if($reference_field && $reference_value)	$reference = "WHERE $reference_field = \"$reference_value\"";	else	$reference = NULL;

@@ -258,11 +258,14 @@ a {
   transition: border-bottom-color 0.2s ease, color 0.2s ease;
   border-bottom: dotted 1px rgba(255, 255, 255, 0.25);
   color: #1cb495;
-  text-decoration: none; }
-  a:hover {
+  text-decoration: none;
+}
+
+a:hover {
     border-bottom-color: transparent;
     color: #1cb495 !important;
-    text-decoration: none; }
+    text-decoration: none;
+}
 
 strong, b {
   color: #fff;
@@ -823,7 +826,9 @@ button,
   line-height: 1.65em; }
 
 #header a {
-  color: inherit; }
+  color: inherit;
+  text-decoration: none;
+}
 
 @media screen and (max-width: 736px) {
   #header h1 {

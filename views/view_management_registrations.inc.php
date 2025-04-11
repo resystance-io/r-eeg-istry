@@ -9,7 +9,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
 
         <header id="header">
             <h1>R:EEG:ISTRY | Management</h1>
-            <p>Registrierung anzeigen<br /></p>
+            <p><A href="/?manage"><i class="fa fa-arrow-alt-circle-left"></i></A>&nbsp;Registrierung anzeigen<br /></p>
         </header>
 
         <?php

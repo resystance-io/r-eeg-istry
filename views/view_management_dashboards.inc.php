@@ -10,7 +10,7 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
         <!--<input type="button" value="JAXON FOO TEST" onclick="jaxon_foo()" /><br />-->
         <header id="header">
             <h1>R:EEG:ISTRY | Management</h1>
-            <p>Dashboards verwalten<br /></p>
+            <p><A href="/?manage_users"><i class="fa fa-arrow-alt-circle-left"></i></A>&nbsp;Dashboards verwalten<br /></p>
         </header>
 
         <?php
@@ -37,6 +37,15 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
 
     function view_render_dashboard($dashboard_id)
     {
+        $admin = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARD_USERS'], 'admin', 'id', $_SESSION['backend_authenticated']);
+        $dashboard_owner = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARDS'], 'user_id', 'id', $dashboard_id);
+
+        if($admin == 'n' && $dashboard_owner != $_SESSION['backend_authenticated'])
+        {
+            print "<script>self.location.href='/?manage_dashboards';</script>";
+            exit;
+        }
+
         if(isset($_REQUEST['preaction']) && $_REQUEST['preaction'] == 'add_column' && isset($_REQUEST['column']) && isset($_REQUEST['dashboard_id']) && $_REQUEST['dashboard_id'] == $dashboard_id)
         {
             $highest_sorted_row = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_DASHBOARD_LAYOUT'], 'dashboard', $dashboard_id, 1, 'sort', 'DESC');
@@ -252,6 +261,8 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
 
     function view_render_dashboards()
     {
+        $admin = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARD_USERS'], 'admin', 'id', $_SESSION['backend_authenticated']);
+
         if(isset($_REQUEST['userid']))
         {
             $link_uid = '&userid=' . $_REQUEST['userid'];
@@ -279,18 +290,40 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
                   <tr>
                     <th style="width:60px">&nbsp;</th>
                     <th>Bezeichnung</th>
+        ';
+
+        if($admin == 'y')   print '     <th style="width:120px">BesitzerIn</th>';
+
+        print '
                     <th style="width:120px">Aktionen</th>
                   </tr>
                 </thead>
                 <tbody>
         ';
 
-        $dashboards = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARDS'], 'user_id', $user_id);
+        if($admin == 'y')
+        {
+            $dashboards = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARDS']);
+        }
+        else
+        {
+            $dashboards = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARDS'], 'user_id', $user_id);
+        }
+
         foreach($dashboards as $dashboard)
         {
             print '<tr class="stategray">
                     <td><i class="fa fa-table"></i></td>
                     <td>' . $dashboard['name'] . '</td>
+            ';
+
+            if($admin == 'y')
+            {
+                $username = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARD_USERS'], 'username', 'id', $dashboard['user_id']);
+                print '     <td>' . $username . '</td>';
+            }
+
+            print '
                     <td>
                         <a href="/?manage_dashboards&dashboard_id=' . $dashboard['id'] . $link_uid . '"><i class="fa fa-edit"></i></a>
                         &nbsp;&nbsp;&nbsp;
@@ -402,6 +435,15 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
 
     function view_render_delete()
     {
+        $admin = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARD_USERS'], 'admin', 'id', $_SESSION['backend_authenticated']);
+        $dashboard_owner = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARDS'], 'user_id', 'id', $_REQUEST['dashboard_id']);
+
+        if($admin == 'n' && $dashboard_owner != $_SESSION['backend_authenticated'])
+        {
+            print "<script>self.location.href='/?manage_dashboards';</script>";
+            exit;
+        }
+
         if(isset($_REQUEST['userid']))
         {
             $userid_link = '&userid=' . $_REQUEST['userid'];

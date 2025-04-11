@@ -106,7 +106,7 @@ class Interactives
                     session_regenerate_id(true);
 
                     $response = jaxon()->newResponse();
-                    $response->script("window.location.href='/?manage';");
+                    $response->script("window.location.href='/';");
                     return $response;
                 }
                 else
@@ -1080,6 +1080,9 @@ class Interactives
         $current_tenant = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'tenant', 'id', $recordid);
 
         $response = jaxon()->newResponse();
+
+        if($dbvalue == 'onboarding')    $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'migration_date', time(), 'id', $recordid);
+        if($dbvalue == 'active')        $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'delivery_date', time(), 'id', $recordid);
 
         if($current_value == 'new')
         {

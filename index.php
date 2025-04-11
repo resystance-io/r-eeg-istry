@@ -87,6 +87,16 @@
             }
 
             // choose what view to display
+            if(isset($_REQUEST['logout']))
+            {
+                // people trying to log off
+                include_once('views/view_join.inc.php');
+                // the user wants to log off -
+                // destroy the session and redirect the user to the webroot
+                session_unset();
+                print '<script>self.location.href="/";</script>';
+            }
+
             if(isset($_REQUEST['join']))
             {
                 // people trying to join the eeg
@@ -118,7 +128,7 @@
                 {
                     include_once('views/view_management.inc.php');
                     $view_manage = new VIEW_MANAGEMENT();
-                    $view_manage->view_render();
+                    $view_manage->view_render_registrations();
                 }
             }
             elseif(isset($_REQUEST['manage_users']))
@@ -186,7 +196,7 @@
                 if(count($account_details) > 0)
                 {
                     $account_details = $account_details[0];
-                    $pi_menu = "Angemeldet als: " . $account_details['firstname'] . " " . $account_details['lastname'] . " (" . $account_details['username'] . ")";
+                    $pi_menu = "Angemeldet als: " . $account_details['firstname'] . " " . $account_details['lastname'] . " (" . $account_details['username'] . ") &nbsp; <A href=\"/?logout\"><i class=\"fa fa-door-open\"></i></A>";
                 }
             }
             else
@@ -196,7 +206,7 @@
         ?>
 
             <div class="" style="background-color: #151515; color: white; padding: 8px; width:100%; height: 40px; vertical-align: middle; text-align: right;">
-                <div style="float:left;font-family:Helvetica;font-size:10pt;color:dimgrey">R:EEG:ISTRY commit #b2aff1e</div><div style="float:right;font-family:Helvetica;font-size:10pt;color:dimgrey"><?php print $pi_menu; ?></div>
+                <div style="float:left;font-family:Helvetica;font-size:10pt;color:dimgrey">R:EEG:ISTRY commit #529bb1c</div><div style="float:right;font-family:Helvetica;font-size:10pt;color:dimgrey"><?php print $pi_menu; ?></div>
             </div>
 
             <!-- Scripts -->

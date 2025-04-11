@@ -3,7 +3,7 @@
 include_once('view.inc.php');
 class VIEW_MANAGEMENT extends VIEW
 {
-    function view_render()
+    function view_render_registrations()
     {
         if(isset($_REQUEST['sortkey']))
         {
@@ -26,7 +26,7 @@ class VIEW_MANAGEMENT extends VIEW
 
         <header id="header">
             <h1>R:EEG:ISTRY | Management</h1>
-            <p>Energiegemeinschaften und Anmeldungen verwalten<br /></p>
+            <p><A href="/"><i class="fa fa-arrow-alt-circle-left"></i></A>&nbsp;Energiegemeinschaften und Anmeldungen verwalten<br /></p>
         </header>
 
         <?php
@@ -87,7 +87,8 @@ class VIEW_MANAGEMENT extends VIEW
             if(isset($_SESSION['dashboard']['search'][$searchable_field['name']]))
             {
                 $selected = 'selected="selected"';
-                $searchprefill = $_SESSION['dashboard']['search'][$searchable_field['name']];
+                if($searchable_field['source'] != null) $searchable_path = $searchable_field['source'] . '.' . $searchable_field['name']; else $searchable_path = $searchable_field['name'];
+                $searchprefill = $_SESSION['dashboard']['search'][$searchable_path];
             }
             else
             {
@@ -134,6 +135,8 @@ class VIEW_MANAGEMENT extends VIEW
 
         $columns = []; // store every column configuration we get for this dashboard layout to avoid multiple lookups
         $column_count = 0;
+        $search_root = 'registrations';
+
         foreach($layout_columns as $layout_column)
         {
             $column_config = array_values(array_filter($column_configs, function($column) use ($layout_column)
@@ -141,6 +144,12 @@ class VIEW_MANAGEMENT extends VIEW
                 return $column['name'] === $layout_column['data'];
             }));
             $columns[$column_count] = $column_config[0];
+
+            if($column_config[0]['source'] == 'meters')
+            {
+                // switch to meter-centric lookups
+                $search_root = 'meters';
+            }
 
             if($columns[$column_count]['sortable'] == 'y')
             {
@@ -207,14 +216,16 @@ class VIEW_MANAGEMENT extends VIEW
         {
             if($column['filterable'] == 'y' && $column['compute'] == null)
             {
-                if($_SESSION['dashboard']['filter'][$column['name']] != null) $filter_value = $_SESSION['dashboard']['filter'][$column['name']]; else $filter_value = '';
+                if($column['source'] != NULL)   $column_path = $column['source'] . '.' . $column['name']; else $column_path = $column['name'];
+                if($_SESSION['dashboard']['filter'][$column_path] != null) $filter_value = $_SESSION['dashboard']['filter'][$column_path]; else $filter_value = '';
+
                 print '<td>
-                            <input type="text" id="filter-' . $column['name'] . '" onclick="this.select();" onfocusout="JaxonInteractives.dashboard_set_filter(' . "'" . $column['name'] . "'" . ', document.getElementById(' . "'filter-" . $column['name'] . "'" . ').value);" class="filter" name="filter-' . $column['name'] . '" value="' . $filter_value . '">
+                            <input type="text" id="filter-' . $column['name'] . '" onclick="this.select();" onfocusout="JaxonInteractives.dashboard_set_filter(' . "'$column_path'" . ', document.getElementById(' . "'filter-" . $column['name'] . "'" . ').value);" class="filter" name="filter-' . $column['name'] . '" value="' . $filter_value . '">
                             <script>
                               input = document.getElementById("filter-' . $column['name'] . '");
                               input.addEventListener("keydown", function(event) {
                                 if (event.key === "Enter") {
-                                    JaxonInteractives.dashboard_set_filter(' . "'" . $column['name'] . "'" . ', document.getElementById(' . "'filter-" . $column['name'] . "'" . ').value);
+                                    JaxonInteractives.dashboard_set_filter(' . "'" . $column_path . "'" . ', document.getElementById(' . "'filter-" . $column['name'] . "'" . ').value);
                                 }
                               });
                             </script>
@@ -259,6 +270,7 @@ class VIEW_MANAGEMENT extends VIEW
                     // only add this field if we have a proper filter value
                     if ($filter_string != '') $filter_string .= ' AND ';
                     $filter_string .= $filter_key . ' LIKE "%' . $filter_value . '%"';
+                    $filter_array[] = $filter_key . ' LIKE "%' . $filter_value . '%"';
                 }
             }
         }
@@ -272,6 +284,7 @@ class VIEW_MANAGEMENT extends VIEW
                     // only add this field if we have a proper search value
                     if ($filter_string != '') $filter_string .= ' AND ';
                     $filter_string .= $search_key . ' LIKE "%' . $search_value . '%"';
+                    $filter_array[] = $search_key . ' LIKE "%' . $search_value . '%"';
                 }
             }
         }
@@ -311,7 +324,19 @@ class VIEW_MANAGEMENT extends VIEW
             $start_index = 0;
         }
 
-        $registrations = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_REGISTRATIONS'], 'deleted', 'n', $start_index . ',' . $page_size, $sortkey_arr[0], $sortkey_arr[1], $filter_string);
+        if($search_root == 'registrations')
+        {
+            $registrations = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_REGISTRATIONS'], 'deleted', 'n', $start_index . ',' . $page_size, $sortkey_arr[0], $sortkey_arr[1], $filter_string);
+        }
+        else
+        {
+            $filter_array[] = $this->config->user['DBTABLE_METERS'] . '.deleted = "n"';
+            $inner_joins = [
+                [ $this->config->user['DBTABLE_REGISTRATIONS'], $this->config->user['DBTABLE_METERS'] . '.registration_id', $this->config->user['DBTABLE_REGISTRATIONS'] . '.id' ]
+            ];
+            $registrations = $this->db->get_rows($this->config->user['DBTABLE_METERS'], $inner_joins, $filter_array, $start_index . ',' . $page_size, );
+        }
+
         foreach($registrations as $registration)
         {
             switch ($registration['state'])
@@ -454,6 +479,10 @@ class VIEW_MANAGEMENT extends VIEW
             &nbsp;<br />&nbsp;<br />&nbsp;<br />
         ';
     }
+
+
+
+
 
     function render_computed_filter_column($compute_type, $column_name, $filter_value=null)
     {

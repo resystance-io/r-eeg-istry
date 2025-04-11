@@ -10,20 +10,27 @@ class VIEW_MANAGEMENT_USERS extends VIEW
         <!--<input type="button" value="JAXON FOO TEST" onclick="jaxon_foo()" /><br />-->
         <header id="header">
             <h1>R:EEG:ISTRY | Management</h1>
-            <p>BenutzerInnen verwalten<br /></p>
+            <p><A href="/?manage"><i class="fa fa-arrow-alt-circle-left"></i></A>&nbsp;BenutzerInnen verwalten<br /></p>
         </header>
 
         <?php
 
         print "<br />";
 
+        $admin = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARD_USERS'], 'admin', 'id', $_SESSION['backend_authenticated']);
+        if($admin != 'y')
+        {
+            // if you're not admin, you're limited to managing yourself
+            if(isset($_REQUEST['userid']))  $_REQUEST['userid'] = $_SESSION['backend_authenticated'];
+        }
+
         if(isset($_REQUEST['add']))
         {
-            $this->view_render_create();
+            if($admin == 'y')   $this->view_render_create();
         }
         elseif(isset($_REQUEST['rmv']))
         {
-            $this->view_render_delete();
+            if($admin == 'y')   $this->view_render_delete();
         }
         elseif(isset($_REQUEST['userid']) && $_REQUEST['userid'] != '')
         {
@@ -46,7 +53,7 @@ class VIEW_MANAGEMENT_USERS extends VIEW
         print "<h3>Passwort &auml;ndern</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
         print "    
-                       
+                       soon
         ";
 
         print "</div><br />";
@@ -134,15 +141,20 @@ class VIEW_MANAGEMENT_USERS extends VIEW
 
     function view_render_users()
     {
-        print '<table class="navigation green-gradient" style="width:160px;">
-                <thead>
-                  <tr>
-                    <th class="" style="cursor:pointer" onclick="self.location.href=\'?manage_users&add\'"><i class="fa fa-plus"></i>&nbsp;Neu</th>
-                  </tr>
-                </thead>
-               </table>
-               <br />
-        ';
+        $admin = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARD_USERS'], 'admin', 'id', $_SESSION['backend_authenticated']);
+
+        if($admin == 'y')
+        {
+            print '<table class="navigation green-gradient" style="width:160px;">
+                    <thead>
+                      <tr>
+                        <th class="" style="cursor:pointer" onclick="self.location.href=\'?manage_users&add\'"><i class="fa fa-plus"></i>&nbsp;Neu</th>
+                      </tr>
+                    </thead>
+                   </table>
+                   <br />
+            ';
+        }
 
         print '
             <div class="table-container">
@@ -162,6 +174,8 @@ class VIEW_MANAGEMENT_USERS extends VIEW
         $users = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARD_USERS'], 'deleted', 'n');
         foreach($users as $user)
         {
+            if($admin != 'y' && $user['id'] != $_SESSION['backend_authenticated'])   continue; // if you're not admin, it's only you
+
             $user_tenants = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARD_USERS_X_TENANTS'], 'user_id', $user['id']);
             $tenant_scope = '';
             foreach($user_tenants as $user_tenant)
@@ -172,7 +186,7 @@ class VIEW_MANAGEMENT_USERS extends VIEW
             }
             if($tenant_scope == '') $tenant_scope = '-';
 
-            print '<tr>
+            print '<tr class="stategray">
                     <td>' . $user['username'] . '</td>
                     <td>' . $user['firstname'] . '</td>
                     <td>' . $user['lastname'] . '</td>
@@ -182,8 +196,13 @@ class VIEW_MANAGEMENT_USERS extends VIEW
                         &nbsp;&nbsp;&nbsp;
                         <a href="/?manage_dashboards&userid=' . $user['id'] . '"><i class="fa fa-table"></i></a>
                         &nbsp;&nbsp;&nbsp;
-                        <a href="/?manage_users&rmv&userid=' . $user['id'] . '"><i class="fa fa-trash"></i>
-                        
+            ';
+
+            if($user['id'] != $_SESSION['backend_authenticated'])
+            {
+                print '            <a href="/?manage_users&rmv&userid=' . $user['id'] . '"><i class="fa fa-trash"></i>';
+            }
+            print '            
                     </td>
                    </tr>';
         }
