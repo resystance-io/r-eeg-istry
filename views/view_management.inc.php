@@ -303,7 +303,19 @@ class VIEW_MANAGEMENT extends VIEW
                 $this->db->update_column_by_column_values($this->config->user['DBTABLE_DASHBOARD_USERS'], 'result_page_size', $page_size, 'id', $_SESSION['backend_authenticated']);
             }
         }
-        $registrations_count = $this->db->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_REGISTRATIONS'], 'deleted','n', $filter_string);
+
+        if($search_root == 'registrations')
+        {
+            $registrations_count = $this->db->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_REGISTRATIONS'], 'deleted', 'n', $filter_string);
+        }
+        else
+        {
+            $filter_array[] = $this->config->user['DBTABLE_METERS'] . '.deleted = "n"';
+            $inner_joins = [
+                [ $this->config->user['DBTABLE_REGISTRATIONS'], $this->config->user['DBTABLE_METERS'] . '.registration_id', $this->config->user['DBTABLE_REGISTRATIONS'] . '.id' ]
+            ];
+            $registrations_count = $this->db->get_rowcount($this->config->user['DBTABLE_METERS'], $inner_joins, $filter_array);
+        }
 
         if($registrations_count > $page_size)
         {

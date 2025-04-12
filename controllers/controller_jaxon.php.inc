@@ -1054,7 +1054,7 @@ class Interactives
         $state_nice = ['new' => 'Neu', 'onboarding' => "Onboarding", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert", 'refused' => "Abgelehnt"];
         foreach($available_states as $available_state)
         {
-            if($available_state == 'new' && $dbvalue != 'new')  $disabled = 'disabled'; else $disabled = '';
+            if($available_state == 'new' && ($dbvalue != 'new' || $dbvalue != 'refused'))  $disabled = 'disabled'; else $disabled = '';
             if($available_state != 'new' && $dbvalue == 'refused')  $disabled = 'disabled';
             if($available_state == 'refused' && $dbvalue != 'new')  $disabled = 'disabled';
             if($dbvalue == $available_state) $selected = 'selected="selected"'; else $selected = '';
@@ -1111,10 +1111,17 @@ class Interactives
                     else
                     {
                         $next_meter_oid = 1;
-                        $response->alert('This is the first meter for this tenant. New Meter OID is ' . $next_meter_oid);
+                       $response->alert('This is the first meter for this tenant. New Meter OID is ' . $next_meter_oid);
                     }
 
                     $this->db->update_column_by_column_values($this->config->user['DBTABLE_METERS'], 'meter_oid', $next_meter_oid, 'id', $meter['id']);
+
+                    if($meter['meter_type'] == 'supplier')  $shorttype = 'ERZ'; else $shorttype = 'ABN';
+                    $tenant_meter_prefix = $this->db->get_column_by_column_value($this->config->user['DBTABLE_TENANTS'], 'meter_prefix_short', 'id', $current_tenant);
+                    $this->db->update_column_by_column_values($this->config->user['DBTABLE_METERS'], 'meter_fqoid', $tenant_meter_prefix . $shorttype . $next_meter_oid, 'id', $meter['id']);
+
+                    $tenant_network_substation_id = $this->db->get_column_by_column_value($this->config->user['DBTABLE_TENANTS'], 'network_substation_id', 'id', $current_tenant);
+                    $this->db->update_column_by_column_values($this->config->user['DBTABLE_METERS'], 'meter_substation_id', $tenant_network_substation_id, 'id', $meter['id']);
                 }
             }
         }
@@ -1219,10 +1226,16 @@ class Interactives
                         {
                             $next_meter_oid = 1;
                             $response->alert('This is the first meter for this tenant. Meter OID is ' . $next_meter_oid);
-
                         }
 
                         $this->db->update_column_by_column_values($this->config->user['DBTABLE_METERS'], 'meter_oid', $next_meter_oid, 'id', $meter['id']);
+
+                        if($meter['meter_type'] == 'supplier')  $shorttype = 'ERZ'; else $shorttype = 'ABN';
+                        $tenant_meter_prefix = $this->db->get_column_by_column_value($this->config->user['DBTABLE_TENANTS'], 'meter_prefix_short', 'id', $dbvalue);
+                        $this->db->update_column_by_column_values($this->config->user['DBTABLE_METERS'], 'meter_fqoid', $tenant_meter_prefix . $shorttype . $next_meter_oid, 'id', $meter['id']);
+
+                        $tenant_network_substation_id = $this->db->get_column_by_column_value($this->config->user['DBTABLE_TENANTS'], 'network_substation_id', 'id', $dbvalue);
+                        $this->db->update_column_by_column_values($this->config->user['DBTABLE_METERS'], 'meter_substation_id', $tenant_network_substation_id, 'id', $meter['id']);
                     }
 
                     $response->script("window.location.href='/?manage_registrations&registration=$recordid';");
