@@ -13,6 +13,10 @@ class VIEW_LOOKUP extends VIEW
                 $this->view_render_profile();
                 break;
 
+            case "reset":
+                $this->view_render_reset();
+                break;
+
             default:
                 print '
                     <header id="header">
@@ -27,7 +31,7 @@ class VIEW_LOOKUP extends VIEW
         }
     }
 
-    private function view_render_login()
+    private function view_render_login(): void
     {
         if(isset($_SESSION['auth_email']) && isset($_SESSION['auth_email']) != "")
         {
@@ -43,7 +47,34 @@ class VIEW_LOOKUP extends VIEW
         print '<br />';
         print 'Passwort:<br><input type="password" onfocus="this.select()" name="auth_mnemonic" id="auth_mnemonic" value="" onfocusout="JaxonInteractives.update_credential_cache(' . "'auth_mnemonic'" . ', document.getElementById(' . "'auth_mnemonic'" . ').value);" />';
         print "</div><br />";
-        print '<button type="button" class="defaultbtn" id="btn_authenticate" onClick="JaxonInteractives.authenticate();">Einloggen</button>';
+        print '<button type="button" class="defaultbtn" style="float:left" id="btn_authenticate" onClick="JaxonInteractives.authenticate();">Einloggen</button>';
+        print '<div style="float:right"><a href="/?lookup=reset">Passwort vergessen?</a></div>';
+    }
+
+    private function view_render_reset(): void
+    {
+        $registrations = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'id', $_SESSION['authenticated']);
+        if ($registrations == NULL || count($registrations) == 0)
+        {
+            print '<h3>Fehler:</h3><br />Die Daten dieser Registrierung konnten nicht abgerufen werden.<br />Bitte kontaktiere den Support';
+            return;
+        }
+        $registration = $registrations[0];
+
+        print '
+                    <header id="header">
+                        <h1>Passwort vergessen</h1>
+                        <p>Hier kannst Du dein Passwort zur&uuml;cksetzen lassen<br /></p>
+                    </header>
+        ';
+
+        print "<table>";
+        print "<tr><td class=\"profileheader\">E-Mail Adresse</td><td><input type=\"text\" name=\"forgot_email\" id=\"forgot_email\"></td></tr>";
+
+        print "<tr><td>&nbsp;</td>";
+            print "<td><button style=\"margin-top:12px;\">Neues Passwort anfordern</button></td>";
+        print "</tr>";
+        print "</table>";
     }
 
     private function view_render_profile()
@@ -58,7 +89,7 @@ class VIEW_LOOKUP extends VIEW
         if ($registrations == NULL || count($registrations) == 0)
         {
             print '<h3>Fehler:</h3><br />Die Daten dieser Registrierung konnten nicht abgerufen werden.<br />Bitte kontaktiere den Support';
-            return false;
+            return;
         }
         $registration = $registrations[0];
 
@@ -66,7 +97,7 @@ class VIEW_LOOKUP extends VIEW
         if ($tenant_info == NULL || count($tenant_info) == 0)
         {
             print '<h3>Fehler:</h3><br />Die Eigenschaften der EEG konnten nicht abgerufen werden.<br />Bitte kontaktiere den Support';
-            return false;
+            return;
         }
         $tenant_info = $tenant_info[0];
 
