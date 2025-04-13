@@ -29,7 +29,16 @@ class VIEW_MANAGEMENT extends VIEW
             <p><A href="/"><i class="fa fa-arrow-alt-circle-left"></i></A>&nbsp;Energiegemeinschaften und Anmeldungen verwalten<br /></p>
         </header>
 
+        <script>
+            function copy_to_clipboard(lineID)
+            {
+                navigator.clipboard.writeText(window.backend_linebuffer[lineID]);
+                document.getElementById("headcol-" + lineID).className = "fa fa-check";
+            }
+        </script>
+
         <?php
+
         print "<br />";
 
         $dashboards = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARDS'], 'user_id', '1');
@@ -355,7 +364,8 @@ class VIEW_MANAGEMENT extends VIEW
             $registrations = $this->db->get_rows($this->config->user['DBTABLE_METERS'], $inner_joins, $filter_array, $start_index . ',' . $page_size, $order);
         }
 
-        foreach($registrations as $registration)
+
+        foreach($registrations as $line_id => $registration)
         {
             switch ($registration['state'])
             {
@@ -402,8 +412,8 @@ class VIEW_MANAGEMENT extends VIEW
             }
 
             print '<tr class="' . $class . '" onclick="self.location.href=\'/?manage_registrations&registration=' . $registration['id'] . '\'">';
-
-            print '<td><i class="fa ' . $icon . '"></td>';
+            print '<td onMouseOver="document.getElementById(\'headcol-' . $line_id . '\').className = \'fa fa-clipboard\';" onMouseOut="document.getElementById(\'headcol-' . $line_id . '\').className = \'fa ' . $icon . '\';" onClick="copy_to_clipboard(' . $line_id . '); event.stopPropagation();"><i id="headcol-' . $line_id . '" class="fa ' . $icon . '"></td>';
+            $csv_buffer = '';
             foreach($columns as $rowindex => $column)
             {
                 if($column['compute'] == '')
@@ -411,6 +421,7 @@ class VIEW_MANAGEMENT extends VIEW
                     if((($column['name'] == 'firstname' && isset($columns[$rowindex + 1]) && $columns[$rowindex + 1]['name'] == 'lastname') || ($column['name'] == 'lastname' && isset($columns[$rowindex + 1]) && $columns[$rowindex + 1]['name'] == 'firstname')) && $registration['type'] == 'company')
                     {   // this is a given name tuple arrangement, and we loaded a company. Let's merge these columns and load the company name for convenience
                         print '<td colspan="2">' . $registration['company_name'] . '</td>';
+                        $csv_buffer .= $registration['company_name'] . ';;';
                     }
                     elseif((($column['name'] == 'firstname' && isset($columns[$rowindex - 1]) && $columns[$rowindex - 1]['name'] == 'lastname') || ($column['name'] == 'lastname' && isset($columns[$rowindex - 1]) && $columns[$rowindex - 1]['name'] == 'firstname')) && $registration['type'] == 'company')
                     {   // it's still a given name tuple, but this is the second column. Suppress this.
@@ -419,14 +430,18 @@ class VIEW_MANAGEMENT extends VIEW
                     else
                     {
                         print '<td>' . $registration[$column['name']] . '</td>';
+                        $csv_buffer .= $registration[$column['name']] . ';';
                     }
                 }
                 else
                 {
-                    print '<td>' . $this->lookup_computed_column($column['compute'], $registration) . '</td>';
+                    $computed_value = $this->lookup_computed_column($column['compute'], $registration);
+                    print '<td>' . $computed_value . '</td>';
+                    $csv_buffer .= $computed_value . ';';
                 }
             }
 
+            print '<script>window.backend_linebuffer[' . $line_id . '] = "' . $csv_buffer . '";</script>';
             print '</tr>';
         }
 

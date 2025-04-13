@@ -1041,6 +1041,42 @@ class Interactives
         return $response;
     }
 
+    public function dashboard_recover_mnemonic($email)
+    {
+        $response = jaxon()->newResponse();
+
+        if(!filter_var($email, FILTER_VALIDATE_EMAIL))
+        {
+            $response->alert("Bitte überprüfe das Format der E-Mail Adresse");
+        }
+        else
+        {
+            $user_status = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'deleted', 'email', $email);
+
+            // create a random string with 8 random alphanumeric characters, but try to prevent homoglyphs
+            $chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Excludes homoglyphs like O/0, I/1, l/1
+            $random_string = '';
+            for ($i = 0; $i < 8; $i++)
+            {
+                $random_string .= $chars[random_int(0, strlen($chars) - 1)];
+            }
+            
+            $insert_arr = [
+                'feature' => 'recover_mnemonic',
+                'value1' => $email,
+                'value2' => $random_string
+            ];
+
+            $this->db->insert_row_with_array($this->config->user['DBTABLE_TEMPORARY'], $insert_arr);
+
+            $response = jaxon()->newResponse();
+            $response->script("window.location.href='/?lookup=recovernote';");
+        }
+
+        return $response;
+
+    }
+
     public function dashboard_inline_update_init($div_id, $dbkey, $recordid)
     {
         $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], $dbkey, 'id', $recordid);

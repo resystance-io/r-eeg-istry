@@ -32,6 +32,9 @@
             <link rel="stylesheet" href="/assets/css/AdminLTE.css" />
             <link rel="stylesheet" href="/assets/css/secondary.css" />
             <link rel="stylesheet" href="/assets/css/datatables.css" />
+            <script>
+                window.backend_linebuffer = [];
+            </script>
         </head>
 
         <body class="is-preload" style="min-height: 100vh; display: flex; flex-direction: column;padding-bottom: 0px; padding-left: 0px; padding-right: 0px">
@@ -205,8 +208,8 @@
             }
         ?>
 
-            <div class="" style="background-color: #151515; color: white; padding: 8px; width:100%; height: 40px; vertical-align: middle; text-align: right;">
-                <div style="float:left;font-family:Helvetica;font-size:10pt;color:dimgrey">R:EEG:ISTRY commit #529bb1c</div><div style="float:right;font-family:Helvetica;font-size:10pt;color:dimgrey"><?php print $pi_menu; ?></div>
+            <div class="" style="background-color: #151515; color: white; padding: 6px; width:100%; height: 38px; vertical-align: middle; text-align: right;">
+                <div style="float:left;font-family:Helvetica;font-size:10pt;color:dimgrey">R:EEG:ISTRY commit #529bb1c</div><div style="float:right;font-family:Helvetica;font-size:10pt;color:dimgrey"><?php print $pi_menu; ?>&nbsp;&nbsp;</div>
             </div>
 
             <!-- Scripts -->
