@@ -72,7 +72,7 @@ class VIEW_LOOKUP extends VIEW
         print "<tr><td class=\"profileheader\">E-Mail Adresse</td><td><input type=\"text\" name=\"forgot_email\" id=\"forgot_email\"></td></tr>";
 
         print "<tr><td>&nbsp;</td>";
-            print "<td><button style=\"margin-top:12px;\">Neues Passwort anfordern</button></td>";
+            print "<td><button style=\"margin-top:12px;\" onclick=\"JaxonInteractives.dashboard_recover_mnemonic(document.getElementById(\'forgot_email\').value);\">Neues Passwort anfordern</button></td>";
         print "</tr>";
         print "</table>";
     }
