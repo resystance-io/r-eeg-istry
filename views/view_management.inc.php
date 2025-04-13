@@ -346,7 +346,13 @@ class VIEW_MANAGEMENT extends VIEW
             $inner_joins = [
                 [ $this->config->user['DBTABLE_REGISTRATIONS'], $this->config->user['DBTABLE_METERS'] . '.registration_id', $this->config->user['DBTABLE_REGISTRATIONS'] . '.id' ]
             ];
-            $registrations = $this->db->get_rows($this->config->user['DBTABLE_METERS'], $inner_joins, $filter_array, $start_index . ',' . $page_size, );
+            if(isset($sortkey_arr[0]) && isset($sortkey_arr[1]))
+            {
+                $order = $sortkey_arr[0] . ' ' . $sortkey_arr[1];
+            }
+            else { $order = null; };
+
+            $registrations = $this->db->get_rows($this->config->user['DBTABLE_METERS'], $inner_joins, $filter_array, $start_index . ',' . $page_size, $order);
         }
 
         foreach($registrations as $registration)

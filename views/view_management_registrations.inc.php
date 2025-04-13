@@ -129,6 +129,17 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         print "<td>&nbsp;</td>";
         print "</tr>";
 
+        print "<tr class=\"stategray\"><td class=\"detailheader\">Letztes Login:</td>";
+        if ($registration['migration_date'] != null)
+        {
+            print "<td class=\"detailcontent\">" . date("d.m.Y", $registration['migration_date']) . "</td>";
+        }
+        else
+        {
+            print "<td class=\"detailcontent\">Noch nie angemeldet</td>";
+        }
+        print "</tr>";
+
         print '
                 </tbody>
               </table>
@@ -329,6 +340,16 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         {
             print '<ul class="timeline">';
 
+            print '
+                                    <!-- timeline item -->
+                                    <li>
+                                      <div class="timeline-item" style="width:98%">                                                                       
+                                          <input type="text" class="form-control" style="float:left; width:90%; height:36px" id="new_note_content" placeholder="Notiz eingeben...">
+                                          <button style="float:right" class="bg-blue-gradient" onclick="JaxonInteractives.dashboard_add_note(document.getElementById(\'new_note_content\').value, ' . "'" .  $registration['id'] . "'" . ');"><i class="fa fa-save"></i></button>
+                                      </div>
+                                    </li>
+            ';
+
             foreach($notes as $note)
             {
                 $author_nicename = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARD_USERS'], 'username', 'id', $note['user_id']);
@@ -341,11 +362,14 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                 if($note['style'] == 'event')
                 {
                     print '
-                            <li class="time-label" style="width:98%">
-                              <span class="bg-blue-gradient">
-                                &nbsp;' . $note['content'] . '&nbsp;
-                              </span>
-                            </li>
+                                    <!-- timeline item -->
+                                    <li>
+                                      <i class="fa fa-edit bg-blue"></i>
+                                      <div class="timeline-item" style="width:98%">
+                                        <span class="time"><i class="fa fa-clock"></i> ' . $note_nicedate . ' | ' . $author_nicename . '</span>
+                                        <h3 class="timeline-header" style="font-weight:normal;">' . $note['content'] . '</h3>
+                                      </div>
+                                    </li>
                     ';
                 }
                 elseif($note['style'] == 'note')

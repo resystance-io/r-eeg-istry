@@ -63,6 +63,8 @@ class Interactives
         $account_id = $this->db->get_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'id', 'email', $username, 'mnemonic', $hashed_mnemonic_provided);
         if($account_id)
         {
+            $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'last_login_date', time(), 'id', $account_id);
+
             $_SESSION['authenticated'] = $account_id;
             $response = jaxon()->newResponse();
             $response->script("window.location.href='/?lookup=profile';");
@@ -997,6 +999,23 @@ class Interactives
         return $response;
     }
 
+    public function dashboard_add_note($note, $registration_id)
+    {
+        $insert_arr = [
+            'user_id' => $_SESSION['backend_authenticated'],
+            'registration_id' => $registration_id,
+            'timestamp' => time(),
+            'style' => 'note',
+            'content' => $note
+        ];
+
+        $this->db->insert_row_with_array($this->config->user['DBTABLE_DASHBOARD_NOTES'], $insert_arr);
+
+        $response = jaxon()->newResponse();
+        $response->script("window.location.href='/?manage_registrations&registration=" . $registration_id ."';");
+        return $response;
+    }
+
     public function dashboard_set_colorconfig($value, $dashboard)
     {
         $this->db->update_column_by_column_values($this->config->user['DBTABLE_DASHBOARDS'], 'colorconfig', $value, 'id', $dashboard);
@@ -1054,9 +1073,12 @@ class Interactives
         $state_nice = ['new' => 'Neu', 'onboarding' => "Onboarding", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert", 'refused' => "Abgelehnt"];
         foreach($available_states as $available_state)
         {
-            if($available_state == 'new' && ($dbvalue != 'new' || $dbvalue != 'refused'))  $disabled = 'disabled'; else $disabled = '';
-            if($available_state != 'new' && $dbvalue == 'refused')  $disabled = 'disabled';
-            if($available_state == 'refused' && $dbvalue != 'new')  $disabled = 'disabled';
+            $disabled = '';
+            if($available_state == 'new' && $dbvalue != 'refused')  $disabled = 'disabled rule=1';
+            if($available_state == 'onboarding' && $dbvalue != 'new')  $disabled = 'disabled rule=1';
+            if($available_state != 'new' && $dbvalue == 'refused')  $disabled = 'disabled rule=2';
+            if($available_state == 'refused' && $dbvalue != 'new')  $disabled = 'disabled rule=3';
+            if($dbvalue == $available_state) $disabled = 'disabled rule=4';
             if($dbvalue == $available_state) $selected = 'selected="selected"'; else $selected = '';
             $input_field .= "<option value=\"" . $available_state . "\" $selected $disabled>" . $state_nice[$available_state] . "</option>";
         }
