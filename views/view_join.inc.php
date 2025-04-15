@@ -910,7 +910,7 @@ sorger!)<br />';
             {
                 if($meter_object['type'] == "consumers")
                 {
-                    $this->view_render_prefilled_meter("Z&auml;hlpunktnummer", $this->config->user['EEG_CONSUMERS_PREFILL'], $meter_key, $meter_object['value']);
+                    $this->view_render_prefilled_meter("Z&auml;hlpunktnummer", $meter_object['value'], $meter_key);
                     $consumer_count++;
                 }
             }
