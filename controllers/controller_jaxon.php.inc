@@ -136,21 +136,19 @@ class Interactives
 
     }
 
-    public function add_meter($meter_type, $prefix)
+    public function add_meter($meter_type, $prefill)
     {
         // add another meter input block to the current layout
         $response = jaxon()->newResponse();
 
         $id = $this->generate_uuid4();
 
-        $_SESSION['meters']["$id"]['prefix'] = $prefix;
-        $_SESSION['meters']["$id"]['value'] = '0000000';
         $_SESSION['meters']["$id"]['type'] = $meter_type;
+        $_SESSION['meters'][$id]['value'] = $prefill;
 
         $element = '
-            Z&auml;hlpunktnummer (letzte 7 Stellen) <div class="input-box">
-                <span class="prefix">' . $prefix . '</span>
-                <input type="text" name="' . $id . '" id="' . $id . '" value="0000000" maxlength="7" onfocus="this.select()"  onfocusout="JaxonInteractives.update_meter_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
+            Z&auml;hlpunktnummer <div class="input-box">
+                <input type="text" name="' . $id . '" id="' . $id . '" value="' . $prefill . '" maxlength="37" onfocus="this.select()"  onfocusout="JaxonInteractives.update_meter_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
                 <button style="background-color:darkred"  onclick="JaxonInteractives.rmv_meter(' . "'" . $id . "'" . ', ' . "'" . $meter_type . "'" . ');"><i style="font-size:16px;color:white;" class="icon fa-trash-alt"></i></button>
             </div>
             <br />
@@ -703,7 +701,7 @@ class Interactives
 
         foreach($_SESSION['meters'] as $meter_key => $meter_object)
         {
-            if($this->validate_record($meter_object['value'], 'meter_shortid') === false)
+            if($this->validate_record($meter_object['value'], 'meter_longid') === false)
             {
                 $failmsg = "Fehlerhaftes Format: Bitte überprüfen Sie die Zählpunktnummer";
                 $focustarget = $meter_key;
@@ -1598,6 +1596,17 @@ class Interactives
                     if(isset($value))
                     {
                         if (is_numeric($value) && strlen($value) == 7 && $value != '0000000')
+                        {
+                            return true;
+                        }
+                    }
+                    break;
+
+                case 'meter_longid':
+                    if(isset($value))
+                    {
+                        $clean_value = str_replace(' ', '', $value);
+                        if (strlen($clean_value) == 33 && str_starts_with($clean_value, 'AT00') && !str_ends_with($clean_value, "0000000"))
                         {
                             return true;
                         }

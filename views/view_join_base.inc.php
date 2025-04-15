@@ -195,6 +195,17 @@ class VIEW_JOIN_BASE extends VIEW
 
     }
 
+    protected function view_render_prefilled_meter($caption, $prefill, $id)
+    {
+        print '
+            <div id="container-' . $id . '">' . $caption . '<br>
+                <div class="input-box">
+                    <input type="text" name="' . $id . '" id="' . $id . '" value="' . $prefill . '" maxlength="38" onfocus="this.select()" onfocusout="JaxonInteractives.update_meter_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
+                    <button style="background-color:darkred"  onclick="JaxonInteractives.rmv_meter(' . "'" . $id . "'" . ');"><i style="font-size:16px;color:white;" class="icon fa-trash-alt"></i></button><br>
+                </div>
+                <br />
+            </div>';
+    }
     protected function view_render_prefixed_meter($caption, $prefix, $id, $value="0000000")
     {
         print '

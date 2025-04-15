@@ -586,11 +586,11 @@ sorger!)<br />';
 
                 if ($meter_object['type'] == "consumers")
                 {
-                    print "<h3>Adresse des Bezugsz&auml;hlpunkts " . $meter_object['value'] . "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</h3>";
+                    print "<h3>Adresse des Bezugsz&auml;hlpunkts " . substr($meter_object['value'], -8) . "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</h3>";
                 }
                 elseif ($meter_object['type'] == "suppliers")
                 {
-                    print "<h3>Adresse des Einspeisez&auml;hlpunkts " . $meter_object['value'] . "</h3>";
+                    print "<h3>Adresse des Einspeisez&auml;hlpunkts " . substr($meter_object['value'], -8) . "</h3>";
                 }
 
                 $this->view_render_meter_detail_inputfield($meter_key, "Stra&szlig;e", 'street', 'required', "width:320px;float:left;");
@@ -621,6 +621,8 @@ sorger!)<br />';
                 }
 
                 print "</div>";
+
+                print "<div style=\"clear:both\"></div>";
 
                 print "</div><br />";
             }
@@ -736,6 +738,7 @@ sorger!)<br />';
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
         $water_heating_arr = ['boiler' => 'Heizstab/Boiler', 'heatpump' => 'W&auml;rmepumpe', 'solar' => 'Solarthermie', 'district' => 'Fernw&auml;rme', 'other' => 'Sonstige'];
         $this->view_render_part_captioned_select("Wie bereitest Du Warmwasser im Sommer?", "water_heating_summer", $water_heating_arr, "generic_information", null, "width:600px;float:left;");
+        print "<div style=\"clear:both\"></div>";
         print "</div><br />";
 
         print "</div></div><br />";
@@ -854,7 +857,7 @@ sorger!)<br />';
                     }
 
                     $meter_array['registration_id'] = $registration_autoinc_id;
-                    $meter_array['meter_id'] = $meter_object['prefix'] . $meter_object['value'];
+                    $meter_array['meter_id'] = $meter_object['value'];
                     $meter_array['meter_uuid'] = $meter_key;
                     $meter_array['meter_type'] = $meter_type;
                     $meter_array['meter_addr_street'] = $meter_object['street']['value'];
@@ -907,7 +910,7 @@ sorger!)<br />';
             {
                 if($meter_object['type'] == "consumers")
                 {
-                    $this->view_render_prefixed_meter("Z&auml;hlpunktnummer (letzte 7 Stellen)", $this->config->user['EEG_CONSUMERS_PREFIX'], $meter_key, $meter_object['value']);
+                    $this->view_render_prefilled_meter("Z&auml;hlpunktnummer", $this->config->user['EEG_CONSUMERS_PREFILL'], $meter_key, $meter_object['value']);
                     $consumer_count++;
                 }
             }
@@ -916,14 +919,13 @@ sorger!)<br />';
         if(!isset($_SESSION['meters']) || $consumer_count == 0)
         {
             $id = $this->generate_uuid4();
-            $_SESSION['meters']["$id"]['prefix'] = $this->config->user['EEG_CONSUMERS_PREFIX'];
-            $_SESSION['meters']["$id"]['value'] = '0000000';
+            $_SESSION['meters']["$id"]['value'] = $this->config->user['EEG_CONSUMERS_PREFILL'];
             $_SESSION['meters']["$id"]['type'] = 'consumers';
-            $this->view_render_prefixed_meter("Z&auml;hlpunktnummer (letzte 7 Stellen)", $this->config->user['EEG_CONSUMERS_PREFIX'], $id);
+            $this->view_render_prefilled_meter("Z&auml;hlpunktnummer", $this->config->user['EEG_CONSUMERS_PREFILL'], $id);
         }
 
         print "<div id='end_of_consumers'></div>";
-        print '<br /><i style="font-size:16px;cursor:pointer;" class="icon fa-plus-square" onclick="JaxonInteractives.add_meter(' . "'consumers'" . ',' . "'" . $this->config->user['EEG_CONSUMERS_PREFIX'] . "'" . ');"></i><span class="label" style="font-weight:normal;font-size:16px;cursor:pointer;" onclick="JaxonInteractives.add_meter(' . "'consumers'" . ',' . "'" . $this->config->user['EEG_CONSUMERS_PREFIX'] . "'" . ');">&nbsp; Einen Bezugsz&auml;hlpunkt hinzuf&uuml;gen</span>';
+        print '<br /><i style="font-size:16px;cursor:pointer;" class="icon fa-plus-square" onclick="JaxonInteractives.add_meter(' . "'consumers'" . ',' . "'" . $this->config->user['EEG_CONSUMERS_PREFILL'] . "'" . ');"></i><span class="label" style="font-weight:normal;font-size:16px;cursor:pointer;" onclick="JaxonInteractives.add_meter(' . "'consumers'" . ',' . "'" . $this->config->user['EEG_CONSUMERS_PREFILL'] . "'" . ');">&nbsp; Einen Bezugsz&auml;hlpunkt hinzuf&uuml;gen</span>';
         print "</div>";
     }
 
@@ -946,13 +948,13 @@ sorger!)<br />';
             {
                 if($meter_object['type'] == "suppliers")
                 {
-                    $this->view_render_prefixed_meter("Z&auml;hlpunktnummer (letzte 7 Stellen)", $this->config->user['EEG_SUPPLIERS_PREFIX'], $meter_key, $meter_object['value']);
+                    $this->view_render_prefilled_meter("Z&auml;hlpunktnummer", $meter_object['value'], $meter_key);
                 }
             }
 
         }
         print "<div id='end_of_suppliers'></div>";
-        print '<br /><i style="font-size:16px;cursor:pointer;" class="icon fa-plus-square" onclick="JaxonInteractives.add_meter(' . "'suppliers'" . ',' . "'" . $this->config->user['EEG_SUPPLIERS_PREFIX'] . "'" . ');"></i><span class="label" style="font-weight:normal;font-size:16px;cursor:pointer;" onclick="JaxonInteractives.add_meter(' . "'suppliers'" . ',' . "'" . $this->config->user['EEG_SUPPLIERS_PREFIX'] . "'" . ');">&nbsp; Einen Einspeisez&auml;hlpunkt hinzuf&uuml;gen</span>';
+        print '<br /><i style="font-size:16px;cursor:pointer;" class="icon fa-plus-square" onclick="JaxonInteractives.add_meter(' . "'suppliers'" . ',' . "'" . $this->config->user['EEG_SUPPLIERS_PREFILL'] . "'" . ');"></i><span class="label" style="font-weight:normal;font-size:16px;cursor:pointer;" onclick="JaxonInteractives.add_meter(' . "'suppliers'" . ',' . "'" . $this->config->user['EEG_SUPPLIERS_PREFILL'] . "'" . ');">&nbsp; Einen Einspeisez&auml;hlpunkt hinzuf&uuml;gen</span>';
         print "</div>";
     }
 
