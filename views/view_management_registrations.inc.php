@@ -36,20 +36,18 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         }
         $registration = $registrations[0];
 
-        if($registration['tenant'] != NULL)
+        if ($registration['tenant'] != NULL)
         {
             $tenant_info = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_TENANTS'], 'id', $registration['tenant']);
             if ($tenant_info == NULL || count($tenant_info) == 0)
             {
                 print '<h3>Fehler:</h3><br />Die Eigenschaften der EEG konnten nicht abgerufen werden.<br />Bitte kontaktiere den Support';
                 return false;
-            }
-            else
+            } else
             {
                 $tenant_info = $tenant_info[0];
             }
-        }
-        else
+        } else
         {
             // tenant not yet chosen
             $tenant_info['fullname'] = 'Nicht zugewiesen';
@@ -103,8 +101,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
             if ($registration['migration_date'] != null)
             {
                 print "<td class=\"detailcontent\">" . date("d.m.Y", $registration['migration_date']) . "</td>";
-            }
-            else
+            } else
             {
                 print "<td class=\"detailcontent\">Noch ausstehend</td>";
             }
@@ -117,8 +114,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
             if ($registration['delivery_date'] != null)
             {
                 print "<td class=\"detailheader\">" . date("d.m.Y", $registration['delivery_date']) . "</td>";
-            }
-            else
+            } else
             {
                 print "<td class=\"detailcontent\">Noch ausstehend</td>";
             }
@@ -133,8 +129,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         if ($registration['migration_date'] != null)
         {
             print "<td class=\"detailcontent\">" . date("d.m.Y", $registration['migration_date']) . "</td>";
-        }
-        else
+        } else
         {
             print "<td class=\"detailcontent\">Noch nie angemeldet</td>";
         }
@@ -154,14 +149,14 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                 <tbody>
         ';
 
-        if($registration['tenant'] != null) $network_substation = $tenant_info['network_substation_id'] . " | " . $tenant_info['network_substation_name'];  else $network_substation = 'Noch nicht zugeordnet';
+        if ($registration['tenant'] != null) $network_substation = $tenant_info['network_substation_id'] . " | " . $tenant_info['network_substation_name']; else $network_substation = 'Noch nicht zugeordnet';
         print "<tr class=\"stategray\"><td class=\"detailheader\">Umspannwerk:</td>";
         print "<td id=\"detail_network_substation\" class=\"detailcontent\">" . $network_substation . "</td>";
         print "</tr>";
         print "<tr class=\"stategray\"><td class=\"detailheader\">Anmeldenummer:</td>";
         print "<td class=\"detailcontent\">" . str_pad($registration['id'], 5, '0', STR_PAD_LEFT) . "</td>";
         print "</tr>";
-        if($registration['member_id'] != null)  $member_id = $registration['member_id']; else $member_id = 'Noch nicht zugewiesen';
+        if ($registration['member_id'] != null) $member_id = $registration['member_id']; else $member_id = 'Noch nicht zugewiesen';
         print "<tr class=\"stategray\"><td class=\"detailheader\">Mitgliedsnummer:</td>";
         print "<td id=\"detail_member_id\" class=\"detailcontent\">$member_id<i onclick=\"JaxonInteractives.dashboard_inline_update_init('detail_member_id', 'member_id', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td>";
         print "</tr>";
@@ -246,17 +241,35 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         print '<br />&nbsp;<br />';
         print '<h3>Zustimmungen</h3>';
         print "<table class=\"table\" style=\"width:700px\">";
-        print "<tr class=\"stategray\"><td class=\"detailheader\">Statuten akzeptiert:</td><td class=\"detailcontent\">" . date("d.m.Y H:i:s", $registration['bylaws_consent']) . "</td></tr>";
-        print "<tr class=\"stategray\"><td class=\"detailheader\">Datenschutzbestimmungen akzeptiert:</td>";
-        if($registration['gdpr_consent'] != null)
+
+        print "<tr class=\"stategray\"><td class=\"detailheader\">Statuten akzeptiert:</td>";
+        if($registration['bylaws_consent'] != null)
         {
-            print "<td class=\"detailcontent\">" . date("d.m.Y H:i:s", $registration['gdpr_consent']) . "</td></tr>";
+            print "<td class=\"detailcontent\">" . date("d.m.Y H:i:s", $registration['bylaws_consent']) . "</td></tr>";
         }
         else
         {
-            print "<td class=\"detailcontent\">Keine Angabe</td></tr>";
+            print "<td class=\"detailcontent bg-red-gradient-transparent\">Nein</td></tr>";
         }
-        print "<tr class=\"stategray\"><td class=\"detailheader\">AGB akzeptiert:</td><td class=\"detailcontent\">" . date("d.m.Y H:i:s", $registration['tos_consent']) . "</td></tr>";
+
+        print "<tr class=\"stategray\"><td class=\"detailheader\">Datenschutzbestimmungen akzeptiert:</td>";
+        if ($registration['gdpr_consent'] != null)
+        {
+            print "<td class=\"detailcontent\">" . date("d.m.Y H:i:s", $registration['gdpr_consent']) . "</td></tr>";
+        } else
+        {
+            print "<td class=\"detailcontent bg-red-gradient-transparent\">Nein</td></tr>";
+        }
+
+        print "<tr class=\"stategray\"><td class=\"detailheader\">AGB akzeptiert:</td>";
+        if($registration['tos_consent'] != null)
+        {
+            print "<td class=\"detailcontent\">" . date("d.m.Y H:i:s", $registration['tos_consent']) . "</td></tr>";
+        }
+        else
+        {
+            print "<td class=\"detailcontent bg-red-gradient-transparent\">Nein</td></tr>";
+        }
         print "<tr class=\"stategray\"><td class=\"detailheader\">Netzbetreibervollmacht erteilt:</td><td class=\"detailcontent\">" . date("d.m.Y H:i:s", $registration['network_consent']) . "</td></tr>";
         print "</table>";
 
@@ -300,7 +313,9 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                     </td>
                     <td class=\"profilemeter\" style=\"text-align:left\">
                         <span class=\"metertype\">$meter_nice ($meter_participation$meter_power$meter_feedlimit)</span><br />
-                        " . $meter['meter_id'] . "
+                        &nbsp;<br />
+                        " . $meter['meter_id'] . "<br />
+                        " . $meter['meter_addr_street'] . " " . $meter['meter_addr_number'] . ", " . $meter['meter_addr_zip'] . " " . $meter['meter_addr_city'] . "<br />
                     </td>
                    </tr>";
         }
