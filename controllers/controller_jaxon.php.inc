@@ -699,6 +699,7 @@ class Interactives
         $failmsg = null;
         $focustarget = null;
 
+        $meter_ids_in_session = [];
         foreach($_SESSION['meters'] as $meter_key => $meter_object)
         {
             if($this->validate_record($meter_object['value'], 'meter_longid') === false)
@@ -708,12 +709,23 @@ class Interactives
             }
             else
             {
-                $meter_id_count = $this->db->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_METERS'],'meter_id', $meter_object['prefix'] . $meter_object['value']);
+                $meter_id_count = $this->db->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_METERS'],'meter_id', $meter_object['value']);
                 if($meter_id_count > 0)
                 {
                     $jaxon_response_object->alert("Dieser Zählpunkt ist bereits einem Mitglied dieser EEG zugeordnet");
                     $jaxon_response_object->script("document.getElementById('" . $meter_key . "').focus();");
                     return false;
+                }
+
+                if(isset($meter_ids_in_session[$meter_object['value']]))
+                {
+                    $jaxon_response_object->alert("Ein Zählpunkt darf nicht mehrmals in einer Registrierung verwendet werden");
+                    $jaxon_response_object->script("document.getElementById('" . $meter_key . "').focus();");
+                    return false;
+                }
+                else
+                {
+                    $meter_ids_in_session[$meter_object['value']] = true;
                 }
             }
         }
