@@ -247,7 +247,15 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         print '<h3>Zustimmungen</h3>';
         print "<table class=\"table\" style=\"width:700px\">";
         print "<tr class=\"stategray\"><td class=\"detailheader\">Statuten akzeptiert:</td><td class=\"detailcontent\">" . date("d.m.Y H:i:s", $registration['bylaws_consent']) . "</td></tr>";
-        print "<tr class=\"stategray\"><td class=\"detailheader\">Datenschutzbestimmungen akzeptiert:</td><td class=\"detailcontent\">" . date("d.m.Y H:i:s", $registration['gdpr_consent']) . "</td></tr>";
+        print "<tr class=\"stategray\"><td class=\"detailheader\">Datenschutzbestimmungen akzeptiert:</td>";
+        if($registration['gdpr_consent'] != null)
+        {
+            print "<td class=\"detailcontent\">" . date("d.m.Y H:i:s", $registration['gdpr_consent']) . "</td></tr>";
+        }
+        else
+        {
+            print "<td class=\"detailcontent\">Keine Angabe</td></tr>";
+        }
         print "<tr class=\"stategray\"><td class=\"detailheader\">AGB akzeptiert:</td><td class=\"detailcontent\">" . date("d.m.Y H:i:s", $registration['tos_consent']) . "</td></tr>";
         print "<tr class=\"stategray\"><td class=\"detailheader\">Netzbetreibervollmacht erteilt:</td><td class=\"detailcontent\">" . date("d.m.Y H:i:s", $registration['network_consent']) . "</td></tr>";
         print "</table>";
