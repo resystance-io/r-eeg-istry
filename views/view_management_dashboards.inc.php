@@ -210,6 +210,7 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
         print '<tr class="stategray">';
         print '    <td>&nbsp;</td>';
 
+        $used_columns = [];
         foreach($columns as $column_count => $column)
         {
             print '<td class="lightup" style="text-align:center">';
@@ -217,6 +218,7 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
             print '            <a style="color:darkred" href="/?manage_dashboards&dashboard_id=' . $dashboard_id. '&column=' . $column['layout_id'] . '&move=trash"><i class="fa fa-trash"></i></a>';
             if($column_count < count($columns) - 1)   print '            <a style="color:black" href="/?manage_dashboards&dashboard_id=' . $dashboard_id. '&column=' . $column['layout_id'] . '&move=right"><i style="margin-top:4px;font-size:14pt" class="fa fa-caret-right fa-pull-right"></i></a>';
             print '</td>';
+            $used_columns[$column['name']] = true;
         }
 
         print '</tr>';
