@@ -172,9 +172,15 @@ class VIEW_MANAGEMENT_USERS extends VIEW
         ';
 
         $users = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARD_USERS'], 'deleted', 'n');
+        $setup_user_present = false;
+
         foreach($users as $user)
         {
             if($admin != 'y' && $user['id'] != $_SESSION['backend_authenticated'])   continue; // if you're not admin, it's only you
+            if($user['username'] == 'setup')
+            {
+                $setup_user_present = true;
+            }
 
             $user_tenants = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARD_USERS_X_TENANTS'], 'user_id', $user['id']);
             $tenant_scope = '';
@@ -211,6 +217,11 @@ class VIEW_MANAGEMENT_USERS extends VIEW
               </table>
             </div>
         ';
+
+        if($setup_user_present === true)
+        {
+            print "<script>alert('Bitte lege einen neuen Admin User an und entferne danach unverzüglich den Benutzer \"setup\" !');</script>";
+        }
 
     }
 
