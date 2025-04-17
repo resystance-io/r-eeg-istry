@@ -1,17 +1,229 @@
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+SET NAMES utf8mb4;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE='NO_AUTO_VALUE_ON_ZERO', SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+# Dump of table dashboard_columns
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `dashboard_columns`;
+
+CREATE TABLE `dashboard_columns` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(32) DEFAULT NULL,
+  `nicename` varchar(64) DEFAULT NULL,
+  `compute` varchar(32) DEFAULT NULL,
+  `source` enum('registrations','meters') DEFAULT NULL,
+  `searchable` enum('y','n') DEFAULT 'y',
+  `filterable` enum('y','n') DEFAULT 'y',
+  `sortable` enum('y','n') DEFAULT NULL,
+  `visible` enum('y','n') DEFAULT 'y',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+LOCK TABLES `dashboard_columns` WRITE;
+/*!40000 ALTER TABLE `dashboard_columns` DISABLE KEYS */;
+
+INSERT INTO `dashboard_columns` (`id`, `name`, `nicename`, `compute`, `source`, `searchable`, `filterable`, `sortable`, `visible`)
+VALUES
+	(1,'tenant','EEG','eeg_short',NULL,'n','y','y','y'),
+	(2,'type','Art','type',NULL,'n','y','y','y'),
+	(3,'company_name','Firmenbezeichnung',NULL,'registrations','y','y','y','y'),
+	(4,'uid','UID',NULL,'registrations','y','y','y','y'),
+	(5,'salestax','Umsatzsteuerpflichtig','salestax',NULL,'n','n','y','y'),
+	(6,'title','Titel',NULL,'registrations','n','y','y','y'),
+	(7,'firstname','Vorname',NULL,'registrations','y','y','y','y'),
+	(8,'lastname','Nachname',NULL,'registrations','y','y','y','y'),
+	(9,'postnomen','Postnomen',NULL,'registrations','n','y','y','y'),
+	(10,'birthdate','Geburtsdatum',NULL,'registrations','y','y','y','y'),
+	(11,'idprovider','Ausweisart','idprovider',NULL,'n','n','y','y'),
+	(12,'idvalue','Ausweisnummer',NULL,'registrations','y','y','y','y'),
+	(13,'street','Stra&szlig;e',NULL,'registrations','y','y','y','y'),
+	(14,'number','Hausnummer',NULL,'registrations','y','y','y','y'),
+	(15,'city','Stadt',NULL,'registrations','y','y','y','y'),
+	(16,'zip','PLZ',NULL,'registrations','y','y','y','y'),
+	(17,'phone','Telefonnummer',NULL,'registrations','y','y','y','y'),
+	(18,'email','E-Mail',NULL,'registrations','y','y','y','y'),
+	(19,'banking_name','Kontoinhaber',NULL,'registrations','y','y','y','y'),
+	(20,'banking_iban','IBAN',NULL,'registrations','y','y','y','y'),
+	(21,'banking_consent','Bankeinzug akzeptiert','banking_consent',NULL,'n','n','y','y'),
+	(22,'network_consent','Netzvollmacht akzeptiert','network_consent',NULL,'n','n','y','y'),
+	(23,'bylaws_consent','Statuten akzeptiert','bylaws_consent',NULL,'n','n','y','y'),
+	(24,'gdpr_consent','DSGVO akzeptiert','gdpr_consent',NULL,'n','n','y','y'),
+	(25,'tos_consent','AGB akzeptiert','tos_consent',NULL,'n','n','y','y'),
+	(26,'network_customerid','Netz Kundennummer',NULL,'registrations','y','y','y','y'),
+	(27,'registration_date','Registrierungsdatum',NULL,'registrations','y','y','y','y'),
+	(28,'migration_date','Onboardingdatum',NULL,'registrations','y','y','y','y'),
+	(29,'delivery_date','Belieferungsbeginn',NULL,'registrations','y','y','y','y'),
+	(30,'ip_address','Registrierungs-IP',NULL,'registrations','y','y','y','y'),
+	(31,'network_inventoryid','INV# Z&auml;hler',NULL,'registrations','y','y','y','y'),
+	(32,'electric_car_count','&Sigma; E-Autos',NULL,'registrations','y','y','y','y'),
+	(33,'electric_car_capacity','&Sigma; Kapazit&auml;t E-Autos',NULL,'registrations','n','y','y','y'),
+	(34,'water_heating_summer','Hei&szlig;wasserbereitung Sommer','water_heating_summer',NULL,'n','y','y','y'),
+	(35,'bool_consuming_meters','Stromabnehmer?','bool_consuming_meters',NULL,'n','n','n','y'),
+	(36,'bool_supplying_meters','Stromlieferant?','bool_supplying_meters',NULL,'n','n','n','y'),
+	(37,'sigma_consuming_meters','&Sigma; Verbrauchsz&auml;hlpunkte','sigma_consuming_meters',NULL,'n','n','n','y'),
+	(38,'sigma_supplying_meters','&Sigma; Einspeisez&auml;hlpunkte','sigma_supplying_meters',NULL,'n','n','n','y'),
+	(39,'sigma_supplying_kwh','&Sigma; Einspeiseleistung','sigma_supplying_kwh',NULL,'n','n','n','y'),
+	(40,'bool_storage','Stromspeicher?','bool_storage',NULL,'n','n','n','y'),
+	(41,'sigma_storage_kwh','&Sigma; Speicherkapazit&auml;t','sigma_storage_kwh',NULL,'n','n','n','y'),
+	(42,'state','Status','state',NULL,'n','y','y','y'),
+	(43,'meter_fqoid','Anlagenummer',NULL,'meters','y','y','y','y'),
+	(44,'meter_id','Z&auml;hlpunktnummer',NULL,'meters','y','y','y','y'),
+	(45,'meter_substation_id','Umspannwerk',NULL,'meters','y','y','y','y'),
+	(46,'member_id','Mitgliedsnummer',NULL,'registrations','y','y','y','y'),
+	(47,'id','Registrierungs-ID',NULL,'registrations','y','y','y','y');
+
+/*!40000 ALTER TABLE `dashboard_columns` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# Dump of table dashboard_layout
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `dashboard_layout`;
+
+CREATE TABLE `dashboard_layout` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `dashboard` int(11) DEFAULT NULL,
+  `data` varchar(32) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+
+# Dump of table dashboard_notes
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `dashboard_notes`;
+
+CREATE TABLE `dashboard_notes` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `registration_id` int(11) NOT NULL,
+  `timestamp` int(11) NOT NULL,
+  `style` enum('note','event') NOT NULL,
+  `category` enum('auth','modify') DEFAULT NULL,
+  `content` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+
+# Dump of table dashboard_users
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `dashboard_users`;
+
+CREATE TABLE `dashboard_users` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `firstname` varchar(32) DEFAULT NULL,
+  `lastname` varchar(32) DEFAULT NULL,
+  `username` varchar(32) DEFAULT NULL,
+  `passphrase` varchar(81) DEFAULT NULL,
+  `result_page_size` tinyint(11) unsigned DEFAULT NULL,
+  `deleted` enum('y','n') DEFAULT 'n',
+  `admin` enum('y','n') DEFAULT 'n',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+LOCK TABLES `dashboard_users` WRITE;
+/*!40000 ALTER TABLE `dashboard_users` DISABLE KEYS */;
+
+INSERT INTO `dashboard_users` (`id`, `firstname`, `lastname`, `username`, `passphrase`, `result_page_size`, `deleted`, `admin`)
+VALUES
+	(1,'DELETE','ME','setup','ce9e5db8d8c09f4b2c115da1e4dc106896dc1e5ed03fe087a10f6f0f609ba501:setup',5,'n','y');
+
+/*!40000 ALTER TABLE `dashboard_users` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# Dump of table dashboard_users_x_tenants
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `dashboard_users_x_tenants`;
+
+CREATE TABLE `dashboard_users_x_tenants` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `tenant_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+
+# Dump of table dashboards
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `dashboards`;
+
+CREATE TABLE `dashboards` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `name` varchar(32) DEFAULT NULL,
+  `filterconfig` text DEFAULT NULL,
+  `colorconfig` enum('y','n') DEFAULT 'n',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+
+# Dump of table meters
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `meters`;
+
+CREATE TABLE `meters` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `registration_id` int(11) DEFAULT NULL,
+  `meter_id` varchar(40) DEFAULT NULL,
+  `meter_oid` int(11) DEFAULT NULL,
+  `meter_fqoid` varchar(16) DEFAULT NULL,
+  `meter_substation_id` varchar(16) DEFAULT NULL,
+  `meter_uuid` varchar(40) DEFAULT NULL,
+  `meter_type` enum('supplier','consumer') DEFAULT NULL,
+  `meter_power` varchar(8) DEFAULT NULL,
+  `meter_feedlimit` varchar(8) DEFAULT NULL,
+  `meter_participation` tinyint(4) unsigned DEFAULT NULL,
+  `meter_addr_street` varchar(64) DEFAULT NULL,
+  `meter_addr_number` varchar(16) DEFAULT NULL,
+  `meter_addr_zip` smallint(5) unsigned DEFAULT NULL,
+  `meter_addr_city` varchar(32) DEFAULT NULL,
+  `deleted` enum('y','n') DEFAULT 'n',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+
+# Dump of table registrations
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `registrations`;
+
 CREATE TABLE `registrations` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `structure_version` int(11) unsigned DEFAULT NULL,
+  `tenant` int(11) unsigned DEFAULT NULL,
   `mnemonic` varchar(64) DEFAULT NULL,
   `type` enum('company','individual','agriculture') NOT NULL,
+  `state` enum('new','onboarding','active','suspended','deactivated','refused') DEFAULT NULL,
   `company_name` varchar(128) DEFAULT NULL,
-  `uid` varchar(16) DEFAULT NULL,
+  `uid` varchar(32) DEFAULT NULL,
+  `salestax` enum('y','n') DEFAULT NULL,
+  `title` varchar(64) DEFAULT NULL,
   `firstname` varchar(64) DEFAULT NULL,
   `lastname` varchar(64) DEFAULT NULL,
+  `postnomen` varchar(64) DEFAULT NULL,
   `birthdate` varchar(10) DEFAULT NULL,
+  `idprovider` enum('passport','idcard','driverslicense','commerceid','associationid') DEFAULT NULL,
+  `idvalue` varchar(64) DEFAULT NULL,
   `street` varchar(64) DEFAULT NULL,
   `number` varchar(16) DEFAULT NULL,
   `city` varchar(32) DEFAULT NULL,
-  `zip` smallint(11) unsigned DEFAULT NULL,
+  `zip` smallint(5) unsigned DEFAULT NULL,
   `phone` varchar(32) DEFAULT NULL,
   `email` varchar(64) DEFAULT NULL,
   `banking_name` varchar(128) DEFAULT NULL,
@@ -21,26 +233,28 @@ CREATE TABLE `registrations` (
   `bylaws_consent` int(11) unsigned DEFAULT NULL COMMENT 'good until March 7, 2106',
   `gdpr_consent` int(11) unsigned DEFAULT NULL COMMENT 'good until March 7, 2106',
   `tos_consent` int(11) unsigned DEFAULT NULL COMMENT 'good until March 7, 2106',
-  `registration_date` int(11) unsigned DEFAULT NULL COMMENT 'good until March 7, 2106',
-  `migration_date` int(11) unsigned DEFAULT NULL COMMENT 'good until March 7, 2106',
-  `delivery_date` int(11) unsigned DEFAULT NULL COMMENT 'good until March 7, 2106',
+  `network_customerid` varchar(64) DEFAULT NULL,
+  `member_id` varchar(16) DEFAULT NULL,
+  `registration_date` int(11) unsigned NOT NULL COMMENT 'good until March 7, 2106',
+  `migration_date` int(11) unsigned DEFAULT NULL,
+  `delivery_date` int(11) unsigned DEFAULT NULL,
+  `last_login_date` int(11) DEFAULT NULL,
   `ip_address` varchar(128) DEFAULT NULL,
+  `network_inventoryid` varchar(11) DEFAULT NULL,
+  `electric_car_count` varchar(16) DEFAULT NULL,
+  `electric_car_capacity` varchar(16) DEFAULT NULL,
+  `electric_car_mileage` varchar(16) DEFAULT NULL,
+  `water_heating_summer` enum('boiler','heatpump','solar','district','other') DEFAULT NULL,
+  `deleted` enum('y','n') DEFAULT 'n',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-CREATE TABLE `meters` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `registration_id` int(11) DEFAULT NULL,
-  `meter_id` varchar(40) DEFAULT NULL,
-  `meter_uuid` varchar(40) DEFAULT NULL,
-  `meter_type` enum('supplier','consumer') DEFAULT NULL,
-  `meter_power` varchar(6) DEFAULT NULL,
-  `meter_addr_street` varchar(64) DEFAULT NULL,
-  `meter_addr_number` varchar(16) DEFAULT NULL,
-  `meter_addr_zip` smallint(5) unsigned DEFAULT NULL,
-  `meter_addr_city` varchar(32) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+# Dump of table storages
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `storages`;
 
 CREATE TABLE `storages` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -49,3 +263,56 @@ CREATE TABLE `storages` (
   `storage_capacity` varchar(6) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+
+# Dump of table temporary
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `temporary`;
+
+CREATE TABLE `temporary` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `feature` varchar(32) DEFAULT NULL,
+  `value1` varchar(64) DEFAULT NULL,
+  `value2` varchar(64) DEFAULT NULL,
+  `value3` varchar(64) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+
+# Dump of table tenants
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `tenants`;
+
+CREATE TABLE `tenants` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `referrer` varchar(64) DEFAULT NULL,
+  `enabled` enum('y','n') DEFAULT 'y',
+  `open` enum('y','n') DEFAULT 'y',
+  `fullname` varchar(128) DEFAULT NULL,
+  `shortname` varchar(64) DEFAULT NULL,
+  `slogan` text DEFAULT NULL,
+  `welcomenote` text DEFAULT NULL,
+  `download_tos` varchar(64) DEFAULT NULL,
+  `download_bylaws` varchar(64) DEFAULT NULL,
+  `download_gdpr` varchar(64) DEFAULT NULL,
+  `creditor_id` varchar(18) DEFAULT NULL,
+  `meter_prefix_short` varchar(8) DEFAULT NULL,
+  `network_substation_id` varchar(16) DEFAULT NULL,
+  `network_substation_name` varchar(16) DEFAULT NULL,
+  `reegistry_website` varchar(64) DEFAULT NULL,
+  `contact_website` varchar(64) DEFAULT NULL,
+  `contact_email` varchar(64) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
