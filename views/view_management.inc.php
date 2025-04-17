@@ -41,7 +41,7 @@ class VIEW_MANAGEMENT extends VIEW
 
         print "<br />";
 
-        $dashboards = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARDS'], 'user_id', '1');
+        $dashboards = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARDS'], 'user_id', $_SESSION['backend_authenticated']);
 
         print '<div class="table-container" style="height:46px;vertical-align:top">';
 
@@ -62,14 +62,28 @@ class VIEW_MANAGEMENT extends VIEW
 
         if(!isset($_SESSION['dashboard']['id']) || $_SESSION['dashboard']['id'] == '')
         {
-            // if no dashboard is selected, default to the first one
-            $_SESSION['dashboard']['id'] = $dashboards[0]['id'];
+            if(count($dashboards) > 0)
+            {
+                // if no dashboard is selected, default to the first one
+                $_SESSION['dashboard']['id'] = $dashboards[0]['id'];
+            }
+            else
+            {
+                print "Bitte richte dein erstes Dashboard in den Einstellungen ein.";
+            }
         }
 
         foreach($dashboards as $dashboard)
         {
-            if(isset($_SESSION['dashboard']['id']) && $_SESSION['dashboard']['id'] == $dashboard['id']) $navclass = 'navselected'; else $navclass = '';
-            print '<th style="white-space:nowrap" class="' . $navclass . '" onclick="self.location.href=\'?manage&dashboard=' . $dashboard['id'] . '\'">&nbsp;<li class="fa fa-table"></li>&nbsp;' . $dashboard['name'] . '&nbsp;</th>';
+            if(count($dashboards) > 0)
+            {
+                if (isset($_SESSION['dashboard']['id']) && $_SESSION['dashboard']['id'] == $dashboard['id']) $navclass = 'navselected'; else $navclass = '';
+                print '<th style="white-space:nowrap" class="' . $navclass . '" onclick="self.location.href=\'?manage&dashboard=' . $dashboard['id'] . '\'">&nbsp;<li class="fa fa-table"></li>&nbsp;' . $dashboard['name'] . '&nbsp;</th>';
+            }
+            else
+            {
+                print '<th style="white-space:nowrap">Bitte erstelle dein erstes Dashboard in den Einstellungen.</th>';
+            }
         }
 
         print '   </tr>
