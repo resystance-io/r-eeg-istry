@@ -9,9 +9,17 @@ $DBLOGON_DB             =   '';
 
 /////////* DATABASE TABLE MAPPINGS *///////////
 
-$DBTABLE_REGISTRATIONS		= 	'registrations';
-$DBTABLE_METERS             =   'meters';
-$DBTABLE_STORAGES           =   'storages';
+$DBTABLE_REGISTRATIONS		       = 'registrations';
+$DBTABLE_METERS                    = 'meters';
+$DBTABLE_STORAGES                  = 'storages';
+$DBTABLE_TENANTS                   = 'tenants';
+$DBTABLE_DASHBOARDS                = 'dashboards';
+$DBTABLE_DASHBOARD_NOTES           = 'dashboard_notes';
+$DBTABLE_DASHBOARD_COLUMNS         = 'dashboard_columns';
+$DBTABLE_DASHBOARD_LAYOUT          = 'dashboard_layout';
+$DBTABLE_DASHBOARD_USERS           = 'dashboard_users';
+$DBTABLE_DASHBOARD_USERS_X_TENANTS = 'dashboard_users_x_tenants';
+$DBTABLE_TEMPORARY                 = 'temporary';
 
 /////////* EMAIL CONFIGURATION *///////////////
 
@@ -19,29 +27,54 @@ $MAIL_MTA_ADDRESS = '';
 $MAIL_MTA_PORT = 587;
 $MAIL_MTA_USER = '';
 $MAIL_MTA_PASS = '';
-$MAIL_FROM = ['sender@domain.tld' => 'nicename'];
+$MAIL_FROM = ['email_address@domain.com'=>'nicename'];
 $MAIL_DEBUGGING = 0;
 $MAIL_OPTIONS = ['ssl'=>[ 'verify_peer'=>false, 'verify_peer_name'=>false, 'allow_self_signed'=>true ] ];
 
-/////////* EEG SPECIFIC DATA *///////////////
+/////////* BEHAVIOR *///////////////
 
-$EEG_NICENAME = "FOO";
-$EEG_CONSUMERS_PREFIX = 'AT 000000 00000 0000000000 000';
-$EEG_SUPPLIERS_PREFIX = 'AT 000000 00000 0000000000 000';
+// CATCH-ALL:
+// if a visitor does not visit with a shortcode,
+// shall we fall back to a default tenant that is going to act as a catch-all?
+$tenant_fallback_on_empty_request = true;
+
+// DEFAULT TENANT:
+// if catch-all is enabled, which tenant is designated as default tenant?
+$default_tenant_id = '1';
+
+// DEFER TENANT ASSIGNMENT:
+// while being used for presenting information about a certain tenant during
+// the onboarding dialogues, the tenant will NOT be assigned to the finished
+// registration. The tenant will be manually assigned later.
+$defer_tenant_assignment = true;
+
+// DASHBOARD PAGE SIZE
+// how many entries shall be displayed on a single backend result page by
+// default (this can be overridden by a user)
+$default_page_size = 5;
+
+$EEG_CONSUMERS_PREFILL = 'AT 003000 00000 0000000000 000';
+$EEG_SUPPLIERS_PREFILL = 'AT 003000 00000 0000000000 003';
 
 /////* LAYOUT SPECIFIC CONFIGURATION *///////////
+
+// Each array index creates an additional step/pane.
+// You can put multiple panes into a single step,
+
+// CAVEAT !!! "meters" MUST be after individual meters (consumption, supply),
+// so it can't be BEFORE individuals and must NOT be in the same step either.
+// The "preparation" step is not mandatory and can be omitted, but if enabled
+// it MUST be the first step as it would not make any sense later.
 
 $JOIN_LAYOUT = [
     ['preparation'],
     ['generic'],
-    ['consumption'],
-    ['supply'],
-    ['storage'],
+    ['consumption','supply','storage'],
     ['meters'],
     ['banking'],
-    ['approvals']
+    ['approvals'],
+    ['optionals']
 ];
-
 
 //////* LET'S CALL THIS, THE -- AUSTRIAN -- CONFIGURATION BLOCK *//////
 
@@ -73,6 +106,19 @@ $postNameTitles = [
     "MD" => "MD",       // Doctor of Medicine
     "MEd" => "MEd"       // Master of Education
 ];
+
+
+// Alternative Layout: All meters on one page:
+
+/*$JOIN_LAYOUT = [
+    ['generic'],
+    ['consumption','supply','storage'],
+    ['meters'],
+    ['banking'],
+    ['approvals'],
+    ['optionals']
+];*/
+
 
 // shall we print debug messages?
 // (enabling this in production is a hell of a bad idea)
