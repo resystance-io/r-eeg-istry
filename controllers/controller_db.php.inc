@@ -115,7 +115,7 @@ class CONTROLLER_DB
 		}
 	}
 
-	public function update_column_by_column_values($table, $field, $value=NULL, $reference_field, $reference_value, $reference_field_2=NULL, $reference_value_2=NULL, $reference_field_3=NULL, $reference_value_3=NULL)
+	public function update_column_by_column_values($table, $field, $value, $reference_field, $reference_value, $reference_field_2=NULL, $reference_value_2=NULL, $reference_field_3=NULL, $reference_value_3=NULL)
 	{
 		$extended_where_clause = NULL;
 
