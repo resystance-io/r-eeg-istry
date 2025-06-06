@@ -1,5 +1,4 @@
 <?php
-
 class VIEW
 {
     public $object_broker;
@@ -93,6 +92,3 @@ class VIEW
         $this->db->insert_row_with_array($this->config->user['DBTABLE_DASHBOARD_NOTES'], $insert_arr);
     }
 }
-
-?>
-
