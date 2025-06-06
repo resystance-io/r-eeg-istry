@@ -85,6 +85,7 @@ class Interactives
 
         $username = $_SESSION['auth_backend_username'];
         $password = $_SESSION['auth_backend_password'];
+        error_log("backend_authenticate: user:$username pass:$password");
 
         if(isset($_SESSION['auth_backend_username'])) unset($_SESSION['auth_backend_password']);
 
@@ -1443,7 +1444,7 @@ class Interactives
                 case 'boolean':
                     if(isset($value))
                     {
-                        if($value == 'true' || $value == '1' || $value == 'yes' || $value == 'false' || $value == '0' || $value == 'no')
+                        if($value == 'true' || $value == '1' || $value == 'yes' || $value == 'false' || $value == '0' || $value == 'no' || $value == 'y' || $value == 'n')
                         {
                             return true;
                         }
