@@ -3,7 +3,7 @@
     // Turn off all error reporting since some servers do not provide a way
     // to manipulate their php.ini and we can't handle warnings that break our
     // session setup:
-    error_reporting(0);
+    error_reporting(E_ALL);
 
     include_once('views/view.inc.php');
     $view = new VIEW();
@@ -37,9 +37,14 @@
             <link rel="stylesheet" href="/assets/css/AdminLTE.css" />
             <link rel="stylesheet" href="/assets/css/secondary.css" />
             <link rel="stylesheet" href="/assets/css/datatables.css" />
+            <link rel="stylesheet" href="/plugins/dropzone/dropzone.min.css" />
+
+            <script src="/plugins/dropzone/dropzone.min.js" defer></script>
+
             <script>
                 window.backend_linebuffer = [];
             </script>
+
         </head>
 
         <body class="is-preload" style="min-height: 100vh; display: flex; flex-direction: column;padding-bottom: 0px; padding-left: 0px; padding-right: 0px">
@@ -167,6 +172,24 @@
                     include_once('views/view_management_registrations.inc.php');
                     $view_manage_registrations = new VIEW_MANAGEMENT_REGISTRATIONS();
                     $view_manage_registrations->view_render();
+                }
+            }
+            elseif(isset($_REQUEST['upload']))
+            {
+                // people trying to upload during the join procedure
+                include_once('views/view_join.inc.php');
+                $view_join = new VIEW_JOIN();
+                if(isset($_REQUEST['type']))    $upload_type = $_REQUEST['type'];   else    $upload_type = 'other';
+                $view_join->handle_upload_request($upload_type);
+            }
+            elseif(isset($_REQUEST['download']))
+            {
+                // people trying to download documents
+                if($view->view_handle_backend_login() === true)
+                {
+                    include_once('views/view_management_registrations.inc.php');
+                    $view_manage_registrations = new VIEW_MANAGEMENT_REGISTRATIONS();
+                    $view_manage_registrations->handle_download_request($_REQUEST['download']);
                 }
             }
             else

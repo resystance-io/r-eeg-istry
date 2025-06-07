@@ -56,6 +56,8 @@ $default_page_size = 5;
 $EEG_CONSUMERS_PREFILL = 'AT 003000 00000 0000000000 000';
 $EEG_SUPPLIERS_PREFILL = 'AT 003000 00000 0000000000 003';
 
+$mandatory_file_uploads = ['invoice', 'credit'];
+
 /////* LAYOUT SPECIFIC CONFIGURATION *///////////
 
 // Each array index creates an additional step/pane.
@@ -71,6 +73,7 @@ $JOIN_LAYOUT = [
     ['generic'],
     ['consumption','supply','storage'],
     ['meters'],
+    ['uploads'],
     ['banking'],
     ['approvals'],
     ['optionals']
@@ -114,6 +117,7 @@ $postNameTitles = [
     ['generic'],
     ['consumption','supply','storage'],
     ['meters'],
+    ['uploads'],
     ['banking'],
     ['approvals'],
     ['optionals']

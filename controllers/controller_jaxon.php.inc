@@ -391,6 +391,13 @@ class Interactives
                         }
                         break;
 
+                    case 'uploads':
+                        if($this->check_step_upload_details($response) === false)
+                        {
+                            return $response;
+                        }
+                        break;
+
                     case 'optionals':
                         if($this->check_step_optionals($response) === false)
                         {
@@ -489,6 +496,41 @@ class Interactives
         }
 
         return true;
+    }
+
+    public function check_step_upload_details(&$jaxon_response_object)
+    {
+        // check the integrity of all data in the individual block
+        $failmsg = null;
+        $focustarget = null;
+
+        $mandatory_file_upload_types = $this->config->user['mandatory_file_uploads'];
+        if(!$mandatory_file_upload_types || !is_array($mandatory_file_upload_types) || count($mandatory_file_upload_types) < 1)
+        {
+            return true;
+        }
+        else
+        {
+            $uploaded_types = array();
+            foreach($_SESSION['generic_information']['uploads'] as $upload)
+            {
+                $uploaded_types[$upload['type']] = 1;
+            }
+
+            $upload_type_arr = ['invoice' => 'Rechnung', 'credit' => 'Gutschrift', 'photo' => 'Foto', 'other' => 'Andere'];
+
+            foreach($mandatory_file_upload_types as $mandatory_file_upload_type)
+            {
+                if(!isset($uploaded_types[$mandatory_file_upload_type]))
+                {
+                    $failmsg = "Bitte überprüfe die hochgeladenen Dateien. Es ist noch eine Datei vom Typ " . $upload_type_arr[$mandatory_file_upload_type] . " erforderlich.";
+                    $jaxon_response_object->alert($failmsg);
+                    return false;
+                }
+            }
+
+            return true;
+        }
     }
 
     public function check_step_integrity_individual(&$jaxon_response_object)

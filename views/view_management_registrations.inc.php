@@ -172,6 +172,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                 <tbody>
         ';
 
+        $upload_type_arr = ['invoice' => 'Rechnung', 'credit' => 'Gutschrift', 'photo' => 'Foto', 'other' => 'Andere'];
         $identity_type_arr = ['passport' => 'Reisepass', 'idcard' => 'Personalausweis', 'driverslicense' => 'F&uuml;hrerschein', 'commerceid' => 'Firmenbuchnummer', 'associationid' => 'Vereinsregister'];
         $tax_type_arr = ['y' => 'Ja', 'n' => 'Nein'];
 
@@ -272,6 +273,34 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         }
         print "<tr class=\"stategray\"><td class=\"detailheader\">Netzbetreibervollmacht erteilt:</td><td class=\"detailcontent\">" . date("d.m.Y H:i:s", $registration['network_consent']) . "</td></tr>";
         print "</table>";
+
+        $uploads = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_UPLOADS'], 'registration_id', $registration['id']);
+        if(count($uploads) > 0)
+        {
+            print '<br />&nbsp;<br />';
+            print '<h3>Bereitgestellte Dokumente / Uploads</h3>';
+
+            print '
+                  <table class="table" style="width:700px">
+            ';
+
+            foreach ($uploads as $upload)
+            {
+                $download_icon = '<i class="fa fa-file-download"></i>';
+
+                print "<tr class=\"stategray profilemeterline\">
+                        <td class=\"profilemeter\" style=\"width:100px;text-align:center;vertical-align:middle;font-size:12pt;font-weight:bold\" onclick=\"window.open('/?download=" . $upload['fsid'] . "', '_blank');\">
+                            <a href=\"/?download=" . $upload['fsid'] . "\" target=\"_blank\">$download_icon</a>
+                        </td>
+                        <td class=\"profilemeter\" style=\"text-align:left\" onclick=\"window.open('/?download=" . $upload['fsid'] . "', '_blank');\">
+                            <span class=\"metertype\">" . $upload['nicename'] . "</span><br />
+                            " . $upload_type_arr[$upload['type']] . "
+                        </td>
+                    </tr>";
+            }
+
+            print "</table>";
+        }
 
         print '<br />&nbsp;<br />';
         print '<h3>Registrierte Z&auml;hlpunkte</h3>';
@@ -425,6 +454,24 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         print '<br />&nbsp;<br />';
         print '</div>'; // END OF TIMELINE: RIGHT
 
+    }
+
+    public function handle_download_request($download_fsid)
+    {
+        $file_path = "uploads/" . $download_fsid;
+        $nicename = $this->db->get_column_by_column_value($this->config->user['DBTABLE_UPLOADS'], 'nicename', 'fsid', $download_fsid);
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/octet-stream');
+        header('Content-Disposition: attachment; filename=' . $nicename);
+        header('Content-Transfer-Encoding: binary');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+        header('Pragma: public');
+        header('Content-Length: ' . filesize($file_path));
+        ob_clean();
+        flush();
+
+        readfile($file_path);
     }
 
 }

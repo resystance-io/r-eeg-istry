@@ -173,6 +173,10 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                             $this->view_render_meter_details();
                             break;
 
+                        case 'uploads':
+                            $this->view_render_uploads();
+                            break;
+
                         case 'storage':
                             $this->view_render_energy_storage();
                             break;
@@ -328,8 +332,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         print "<h3>Netzbetreiber</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
         print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Zugangsdaten f&uuml;r das Online-Portal des Netzbetreibers (z. B. Netz O&Ouml;, Linz Netz)<br />';
-        print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Falls vorhanden: Kundennummer beim Netzbetreiber (Achtung: nicht vom Energiever-
-sorger!)<br />';
+        print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Falls vorhanden: Kundennummer beim Netzbetreiber (Achtung: nicht vom Energieversorger!)<br />';
         print "</div>";
 
         print "<br />"; "<br />";
@@ -716,6 +719,48 @@ sorger!)<br />';
 
     }
 
+    private function view_render_uploads()
+    {
+        print '
+                    <br />
+                    <header id="header">
+                        <h2>Bereitzustellende Unterlagen</h2>
+                        <p>Bitte stelle uns folgende Unterlage(n) bereit damit wir Deine Teilnahme an unserer EEG besser kalkulieren k&ouml;nnen:</p>
+                    </header>
+        ';
+
+        print "<h3>Rechnung eines Verbraucherz&auml;hlpunktes (Monats- oder Jahresabrechnung)</h3>";
+        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
+        print '
+            <script>
+              Dropzone.options.DropzoneInvoice = {
+                maxFilesize: "10M",
+                maxFiles: 1
+              };
+            </script>
+            <form action="?upload&type=invoice" class="dropzone" id="DropzoneInvoice">
+                <div class="dz-message" data-dz-message><span style="color:dimgrey;font-weight:normal;">Datei zur &Uuml;bermittlung hier ablegen oder klicken um eine Datei auszuw&auml;hlen</span></div>
+            </form>
+        ';
+        print "</div><br />";
+
+        print "<h3>Gutschrift eines Lieferz&auml;hlpunktes (falls vorhanden. Monats- oder Jahresabrechnung)</h3>";
+        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
+        print '
+            <script>
+              Dropzone.options.DropzoneCredit = {
+                maxFilesize: "10M",
+                maxFiles: 1
+              };
+            </script>
+            <form action="?upload&type=credit" class="dropzone" id="DropzoneCredit">
+                <div class="dz-message" data-dz-message><span style="color:dimgrey;font-weight:normal;">Datei zur &Uuml;bermittlung hier ablegen oder klicken um eine Datei auszuw&auml;hlen</span></div>
+            </form>
+        ';
+        print "</div></div><br />";
+
+    }
+
     private function view_render_optionals()
     {
         print '
@@ -883,6 +928,19 @@ sorger!)<br />';
                 }
             }
 
+            if(isset($_SESSION['generic_information']['uploads']))
+            {
+                foreach($_SESSION['generic_information']['uploads'] as $upload_object)
+                {
+                    $upload_array['registration_id'] = $registration_autoinc_id;
+                    $upload_array['fsid'] = $upload_object['fsid'];
+                    $upload_array['type'] = $upload_object['type'];
+                    $upload_array['nicename'] = $upload_object['nicename'];
+
+                    $this->object_broker->instance['db']->insert_row_with_array($this->config->user['DBTABLE_UPLOADS'], $upload_array);
+                }
+            }
+
             return true;
         }
         else
@@ -983,6 +1041,40 @@ sorger!)<br />';
         print "</div>";
     }
 
+    public function handle_upload_request($upload_type=null)
+    {
+        error_log("join: upload request received");
+        $basedir = 'uploads/';
+        if(!is_dir($basedir))
+        {
+            mkdir($basedir);
+        }
+
+        if (!empty($_FILES))
+        {
+            $target_file_name = $this->generate_uuid4();
+            $original_file_name = $_FILES['file']['name'];
+            $source_fs_location = $_FILES['file']['tmp_name'];
+            $target_fs_location = $basedir . '/' . $target_file_name;
+            if (is_file($target_fs_location))
+            {
+                error_log('File successfully uploaded: ' . $target_fs_location);
+            }
+            else
+            {
+                error_log('File uploaded but missing on landing zone: ' . $target_fs_location);
+            }
+
+            if(move_uploaded_file($source_fs_location, $target_fs_location))
+            {
+                $_SESSION['generic_information']['uploads'][] = array(
+                    'fsid' => $target_file_name,
+                    'type' => $upload_type,
+                    'nicename' => $original_file_name
+                );
+            }
+        }
+    }
     private function generate_uuid4($data = null)
     {
         // Generate 16 bytes (128 bits) of random data or use the data passed into the function.
