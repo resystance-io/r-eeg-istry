@@ -757,7 +757,7 @@ sorger!)<br />';
                 <div class="dz-message" data-dz-message><span style="color:dimgrey;font-weight:normal;">Datei zur &Uuml;bermittlung hier ablegen oder klicken um eine Datei auszuw&auml;hlen</span></div>
             </form>
         ';
-        print "</div></div><br />";
+        print "</div><br />";
 
     }
 
