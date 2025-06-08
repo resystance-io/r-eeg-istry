@@ -653,7 +653,7 @@ sorger!)<br />';
         $this->view_render_part_captioned_inputfield("IBAN", "banking_iban", "generic_information", "iban");
         $this->view_render_part_annotated_checkbox("Hiermit best&auml;tige ich die Richtigkeit der angegebenen Kontoinformationen<br />und erm&auml;chtige " . $shortname . " zum Bankeinzug im Rahmen der Leistungsabrechnung. <br /> Creditor ID: " . $cid . ".", "banking_consent", "generic_information", "booltrue");
 
-        print "</div></div><br />";
+        print "</div><br />";
 
     }
 
@@ -715,7 +715,7 @@ sorger!)<br />';
         $this->view_render_part_captioned_inputfield("Inventarnummer eines beliebigen Z&auml;hlers", "network_inventoryid", "generic_information", "hwinventoryid", "width:500px;padding-left:10px;", "xxx.xxx.xxx");
 
 
-        print "</div></div><br />";
+        print "</div><br />";
 
     }
 
@@ -873,6 +873,7 @@ sorger!)<br />';
 
             if (isset($_SESSION['generic_information']['electric_car_count']['value'])) $registration_array['electric_car_count'] = $_SESSION['generic_information']['electric_car_count']['value'];
             if (isset($_SESSION['generic_information']['electric_car_capacity']['value'])) $registration_array['electric_car_capacity'] = $_SESSION['generic_information']['electric_car_capacity']['value'];
+            if (isset($_SESSION['generic_information']['electric_car_mileage']['value'])) $registration_array['electric_car_mileage'] = $_SESSION['generic_information']['electric_car_mileage']['value'];
             if (isset($_SESSION['generic_information']['water_heating_summer']['value'])) $registration_array['water_heating_summer'] = $_SESSION['generic_information']['water_heating_summer']['value'];
 
 
