@@ -44,6 +44,29 @@ class VIEW_MANAGEMENT_USERS extends VIEW
 
     function view_render_user($userid)
     {
+        if(isset($_REQUEST['preaction']) && $_REQUEST['preaction'] == 'changepw')
+        {
+            $admin = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARD_USERS'], 'admin', 'id', $_SESSION['backend_authenticated']);
+            if ($admin == 'y' || $userid == $_SESSION['backend_authenticated'])
+            {
+                if($_REQUEST['password'] == $_REQUEST['password_repeat'])
+                {
+                    $salt = rand(1111111111111111, 9999999999999999);
+                    $new_password = hash('sha256', $_REQUEST['password'] . $salt) . ':' . $salt;
+                    $this->db->update_column_by_column_values($this->config->user['DBTABLE_DASHBOARD_USERS'], 'passphrase', $new_password, 'id', $_REQUEST['userid']);
+                    print '<script>alert("Passwort erfolgreich geändert!");</script>';
+                }
+                else
+                {
+                    print '<script>alert("Passwort konnte nicht geändert werden:\nPasswörter sind nicht identisch!");</script>';
+                }
+            }
+            else
+            {
+                print '<script>alert("Passwort kann nur vom Accountinhaber oder einem Administrator geändert werden!");</script>';
+            }
+        }
+
         $firstname = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARD_USERS'], 'firstname', 'id', $userid);
         $lastname = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARD_USERS'], 'lastname', 'id', $userid);
         $username = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARD_USERS'], 'username', 'id', $userid);
@@ -52,11 +75,17 @@ class VIEW_MANAGEMENT_USERS extends VIEW
         print "<br />";
         print "<h3>Passwort &auml;ndern</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
-        print "    
-                       soon
+        print "<form action=\"?manage_users\" method=\"post\">";
+        print "<input type=\"hidden\" name=\"userid\" value=\"$userid\">";
+        print "<input type=\"hidden\" name=\"preaction\" value=\"changepw\">";
+        print "
+            <div style=\"padding:8px;line-height:40px;\">Passwort<input type=\"password\" onfocus=\"this.select()\" name=\"password\" id=\"password\" /></div>
+            <div style=\"padding:8px;line-height:40px;\">Passwort (Wiederholung)<input type=\"password\" onfocus=\"this.select()\" name=\"password_repeat\" id=\"password_repeat\" /></div>
+            <br />
+            <div style=\"padding:8px;line-height:40px;\"><input type=\"submit\" value=\"Passwort &auml;ndern\" /></div>
         ";
-
-        print "</div><br />";
+        print "</form>";
+        print "</div>";
     }
 
     function view_render_delete()
@@ -101,8 +130,14 @@ class VIEW_MANAGEMENT_USERS extends VIEW
                         'firstname' => $_REQUEST['firstname'],
                         'lastname' => $_REQUEST['lastname'],
                         'username' => $_REQUEST['username'],
-                        'passphrase' => hash('sha256', $_REQUEST['password'] . $salt) . ':' . $salt
+                        'passphrase' => hash('sha256', $_REQUEST['password'] . $salt) . ':' . $salt,
+                        'result_page_size' => 20
                     ];
+
+                    if($_REQUEST['permissions'] == 'admin')
+                    {
+                        $insert_arr['admin'] = 'y';
+                    }
 
                     $this->db->insert_row_with_array($this->config->user['DBTABLE_DASHBOARD_USERS'], $insert_arr);
                     print '<script>self.location.href="/?manage_users";</script>';
@@ -132,6 +167,8 @@ class VIEW_MANAGEMENT_USERS extends VIEW
                 <div style=\"padding:8px;line-height:40px;\">Nachname<input type=\"text\" onfocus=\"this.select()\" name=\"lastname\" id=\"lastname\" value=\"$prefill_lastname\"/></div>
                 <div style=\"padding:8px;line-height:40px;\">Passwort<input type=\"password\" onfocus=\"this.select()\" name=\"password\" id=\"password\" /></div>
                 <div style=\"padding:8px;line-height:40px;\">Passwort (Wiederholung)<input type=\"password\" onfocus=\"this.select()\" name=\"password_repeat\" id=\"password_repeat\" /></div>
+                <div style=\"padding:8px;line-height:40px;\">Berechtigungen <select name=\"permissions\" id=\"permissions\" /><option value=\"user\">Benutzer</option><option value=\"admin\">Administrator</option></select></div>
+                <br />
                 <div style=\"padding:8px;line-height:40px;\"><input type=\"submit\" value=\"Account anlegen\" /></div>
                </div>
                </form>
