@@ -19,6 +19,7 @@ $DBTABLE_DASHBOARD_COLUMNS         = 'dashboard_columns';
 $DBTABLE_DASHBOARD_LAYOUT          = 'dashboard_layout';
 $DBTABLE_DASHBOARD_USERS           = 'dashboard_users';
 $DBTABLE_DASHBOARD_USERS_X_TENANTS = 'dashboard_users_x_tenants';
+$DBTABLE_UPLOADS                   = 'uploads';
 $DBTABLE_TEMPORARY                 = 'temporary';
 
 /////////* EMAIL CONFIGURATION *///////////////
