@@ -55,7 +55,7 @@
             if(isset($_REQUEST['tenant']) && $_REQUEST['tenant'] != '')
             {
                 $clean_tenant = preg_replace("/[^a-zA-Z]/", '', $_REQUEST['tenant']);
-                $tenant_info = $view->db->get_rows_by_column_value($view->config->user['DBTABLE_TENANTS'], 'referrer', $clean_tenant, $limit=1);
+                $tenant_info = $view->db->get_rows_by_column_value($view->config->user['DBTABLE_TENANTS'], 'referrer', $clean_tenant, 1);
 
                 if(isset($tenant_info[0]))
                 {
@@ -110,94 +110,109 @@
                 print '<script>self.location.href="/";</script>';
             }
 
-            if(isset($_REQUEST['join']))
+            include(dirname(__FILE__) . '/configs/version.php');
+            $db_config = $view->db->get_rows_by_column_value($view->config->user['DBTABLE_TEMPORARY'], 'feature', 'database_version');
+            if(isset($db_config[0]))
             {
-                // people trying to join the eeg
-                include_once('views/view_join.inc.php');
-                $view_join = new VIEW_JOIN();
-                $view_join->view_render();
+                $installed_database_version = $db_config[0]['value1'];
             }
-            elseif(isset($_REQUEST['lookup']))
+            else
             {
-                // people trying to look up their registration data
-                include_once('views/view_lookup.inc.php');
-                $view_lookup = new VIEW_LOOKUP();
-                $view_lookup->view_render();
+                $installed_database_version = 0;
             }
-            elseif(isset($_REQUEST['debug']))
+
+            /** @var int $latest_database_version */
+            if($latest_database_version > $installed_database_version)
             {
-                // people that are trying to debug this madness
-                if($view->view_handle_backend_login() === true)
+                if ($view->view_handle_backend_login() === true)
                 {
-                    include_once('views/view_debug.inc.php');
-                    $view_debug = new VIEW_DEBUG();
-                    $view_debug->view_render();
-                }
-            }
-            elseif(isset($_REQUEST['manage']))
-            {
-                // management
-                if($view->view_handle_backend_login() === true)
-                {
-                    include_once('views/view_management.inc.php');
-                    $view_manage = new VIEW_MANAGEMENT();
-                    $view_manage->view_render_registrations();
-                }
-            }
-            elseif(isset($_REQUEST['manage_users']))
-            {
-                // management
-                if($view->view_handle_backend_login() === true)
-                {
-                    include_once('views/view_management_users.inc.php');
-                    $view_manage_users = new VIEW_MANAGEMENT_USERS();
-                    $view_manage_users->view_render();
-                }
-            }
-            elseif(isset($_REQUEST['manage_dashboards']))
-            {
-                // management
-                if($view->view_handle_backend_login() === true)
-                {
-                    include_once('views/view_management_dashboards.inc.php');
-                    $view_manage_dashboards = new VIEW_MANAGEMENT_DASHBOARDS();
-                    $view_manage_dashboards->view_render();
-                }
-            }
-            elseif(isset($_REQUEST['manage_registrations']))
-            {
-                // management
-                if($view->view_handle_backend_login() === true)
-                {
-                    include_once('views/view_management_registrations.inc.php');
-                    $view_manage_registrations = new VIEW_MANAGEMENT_REGISTRATIONS();
-                    $view_manage_registrations->view_render();
-                }
-            }
-            elseif(isset($_REQUEST['upload']))
-            {
-                // people trying to upload during the join procedure
-                include_once('views/view_join.inc.php');
-                $view_join = new VIEW_JOIN();
-                if(isset($_REQUEST['type']))    $upload_type = $_REQUEST['type'];   else    $upload_type = 'other';
-                $view_join->handle_upload_request($upload_type);
-            }
-            elseif(isset($_REQUEST['download']))
-            {
-                // people trying to download documents
-                if($view->view_handle_backend_login() === true)
-                {
-                    include_once('views/view_management_registrations.inc.php');
-                    $view_manage_registrations = new VIEW_MANAGEMENT_REGISTRATIONS();
-                    $view_manage_registrations->handle_download_request($_REQUEST['download']);
+                    include_once('views/view_management_updates.inc.php');
+                    $view_manage_updates = new VIEW_MANAGEMENT_UPDATES();
+                    $view_manage_updates->view_render();
                 }
             }
             else
             {
-                // people who did not decide yet
-                include_once('views/view_default.inc.php');
-                $view_default = new VIEW_DEFAULT();
-                $view_default->view_render();
+                if (isset($_REQUEST['join']))
+                {
+                    // people trying to join the eeg
+                    include_once('views/view_join.inc.php');
+                    $view_join = new VIEW_JOIN();
+                    $view_join->view_render();
+                } elseif (isset($_REQUEST['lookup']))
+                {
+                    // people trying to look up their registration data
+                    include_once('views/view_lookup.inc.php');
+                    $view_lookup = new VIEW_LOOKUP();
+                    $view_lookup->view_render();
+                } elseif (isset($_REQUEST['debug']))
+                {
+                    // people that are trying to debug this madness
+                    if ($view->view_handle_backend_login() === true)
+                    {
+                        include_once('views/view_debug.inc.php');
+                        $view_debug = new VIEW_DEBUG();
+                        $view_debug->view_render();
+                    }
+                } elseif (isset($_REQUEST['manage']))
+                {
+                    // management
+                    if ($view->view_handle_backend_login() === true)
+                    {
+                        include_once('views/view_management.inc.php');
+                        $view_manage = new VIEW_MANAGEMENT();
+                        $view_manage->view_render_registrations();
+                    }
+                } elseif (isset($_REQUEST['manage_users']))
+                {
+                    // management
+                    if ($view->view_handle_backend_login() === true)
+                    {
+                        include_once('views/view_management_users.inc.php');
+                        $view_manage_users = new VIEW_MANAGEMENT_USERS();
+                        $view_manage_users->view_render();
+                    }
+                } elseif (isset($_REQUEST['manage_dashboards']))
+                {
+                    // management
+                    if ($view->view_handle_backend_login() === true)
+                    {
+                        include_once('views/view_management_dashboards.inc.php');
+                        $view_manage_dashboards = new VIEW_MANAGEMENT_DASHBOARDS();
+                        $view_manage_dashboards->view_render();
+                    }
+                } elseif (isset($_REQUEST['manage_registrations']))
+                {
+                    // management
+                    if ($view->view_handle_backend_login() === true)
+                    {
+                        include_once('views/view_management_registrations.inc.php');
+                        $view_manage_registrations = new VIEW_MANAGEMENT_REGISTRATIONS();
+                        $view_manage_registrations->view_render();
+                    }
+                } elseif (isset($_REQUEST['upload']))
+                {
+                    // people trying to upload during the join procedure
+                    include_once('views/view_join.inc.php');
+                    $view_join = new VIEW_JOIN();
+                    if (isset($_REQUEST['type'])) $upload_type = $_REQUEST['type']; else    $upload_type = 'other';
+                    $view_join->handle_upload_request($upload_type);
+                } elseif (isset($_REQUEST['download']))
+                {
+                    // people trying to download documents
+                    if ($view->view_handle_backend_login() === true)
+                    {
+                        include_once('views/view_management_registrations.inc.php');
+                        $view_manage_registrations = new VIEW_MANAGEMENT_REGISTRATIONS();
+                        $view_manage_registrations->handle_download_request($_REQUEST['download']);
+                    }
+                } else
+                {
+                    // people who did not decide yet
+                    include_once('views/view_default.inc.php');
+                    $view_default = new VIEW_DEFAULT();
+                    $view_default->view_render();
+                }
             }
 
         ?>

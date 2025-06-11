@@ -62,7 +62,6 @@ class CONTROLLER_DB
 	}
 
 
-
 	// ---------------------------------------------------------------------------------
 	// ::DESCRIPT: send query to database model and return the raw object
 	// ::RETURNS: raw retsul object
