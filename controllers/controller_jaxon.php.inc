@@ -1217,12 +1217,12 @@ class Interactives
                     {
                         $highest_meter_row = $highest_meter_row[0];
                         $next_meter_oid = $highest_meter_row['meter_oid'] + 1;
-                        $response->alert('Meters were already present for this tenant. Increased Meter OID is ' . $next_meter_oid);
+                        //$response->alert('Meters were already present for this tenant. Increased Meter OID is ' . $next_meter_oid);
                     }
                     else
                     {
-                        $next_meter_oid = 1;
-                       $response->alert('This is the first meter for this tenant. New Meter OID is ' . $next_meter_oid);
+                       $next_meter_oid = 1;
+                       //$response->alert('This is the first meter for this tenant. New Meter OID is ' . $next_meter_oid);
                     }
 
                     $this->db->update_column_by_column_values($this->config->user['DBTABLE_METERS'], 'meter_oid', $next_meter_oid, 'id', $meter['id']);
