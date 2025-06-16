@@ -8,6 +8,22 @@
     include_once('views/view.inc.php');
     $view = new VIEW();
 
+    // If we're dealing with a download request we're going to make sure this is
+    // as early as possible in case we're not output buffered
+
+    if (isset($_REQUEST['download']))
+    {
+        // people trying to download documents
+        if ($view->view_handle_backend_login() === true)
+        {
+            include_once('views/view_management_registrations.inc.php');
+            $view_manage_registrations = new VIEW_MANAGEMENT_REGISTRATIONS();
+            $view_manage_registrations->handle_download_request($_REQUEST['download']);
+            exit();
+        }
+    }
+
+    // that's it for the download part - let's move on and
     // prepare the jaxon environment for asynchronous events
     require_once('./vendor/autoload.php');
 
@@ -197,15 +213,6 @@
                     $view_join = new VIEW_JOIN();
                     if (isset($_REQUEST['type'])) $upload_type = $_REQUEST['type']; else    $upload_type = 'other';
                     $view_join->handle_upload_request($upload_type);
-                } elseif (isset($_REQUEST['download']))
-                {
-                    // people trying to download documents
-                    if ($view->view_handle_backend_login() === true)
-                    {
-                        include_once('views/view_management_registrations.inc.php');
-                        $view_manage_registrations = new VIEW_MANAGEMENT_REGISTRATIONS();
-                        $view_manage_registrations->handle_download_request($_REQUEST['download']);
-                    }
                 } else
                 {
                     // people who did not decide yet
