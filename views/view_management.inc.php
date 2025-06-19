@@ -535,6 +535,7 @@ class VIEW_MANAGEMENT extends VIEW
     {
         switch($compute_type)
         {
+
             case 'eeg_short':
                 print '<select class="filter" id="filter-' . $column_name . '" name="filter-' . $column_name . '" onchange="JaxonInteractives.dashboard_set_filter(' . "'" . $column_name . "'" . ', document.getElementById(' . "'filter-" . $column_name . "'" . ').value);">';
                 $options_arr = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_TENANTS'], 'shortname', null, null, 'shortname', 'ASC');
@@ -585,6 +586,11 @@ class VIEW_MANAGEMENT extends VIEW
     {
         switch($compute_type)
         {
+            case 'registration_date':
+            case 'migration_date':
+            case 'delivery_date':
+                return date('d.m.Y', $registration_arr[$compute_type]);
+
             case 'eeg_short':
                 return $this->db->get_column_by_column_value($this->config->user['DBTABLE_TENANTS'], 'shortname', 'id', $registration_arr['tenant']);
 
