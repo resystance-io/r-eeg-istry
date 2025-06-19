@@ -1152,6 +1152,62 @@ class Interactives
         return $response;
     }
 
+    public function dashboard_inline_update_memberid_init($div_id, $recordid)
+    {
+        $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'member_id', 'id', $recordid);
+        $tenant = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'tenant', 'id', $recordid);
+
+        if($dbvalue)
+        {
+            // if we already have a value in there, use this as a placeholder as well
+            $highest_memberid = $dbvalue;
+        }
+        elseif($tenant)
+        {
+            // we don't have a member id yet, but a tenant has been set - calculate the next member id
+            $highest_memberid_arr = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_REGISTRATIONS'],
+                'tenant',
+                $tenant,
+                1,
+                'member_id',
+                'DESC');
+            $highest_memberid = $highest_memberid_arr[0]['member_id'];
+            if($highest_memberid)
+            {
+                // the next member id is ....
+                $highest_memberid++;
+            }
+            else
+            {
+                // this is the first member of this tenant, so the next member id is 1
+                $highest_memberid = 1;
+            }
+        }
+        else
+        {
+            $highest_memberid = "Fehler: keine EEG gew&auml;hlt";
+        }
+
+
+        $input_field = "<INPUT type=\"text\" name=\"member_id\" id=\"member_id\" value=\"$dbvalue\" placeholder=\"$highest_memberid\" style=\"width:200px;float:left\" class=\"detail\"><i onclick=\"var dbkey='member_id'; JaxonInteractives.dashboard_inline_update_save('$div_id', 'member_id', document.getElementById(dbkey).value, '$recordid');\" style=\"margin-top:6px; cursor:pointer\" class=\"fa fa-save fa-pull-right\"></i>";
+        $response = jaxon()->newResponse();
+        $response->assign($div_id, 'innerHTML', $input_field);
+
+        return $response;
+    }
+
+    public function dashboard_inline_update_memberid_save($div_id, $dbvalue, $recordid)
+    {
+        $current_value = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'member_id', 'id', $recordid);
+        $this->view->record_note($recordid, 'event', 'modify', "Aktualisierung member_id: $current_value -> $dbvalue");
+        $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], $dbkey, $dbvalue, 'id', $recordid);
+        $input_field = "$dbvalue <i onclick=\"JaxonInteractives.dashboard_inline_update_init('$div_id', '$dbkey', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
+        $response = jaxon()->newResponse();
+        $response->assign($div_id, 'innerHTML', $input_field);
+
+        return $response;
+    }
+
     public function dashboard_inline_update_state_init($div_id, $recordid)
     {
         $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'state', 'id', $recordid);
@@ -1290,6 +1346,7 @@ class Interactives
         $response = jaxon()->newResponse();
         $current_value = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'tenant', 'id', $recordid);
         $current_state = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'state', 'id', $recordid);
+        $current_member_id = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'member_id', 'id', $recordid);
 
         if($dbvalue == '-')
         {
@@ -1317,6 +1374,7 @@ class Interactives
                     $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'tenant', $dbvalue, 'id', $recordid);
 
                     $associated_meters = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_METERS'], 'registration_id', $recordid);
+
                     foreach($associated_meters as $meter)
                     {
                         $highest_meter_row = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_METERS'],
@@ -1331,13 +1389,15 @@ class Interactives
                         {
                             $highest_meter_row = $highest_meter_row[0];
                             $next_meter_oid = $highest_meter_row['meter_oid'] + 1;
-                            $response->alert('Meters were already present for this tenant. Increased Meter OID is ' . $next_meter_oid);
                         }
                         else
                         {
                             $next_meter_oid = 1;
-                            $response->alert('This is the first meter for this tenant. Meter OID is ' . $next_meter_oid);
                         }
+
+                        $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'member_id', NULL, 'id', $recordid);
+                        $this->view->record_note($recordid, 'event', 'modify', "Kundennummer $current_member_id wurde durch die Zuordnung zu einer neuen EEG entfernt");
+
 
                         $this->db->update_column_by_column_values($this->config->user['DBTABLE_METERS'], 'meter_oid', $next_meter_oid, 'id', $meter['id']);
 
@@ -1364,7 +1424,8 @@ class Interactives
                     $response->assign('modalbody', 'innerHTML',
                         "<b style=\"color:black\">Dieses Mitglied ist bereits einer EEG zugeordnet.</b><br />" .
                         "Durch diese &Auml;nderung erhalten $associated_meter_count Z&auml;hlpunkt(e) neue IDs<br />" .
-                        "und werden einem neuen Umspannwerk zugeordnet.");
+                        "und werden einem neuen Umspannwerk zugeordnet.<br />
+                        Die bestehende Kundennummer wird entfernt und muss daher erneut vergeben werden.<br />");
                     $response->assign('modalfooter', 'innerHTML', $footer_actions);
 
                     $response->assign('modal', 'style.display', 'inline');
