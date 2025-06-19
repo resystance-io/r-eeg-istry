@@ -149,16 +149,33 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                 <tbody>
         ';
 
-        if ($registration['tenant'] != null) $network_substation = $tenant_info['network_substation_id'] . " | " . $tenant_info['network_substation_name']; else $network_substation = 'Noch nicht zugeordnet';
+        print "<tr class=\"stategray\"><td class=\"detailheader\">Datensatz:</td>";
+        print "<td class=\"detailcontent\">" . str_pad($registration['id'], 5, '0', STR_PAD_LEFT) . "</td>";
+        print "</tr>";
+
+        if ($registration['tenant'] != null) $network_substation = $tenant_info['network_substation_id'] . " | " . $tenant_info['network_substation_name']; else $network_substation = 'Bitte zuerst Mandant/EEG festlegen';
         print "<tr class=\"stategray\"><td class=\"detailheader\">Umspannwerk:</td>";
         print "<td id=\"detail_network_substation\" class=\"detailcontent\">" . $network_substation . "</td>";
         print "</tr>";
-        print "<tr class=\"stategray\"><td class=\"detailheader\">Anmeldenummer:</td>";
-        print "<td class=\"detailcontent\">" . str_pad($registration['id'], 5, '0', STR_PAD_LEFT) . "</td>";
-        print "</tr>";
-        if ($registration['member_id'] != null) $member_id = $registration['member_id']; else $member_id = 'Noch nicht zugewiesen';
+
         print "<tr class=\"stategray\"><td class=\"detailheader\">Mitgliedsnummer:</td>";
-        print "<td id=\"detail_member_id\" class=\"detailcontent\">$member_id<i onclick=\"JaxonInteractives.dashboard_inline_update_init('detail_member_id', 'member_id', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td>";
+        if($registration['tenant'] == null)
+        {
+            print "<td id=\"detail_member_id\" class=\"detailcontent\">Bitte zuerst EEG und Status zuweisen</td>";
+        }
+        elseif($registration['state'] == 'new')
+        {
+            print "<td id=\"detail_member_id\" class=\"detailcontent\">Bitte zuerst Status zuweisen</td>";
+        }
+        elseif($registration['state'] == 'refused')
+        {
+            print "<td id=\"detail_member_id\" class=\"detailcontent\">Abgelehnt</td>";
+        }
+        else
+        {
+            if ($registration['member_id'] != null) $member_id = $registration['member_id']; else $member_id = 'Noch nicht zugewiesen';
+            print "<td id=\"detail_member_id\" class=\"detailcontent\">$member_id<i onclick=\"JaxonInteractives.dashboard_inline_update_memberid_init('detail_member_id', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td>";
+        }
         print "</tr>";
 
         print "</tbody></table>";
