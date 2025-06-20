@@ -22,6 +22,13 @@
             exit();
         }
     }
+    elseif (isset($_REQUEST['statistics']))
+    {
+        // API
+        include_once('controllers/controller_api.inc.php');
+        $controller_api = new CONTROLLER_API($view->object_broker);
+        $controller_api->get_public_statistics();
+    }
 
     // that's it for the download part - let's move on and
     // prepare the jaxon environment for asynchronous events
