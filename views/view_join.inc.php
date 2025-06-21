@@ -734,7 +734,7 @@ sorger!)<br />';
         print '
             <script>
               Dropzone.options.DropzoneInvoice = {
-                maxFilesize: "10M",
+                maxFilesize: "20M",
                 maxFiles: 1
               };
             </script>
@@ -749,7 +749,7 @@ sorger!)<br />';
         print '
             <script>
               Dropzone.options.DropzoneCredit = {
-                maxFilesize: "10M",
+                maxFilesize: "20M",
                 maxFiles: 1
               };
             </script>
@@ -758,6 +758,39 @@ sorger!)<br />';
             </form>
         ';
         print "</div><br />";
+
+        if($_SESSION['generic_information']['join_type'] != 'company')
+        {
+            // ID Document Upload does only apply to individual or aggriculture memberships
+            print "<h3>Scan eines g&uuml;ltigen Lichtbildausweises (Reisepass, Personalausweis, F&uuml;hrerschein)</h3>";
+            print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
+            print '
+                <script>
+                  Dropzone.options.DropzoneID = {
+                    maxFilesize: "20M",
+                    maxFiles: 1
+                  };
+                </script>
+                <form action="?upload&type=id" class="dropzone" id="DropzoneID">
+                    <div class="dz-message" data-dz-message><span style="color:dimgrey;font-weight:normal;">Datei zur &Uuml;bermittlung hier ablegen oder klicken um eine Datei auszuw&auml;hlen</span></div>
+                </form>
+            ';
+            print "</div><br />";
+        }
+
+        print "<h3>Foto eines (oder mehrerer) Z&auml;hler (bitte beachte, dass die Aufkleber gut sichbar sind)</h3>";
+        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
+        print '
+            <script>
+              Dropzone.options.DropzonePhoto = {
+                maxFilesize: "20M",
+                maxFiles: 1
+              };
+            </script>
+            <form action="?upload&type=photo" class="dropzone" id="DropzonePhoto">
+                <div class="dz-message" data-dz-message><span style="color:dimgrey;font-weight:normal;">Datei zur &Uuml;bermittlung hier ablegen oder klicken um eine Datei auszuw&auml;hlen</span></div>
+            </form>
+        ';
 
     }
 

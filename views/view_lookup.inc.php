@@ -247,8 +247,34 @@ class VIEW_LOOKUP extends VIEW
 
         print "</table>";
 
+        $uploads = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_UPLOADS'], 'registration_id', $registration['id']);
+        if(count($uploads) > 0)
+        {
+            print '<br />&nbsp;<br />';
+            print '<h3>Bereitgestellte Dokumente / Uploads</h3>';
+
+            print '
+                  <table class="table" style="width:700px">
+            ';
+
+            foreach ($uploads as $upload)
+            {
+                $download_icon = '<i class="fa fa-file-download"></i>';
+
+                print "<tr class=\"stategray profilemeterline\">
+                        <td class=\"profilemeter\" style=\"width:100px;text-align:center;vertical-align:middle;font-size:12pt;font-weight:bold\" onclick=\"window.open('/?download=" . $upload['fsid'] . "', '_blank');\">
+                            <a href=\"/?download=" . $upload['fsid'] . "\" target=\"_blank\">$download_icon</a>
+                        </td>
+                        <td class=\"profilemeter\" style=\"text-align:left\" onclick=\"window.open('/?download=" . $upload['fsid'] . "', '_blank');\">
+                            <span class=\"metertype\">" . $upload['nicename'] . "</span><br />
+                            " . $upload_type_arr[$upload['type']] . "
+                        </td>
+                    </tr>";
+            }
+
+            print "</table>";
+        }
+
 
     }
 }
-
-?>

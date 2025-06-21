@@ -189,7 +189,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                 <tbody>
         ';
 
-        $upload_type_arr = ['invoice' => 'Rechnung', 'credit' => 'Gutschrift', 'photo' => 'Foto', 'other' => 'Andere'];
+        $upload_type_arr = ['invoice' => 'Rechnung', 'credit' => 'Gutschrift', 'photo' => 'Foto', 'id' => 'Ausweis', 'other' => 'Andere'];
         $identity_type_arr = ['passport' => 'Reisepass', 'idcard' => 'Personalausweis', 'driverslicense' => 'F&uuml;hrerschein', 'commerceid' => 'Firmenbuchnummer', 'associationid' => 'Vereinsregister'];
         $tax_type_arr = ['y' => 'Ja', 'n' => 'Nein'];
 
@@ -477,18 +477,56 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
     {
         $file_path = "uploads/" . $download_fsid;
         $nicename = $this->db->get_column_by_column_value($this->config->user['DBTABLE_UPLOADS'], 'nicename', 'fsid', $download_fsid);
-        header('Content-Description: File Transfer');
-        header('Content-Type: application/octet-stream');
-        header('Content-Disposition: attachment; filename=' . $nicename);
-        header('Content-Transfer-Encoding: binary');
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-        header('Pragma: public');
-        header('Content-Length: ' . filesize($file_path));
-        ob_clean();
-        flush();
 
-        readfile($file_path);
+        if(filter_var($_SESSION['authenticated'], FILTER_VALIDATE_INT))
+        {
+            $registration_id = $this->db->get_column_by_column_value($this->config->user['DBTABLE_UPLOADS'], 'registration_id', 'fsid', $download_fsid);
+            if($_SESSION['authenticated'] == $registration_id)
+            {
+                $download_allowed = true;
+            }
+            else
+            {
+                if($this->view_handle_backend_login() === true)
+                {
+                    $download_allowed = true;
+                }
+                else
+                {
+                    $download_allowed = false;
+                }
+            }
+        }
+        else
+        {
+            if($this->view_handle_backend_login() === true)
+            {
+                $download_allowed = true;
+            }
+            else
+            {
+                $download_allowed = false;
+            }
+        }
+
+        if($download_allowed === true)
+        {
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/octet-stream');
+            header('Content-Disposition: attachment; filename=' . $nicename);
+            header('Content-Transfer-Encoding: binary');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($file_path));
+            ob_clean();
+            flush();
+            readfile($file_path);
+        }
+        else
+        {
+            die('Sorry, but you are not allowed to download this file.');
+        }
     }
 
 }

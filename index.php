@@ -14,7 +14,7 @@
     if (isset($_REQUEST['download']))
     {
         // people trying to download documents
-        if ($view->view_handle_backend_login() === true)
+        if (($view->view_handle_backend_login() === true) || filter_var($_SESSION['authenticated'], FILTER_VALIDATE_INT))
         {
             include_once('views/view_management_registrations.inc.php');
             $view_manage_registrations = new VIEW_MANAGEMENT_REGISTRATIONS();
