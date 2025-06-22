@@ -350,6 +350,7 @@ class CONTROLLER_DB
 
 		$ret = $this->db->execute_query("SELECT COUNT($table.id) FROM $table $joinstatement WHERE $table.$haystack = \"$needle\" $extended_where_clause");
 		return $ret->fetchColumn();
+
 	}
 
 	// ---------------------------------------------------------------------------------
