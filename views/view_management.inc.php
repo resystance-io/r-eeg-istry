@@ -16,6 +16,7 @@ class VIEW_MANAGEMENT extends VIEW
             $_SESSION['dashboard']['colorconfig'] = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARDS'], 'colorconfig', 'id', $_SESSION['dashboard']['id']);
             $filterconfig = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARDS'], 'filterconfig', 'id', $_SESSION['dashboard']['id']);
             unset($_SESSION['dashboard']['filter']);
+            unset($_SESSION['dashboard']['sortkey']);
             if($filterconfig != null)
             {
                 $_SESSION['dashboard']['filter'] = json_decode(base64_decode($filterconfig), true);
@@ -154,6 +155,8 @@ class VIEW_MANAGEMENT extends VIEW
 
         $column_configs = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARD_COLUMNS'], 'visible', 'y');
         $layout_columns = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARD_LAYOUT'], 'dashboard', $_SESSION['dashboard']['id'], NULL, 'sort', 'ASC');
+        $dashboard_sort = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARDS'], 'sort', 'id', $_SESSION['dashboard']['id']);
+
         print '<th style="width:60px">&nbsp;</th>';
 
         $columns = []; // store every column configuration we get for this dashboard layout to avoid multiple lookups
@@ -179,6 +182,14 @@ class VIEW_MANAGEMENT extends VIEW
                 if(isset($_SESSION['dashboard']['sortkey']))
                 {
                     $sortkey_arr = explode(';', $_SESSION['dashboard']['sortkey']);
+                }
+                elseif($dashboard_sort)
+                {
+                    $sortkey_arr = explode(';', $dashboard_sort);
+                }
+
+                if(isset($sortkey_arr))
+                {
                     $sortkey_field = $sortkey_arr[0];
                     $sortkey_direction = $sortkey_arr[1];
                     if($sortkey_field == $columns[$column_count]['name'])

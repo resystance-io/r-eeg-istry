@@ -73,6 +73,26 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
         $dashboard_filterconfig = json_decode(base64_decode($dashboard_filterconfig), true);
         $_SESSION['dashboard']['filterconfig'] = $dashboard_filterconfig;
 
+        if(isset($_REQUEST['column']) && isset($_REQUEST['sort']))
+        {
+            $sort_name = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARD_LAYOUT'], 'data', 'id', $_REQUEST['column']);
+
+            switch($_REQUEST['sort'])
+            {
+                case 'asc':
+                    $this->db->update_column_by_column_values($this->config->user['DBTABLE_DASHBOARDS'], 'sort', $_REQUEST['column'] . ';' . 'asc', 'id', $dashboard_id);
+                    break;
+
+                case 'desc':
+                    $this->db->update_column_by_column_values($this->config->user['DBTABLE_DASHBOARDS'], 'sort', $_REQUEST['column'] . ';' . 'desc', 'id', $dashboard_id);
+                    break;
+
+                case '':
+                    $this->db->update_column_by_column_values($this->config->user['DBTABLE_DASHBOARDS'], 'sort', NULL, 'id', $dashboard_id);
+                    break;
+            }
+        }
+
         if(isset($_REQUEST['column']) && isset($_REQUEST['move']))
         {
             switch($_REQUEST['move'])
@@ -128,6 +148,7 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
 
         $dashboard_name = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARDS'], 'name', 'id', $dashboard_id);
         $dashboard_colorconfig = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARDS'], 'colorconfig', 'id', $dashboard_id);
+        $dashboard_sort = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARDS'], 'sort', 'id', $dashboard_id);
         $column_configs = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARD_COLUMNS'], 'visible', 'y');
         $layout_columns = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARD_LAYOUT'], 'dashboard', $dashboard_id, NULL, 'sort', 'ASC');
 
@@ -155,7 +176,39 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
 
             if($columns[$column_count]['sortable'] == 'y')
             {
-                print '<th>' . $columns[$column_count]['nicename'] . '<i style="margin-top:6px;color:slategrey" class="fa fa-sort fa-pull-right"></i></th>';
+                // this is the sorted column
+                $fa_sort_color = 'black';
+                $dashboard_sort_arr = explode(';', $dashboard_sort);
+                $sortkey_column = $dashboard_sort_arr[0];
+                $sortkey_direction = $dashboard_sort_arr[1];
+
+                if($sortkey_column == $layout_column['data'])
+                {
+                    if ($sortkey_direction == 'asc')
+                    {
+                        // currently we're sorting ascending
+                        $fa_sort_icon = 'fa-sort-up';
+                        $fa_sort_link = '?manage_dashboards&dashboard_id=' . $dashboard_id. '&column=' . $layout_column['data'] . '&sort=desc';
+                    } elseif ($sortkey_direction == 'desc')
+                    {
+                        // currently we're sorting descending
+                        $fa_sort_icon = 'fa-sort-down';
+                        $fa_sort_link = '?manage_dashboards&dashboard_id=' . $dashboard_id. '&column=' . $layout_column['data'] . '&sort=';
+                    } else
+                    {
+                        // wtf?
+                        $fa_sort_icon = 'fa-sort';
+                        $fa_sort_link = 'sortkey=' . $columns[$column_count]['name'] . ';asc';
+                    }
+                }
+                else
+                {
+                    $fa_sort_color = 'slategrey';
+                    $fa_sort_icon = 'fa-sort';
+                    $fa_sort_link = '?manage_dashboards&dashboard_id=' . $dashboard_id. '&column=' . $layout_column['data'] . '&sort=asc';
+                }
+
+                print '<th>' . $columns[$column_count]['nicename'] . '<i style="margin-top:6px;color:' . $fa_sort_color . '" class="fa ' . $fa_sort_icon . ' fa-pull-right" onclick="self.location.href=\'' . $fa_sort_link . '\'"></i></th>';
             }
             else
             {
