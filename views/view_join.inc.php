@@ -622,6 +622,10 @@ sorger!)<br />';
 
                     $this->view_render_meter_detail_explained_inputfield($meter_key, "Erlaubte Netzzugangsleistung", 'feedlimit', 'decimal', null, 0, "&nbsp;&nbsp;&nbsp;&nbsp;kVA");
                 }
+                else
+                {
+                    $this->view_render_meter_detail_explained_inputfield($meter_key, "Jahresstromverbrauch", 'estimated_consumption', 'decimal', null, 0, "&nbsp;&nbsp;&nbsp;&nbsp;kW");
+                }
 
                 print "</div>";
 
@@ -649,8 +653,9 @@ sorger!)<br />';
         print "<h3>Kontoinformationen</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
 
-        $this->view_render_part_captioned_inputfield("Name d. Kontoinhabers", "banking_name", "generic_information", "required");
+        $this->view_render_part_captioned_inputfield("Name KontoinhaberIn", "banking_name", "generic_information", "required");
         $this->view_render_part_captioned_inputfield("IBAN", "banking_iban", "generic_information", "iban");
+        $this->view_render_part_captioned_inputfield("Name der Bank", "banking_institute", "generic_information", "required");
         $this->view_render_part_annotated_checkbox("Hiermit best&auml;tige ich die Richtigkeit der angegebenen Kontoinformationen<br />und erm&auml;chtige " . $shortname . " zum Bankeinzug im Rahmen der Leistungsabrechnung. <br /> Creditor ID: " . $cid . ".", "banking_consent", "generic_information", "booltrue");
 
         print "</div><br />";
@@ -896,6 +901,7 @@ sorger!)<br />';
 
             if (isset($_SESSION['generic_information']['banking_name']['value'])) $registration_array['banking_name'] = $_SESSION['generic_information']['banking_name']['value'];
             if (isset($_SESSION['generic_information']['banking_iban']['value'])) $registration_array['banking_iban'] = strtoupper(str_replace(' ', '', $_SESSION['generic_information']['banking_iban']['value']));
+            if (isset($_SESSION['generic_information']['banking_institute']['value'])) $registration_array['banking_institute'] = $_SESSION['generic_information']['banking_institute']['value'];
             if (isset($_SESSION['generic_information']['banking_consent']['value']) && $_SESSION['generic_information']['banking_consent']['value'] == '1') $registration_array['banking_consent'] = time();
             if (isset($_SESSION['generic_information']['bylaws_consent']['value']) && $_SESSION['generic_information']['bylaws_consent']['value'] == '1') $registration_array['bylaws_consent'] = time();
             if (isset($_SESSION['generic_information']['tos_consent']['value']) && $_SESSION['generic_information']['tos_consent']['value'] == '1') $registration_array['tos_consent'] = time();
@@ -945,6 +951,7 @@ sorger!)<br />';
                     $meter_array['meter_addr_zip'] = $meter_object['zip']['value'];
                     $meter_array['meter_participation'] = $meter_object['participation']['value'];
                     $meter_array['meter_feedlimit'] = $meter_object['feedlimit']['value'];
+                    $meter_array['meter_estimated_consumption'] = $meter_object['estimated_consumption']['value'];
 
                     $this->object_broker->instance['db']->insert_row_with_array($this->config->user['DBTABLE_METERS'], $meter_array);
                 }

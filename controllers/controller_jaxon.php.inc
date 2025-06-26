@@ -85,7 +85,6 @@ class Interactives
 
         $username = $_SESSION['auth_backend_username'];
         $password = $_SESSION['auth_backend_password'];
-        error_log("backend_authenticate: user:$username pass:$password");
 
         if(isset($_SESSION['auth_backend_username'])) unset($_SESSION['auth_backend_password']);
 
@@ -517,7 +516,7 @@ class Interactives
                 $uploaded_types[$upload['type']] = 1;
             }
 
-            $upload_type_arr = ['invoice' => 'Rechnung', 'credit' => 'Gutschrift', 'photo' => 'Foto', 'other' => 'Andere'];
+            $upload_type_arr = ['invoice' => 'Rechnung', 'credit' => 'Gutschrift', 'id' => 'Ausweis', 'photo' => 'Foto', 'other' => 'Andere'];
 
             foreach($mandatory_file_upload_types as $mandatory_file_upload_type)
             {
@@ -823,6 +822,12 @@ class Interactives
                     $focustarget = 'participation_' . $meter_key;
                 }
 
+                if ($this->validate_record($meter_object['estimated_consumption']['value'], $meter_object['estimated_consumption']['integrity']) === false)
+                {
+                    $failmsg = "Bitte überprüfen Sie den Jahresstromverbrauch";
+                    $focustarget = 'estimated_consumption_' . $meter_key;
+                }
+
                 if ($this->validate_record($meter_object['feedlimit']['value'], $meter_object['feedlimit']['integrity']) === false)
                 {
                     $failmsg = "Bitte überprüfen Sie die maximal erlaubte Netzzugangsleistung";
@@ -965,6 +970,12 @@ class Interactives
         {
             $failmsg = "Bitte überprüfen Sie die IBAN";
             $focustarget = 'banking_iban';
+        }
+
+        if($this->validate_record($_SESSION['generic_information']['banking_institute']['value'], $_SESSION['generic_information']['banking_institute']['integrity']) === false)
+        {
+            $failmsg = "Bitte überprüfen Sie den Namen ihrer kontoführenden Bank";
+            $focustarget = 'banking_institute';
         }
 
         if($this->validate_record($_SESSION['generic_information']['banking_consent']['value'], $_SESSION['generic_information']['banking_consent']['integrity']) === false)
@@ -1306,6 +1317,78 @@ class Interactives
         $div_content = $state_nice[$dbvalue] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_state_init('detail_state', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
 
         $response = jaxon()->newResponse();
+        $response->assign($div_id, 'innerHTML', $div_content);
+        return $response;
+    }
+
+    public function dashboard_inline_update_debit_type_init($div_id, $recordid)
+    {
+        $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'banking_debit_type', 'id', $recordid);
+        $input_field = "<div style=\"float:left\">
+                        <select name=\"debit_type\" id=\"debit_type\" class=\"detail\" style=\"width:280px\">";
+
+        if($dbvalue == null || $dbvalue == 'none') $selected = 'selected="selected"'; else $selected = '';
+        $input_field .= "<option value=\"none\" $selected>Kein SEPA</option>";
+
+        if($dbvalue == 'core') $selected = 'selected="selected"'; else $selected = '';
+        $input_field .= "<option value=\"core\" $selected>SDD CORE</option>";
+
+        if($dbvalue == 'b2b') $selected = 'selected="selected"'; else $selected = '';
+        $input_field .= "<option value=\"b2b\" $selected>SDD B2B</option>";
+
+        $input_field .= "            </select>
+                        </div>
+                        
+                        <div style=\"float:right\">
+                            <button class=\"search bg-green-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_debit_type_save(document.getElementById('debit_type').value, '$recordid')\"><i class=\"fa fa-check\"></i></button>
+                            <button class=\"search bg-red-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_debit_type_cancel('detail_banking_debit_type', '$recordid');\"><i class=\"fa fa-ban\"></i></button>
+                        </div>";
+
+        $response = jaxon()->newResponse();
+        $response->assign($div_id, 'innerHTML', $input_field);
+        return $response;
+    }
+
+    public function dashboard_inline_update_debit_type_save($dbvalue, $recordid)
+    {
+        $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'banking_debit_type', $dbvalue, 'id', $recordid);
+        $debit_type = ['core' => 'SDD CORE', 'b2b' => 'SDD B2B', 'none' => 'Kein SEPA'];
+
+        if($dbvalue == null)
+        {
+            $debit_type_nice = $debit_type['none'];
+        }
+        else
+        {
+            $debit_type_nice = $debit_type[$dbvalue];
+        }
+
+        $div_content = $debit_type_nice . "<i onclick=\"JaxonInteractives.dashboard_inline_update_debit_type_init('detail_banking_debit_type', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
+
+        $response = jaxon()->newResponse();
+        $response->assign('modal', 'style.display', 'none');
+        $response->assign('detail_banking_debit_type', 'innerHTML', $div_content);
+        return $response;
+    }
+
+    public function dashboard_inline_update_debit_type_cancel($div_id, $recordid)
+    {
+        $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'banking_debit_type', 'id', $recordid);
+        $debit_type = ['core' => 'SDD CORE', 'b2b' => 'SDD B2B', 'none' => 'Kein SEPA'];
+
+        if($dbvalue == null)
+        {
+            $debit_type_nice = $debit_type['none'];
+        }
+        else
+        {
+            $debit_type_nice = $debit_type[$dbvalue];
+        }
+
+        $div_content = $debit_type_nice . "<i onclick=\"JaxonInteractives.dashboard_inline_update_debit_type_init('detail_banking_debit_type', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
+
+        $response = jaxon()->newResponse();
+        $response->assign('modal', 'style.display', 'none');
         $response->assign($div_id, 'innerHTML', $div_content);
         return $response;
     }

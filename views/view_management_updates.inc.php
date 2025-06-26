@@ -47,8 +47,9 @@ class VIEW_MANAGEMENT_UPDATES extends VIEW
                     {
                         if($migration_index > 0)    print "<br />";
                         print "Adaption " . $migration_index + 1 . " von " . count($database_migrations[$i]) . "<br />\n";
-                        print $migration_step . "<br />\n";
+                        print "&bull; " . hash('sha256', $migration_step) . "... ";
                         $this->db->execute_query($migration_step);
+                        print "[confirmed]<br />&nbsp;<br />";
                     }
 
                     print "</blockquote>";

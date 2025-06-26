@@ -76,6 +76,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         ';
 
         $state_nice = ['new' => 'Neu', 'onboarding' => "Onboarding", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert", 'refused' => "Abgelehnt"];
+        $debit_type = ['core' => 'SDD CORE', 'b2b' => 'SDD B2B', 'none' => 'Kein SEPA'];
         print "<tr class=\"stategray\">
                 <td class=\"detailheader\">Status:</td>
                 <td class=\"detailcontent\" id=\"detail_state\">
@@ -253,7 +254,11 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         print "<table class=\"table\" style=\"width:700px\">";
         print "<tr class=\"stategray\"><td class=\"detailheader\">Kontoinhaber*in:</td><td id=\"detail_banking_name\" class=\"detailcontent\">" . $registration['banking_name'] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_init('detail_banking_name', 'banking_name', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td></tr>";
         print "<tr class=\"stategray\"><td class=\"detailheader\">Aktive IBAN:</td><td class=\"detailcontent\">" . $registration['banking_iban'] . "</td></tr>";
+        print "<tr class=\"stategray\"><td class=\"detailheader\">Name d. Bankinstituts:</td><td class=\"detailcontent\">" . $registration['banking_institute'] . "</td></tr>";
         print "<tr class=\"stategray\"><td class=\"detailheader\">Einzugserm&auml;chtigung erteilt:</td><td class=\"detailcontent\">" . date("d.m.Y H:i:s", $registration['banking_consent']) . "</td></tr>";
+        print "<tr class=\"stategray\"><td class=\"detailheader\">Mandatsreferenznummer:</td><td id=\"detail_banking_mandate_reference\" class=\"detailcontent\">" . $registration['banking_mandate_reference'] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_init('detail_banking_mandate_reference', 'banking_mandate_reference', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td></tr>";
+        if($registration['banking_debit_type'] != null)     $debit_type_nice = $debit_type[$registration['banking_debit_type']];     else    $debit_type_nice = $debit_type['none'];
+        print "<tr class=\"stategray\"><td class=\"detailheader\">Einzugsart:</td><td id=\"detail_banking_debit_type\" class=\"detailcontent\">" . $debit_type_nice . "<i onclick=\"JaxonInteractives.dashboard_inline_update_debit_type_init('detail_banking_debit_type', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td></tr>";
         print "</table>";
 
         print '<br />&nbsp;<br />';
@@ -343,6 +348,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
             if ($meter['meter_participation'] != null) $meter_participation = 'Faktor: ' . $meter['meter_participation'] . '%'; else $meter_participation = '';
             if ($meter['meter_power'] != null) $meter_power = ', Leistung: ' . $meter['meter_power'] . ' kWp'; else $meter_power = '';
             if ($meter['meter_feedlimit'] != null) $meter_feedlimit = ', R&uuml;ckspeiselimit: ' . $meter['meter_feedlimit'] . ' kVA'; else $meter_feedlimit = '';
+            if ($meter['meter_estimated_consumption'] != null) $meter_estimated_consumption = ', Voraussichtl. Jahresverbrauch: ' . $meter['meter_estimated_consumption'] . ' kW'; else $meter_estimated_consumption = '';
 
             if($registration['tenant'] == null || $registration['state'] == 'new' || $registration['state'] == 'refused')
             {
@@ -358,7 +364,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                         $meter_short_id
                     </td>
                     <td class=\"profilemeter\" style=\"text-align:left\">
-                        <span class=\"metertype\">$meter_nice ($meter_participation$meter_power$meter_feedlimit)</span><br />
+                        <span class=\"metertype\">$meter_nice ($meter_participation$meter_power$meter_feedlimit$meter_estimated_consumption)</span><br />
                         &nbsp;<br />
                         " . $meter['meter_id'] . "<br />
                         " . $meter['meter_addr_street'] . " " . $meter['meter_addr_number'] . ", " . $meter['meter_addr_zip'] . " " . $meter['meter_addr_city'] . "<br />

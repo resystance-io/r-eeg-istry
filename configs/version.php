@@ -1,3 +1,3 @@
 <?php
 
-$latest_database_version = 3;
+$latest_database_version = 5;

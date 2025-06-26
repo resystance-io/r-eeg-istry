@@ -184,10 +184,14 @@ class VIEW_LOOKUP extends VIEW
         print "<tr><td class=\"profileheader\">E-Mail-Adresse</td><td>" . $registration['email'] . "</td></tr>";
         print "<tr><td class=\"profileheader\">Kundennummer Netzbetreiber</td><td>" . $registration['network_customerid'] . "</td></tr>";
         print "<tr><td class=\"profileheader\">Inventarnummer eines Z&auml;hlers</td><td>" . $registration['network_inventoryid'] . "</td></tr>";
-        print "<tr><td class=\"profileheader\">Optional: Anzahl d. E-Autos</td><td>" . $registration['electric_car_count'] . "</td></tr>";
-        print "<tr><td class=\"profileheader\">Optional: E-Auto Gesamt-kWh</td><td>" . $registration['electric_car_capacity'] . "</td></tr>";
-        print "<tr><td class=\"profileheader\">Optional: E-Auto Jahreskilometer</td><td>" . $registration['electric_car_mileage'] . "</td></tr>";
-        print "<tr><td class=\"profileheader\">Optional: Hei&szlig;wasserbereitung (Sommer)</td><td>" . $registration['water_heating_summer'] . "</td></tr>";
+        print "<tr><td>&nbsp;</td></tr>";
+        print "<tr><td class=\"profileheader\">Anzahl d. E-Autos<br />(Optional)</td><td>" . $registration['electric_car_count'] . "</td></tr>";
+        print "<tr><td>&nbsp;</td></tr>";
+        print "<tr><td class=\"profileheader\">E-Auto Gesamt-kWh<br />(Optional)</td><td>" . $registration['electric_car_capacity'] . "</td></tr>";
+        print "<tr><td>&nbsp;</td></tr>";
+        print "<tr><td class=\"profileheader\">E-Auto Jahreskilometer<br />(Optional)</td><td>" . $registration['electric_car_mileage'] . "</td></tr>";
+        print "<tr><td>&nbsp;</td></tr>";
+        print "<tr><td class=\"profileheader\">Hei&szlig;wasserbereitung Sommer<br />(Optional)</td><td>" . $registration['water_heating_summer'] . "</td></tr>";
 
         print "</table>";
 
@@ -196,6 +200,7 @@ class VIEW_LOOKUP extends VIEW
         print "<table>";
         print "<tr><td class=\"profileheader\">Kontoinhaber*in:</td><td>" . $registration['banking_name'] . "</td></tr>";
         print "<tr><td class=\"profileheader\">Aktive IBAN:</td><td>" . $registration['banking_iban'] . "</td></tr>";
+        print "<tr><td class=\"profileheader\">Name der Bank:</td><td>" . $registration['banking_institute'] . "</td></tr>";
         print "<tr><td class=\"profileheader\">Einzugserm&auml;chtigung erteilt:</td><td>" . date("d.m.Y H:i:s", $registration['banking_consent']) . "</td></tr>";
         print "</table>";
 
@@ -216,12 +221,12 @@ class VIEW_LOOKUP extends VIEW
         foreach ($meters as $meter)
         {
             if ($meter['meter_type'] == 'consumer') $meter_nice = "Verbrauch"; else    $meter_nice = "Einspeisung";
-
             if ($meter['meter_participation'] != null) $meter_participation = 'Faktor: ' . $meter['meter_participation'] . '%'; else $meter_participation = '';
+            if ($meter['meter_estimated_consumption'] != null) $meter_estimated_consumption = ', voraussichtl. Jahresstromverbrauch: ' . $meter['meter_estimated_consumption'] . ' kW'; else $meter_estimated_consumption = '';
             if ($meter['meter_power'] != null) $meter_power = ', Leistung: ' . $meter['meter_power'] . ' kWp'; else $meter_power = '';
             if ($meter['meter_feedlimit'] != null) $meter_feedlimit = ', R&uuml;ckspeiselimit: ' . $meter['meter_feedlimit'] . ' kVA'; else $meter_feedlimit = '';
 
-            print "<tr class=\"profilemeterline\"><td class=\"profilemeter\"><span class=\"metertype\">$meter_nice ($meter_participation$meter_power$meter_feedlimit)</span><br />" . $meter['meter_id'] . "</td></tr>";
+            print "<tr class=\"profilemeterline\"><td class=\"profilemeter\"><span class=\"metertype\">$meter_nice ($meter_participation$meter_power$meter_feedlimit$meter_estimated_consumption)</span><br />" . $meter['meter_id'] . "</td></tr>";
         }
 
         print "</table>";
@@ -257,6 +262,7 @@ class VIEW_LOOKUP extends VIEW
                   <table class="table" style="width:700px">
             ';
 
+            $upload_type_arr = ['invoice' => 'Rechnung', 'credit' => 'Gutschrift', 'id' => 'Ausweis', 'photo' => 'Foto', 'other' => 'Andere'];
             foreach ($uploads as $upload)
             {
                 $download_icon = '<i class="fa fa-file-download"></i>';

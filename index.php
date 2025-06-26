@@ -266,7 +266,7 @@
         ?>
 
             <div class="" style="background-color: #151515; color: white; padding: 6px; width:100%; height: 38px; vertical-align: middle; text-align: right;">
-                <div style="float:left;font-family:Helvetica;font-size:10pt;color:dimgrey">R:EEG:ISTRY commit #529bb1c</div><div style="float:right;font-family:Helvetica;font-size:10pt;color:dimgrey"><?php print $pi_menu; ?>&nbsp;&nbsp;</div>
+                <div style="float:left;font-family:Helvetica;font-size:10pt;color:dimgrey">R:EEG:ISTRY commit #c7da35fd</div><div style="float:right;font-family:Helvetica;font-size:10pt;color:dimgrey"><?php print $pi_menu; ?>&nbsp;&nbsp;</div>
             </div>
 
             <!-- Scripts -->
