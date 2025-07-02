@@ -195,16 +195,16 @@ class Interactives
     public function rmv_meter($id)
     {
         // remove a meter input block from the current layout
-        if(isset($_SESSION['meters']["$id"]))
+        if(isset($_SESSION['meters'][$id]))
         {
-            if($_SESSION['meters']["$id"]['type'] == 'suppliers')
+            if($_SESSION['meters'][$id]['type'] == 'suppliers')
             {
-                unset($_SESSION['meters']["$id"]);
+                unset($_SESSION['meters'][$id]);
                 $response = jaxon()->newResponse();
                 $response->remove('container-' . $id);
                 return $response;
             }
-            elseif($_SESSION['meters']["$id"]['type'] == 'consumers')
+            elseif($_SESSION['meters'][$id]['type'] == 'consumers')
             {
                 $consumer_count = 0;
                 foreach($_SESSION['meters'] as $meter_object)
@@ -220,7 +220,7 @@ class Interactives
                 }
                 else
                 {
-                    unset($_SESSION['meters']["$id"]);
+                    unset($_SESSION['meters'][$id]);
 
                     $response = jaxon()->newResponse();
                     $response->remove('container-' . $id);
@@ -233,9 +233,9 @@ class Interactives
     public function rmv_storage($id)
     {
         // remove a storage input block from the current layout
-        if(isset($_SESSION['storages']["$id"]))
+        if(isset($_SESSION['storages'][$id]))
         {
-            unset($_SESSION['storages']["$id"]);
+            unset($_SESSION['storages'][$id]);
             $response = jaxon()->newResponse();
             $response->remove('container-' . $id);
             return $response;
@@ -245,25 +245,25 @@ class Interactives
     public function update_storage_value($id, $value)
     {
         // write the given storage value to our session
-        if(isset($_SESSION['storages']["$id"]))
+        if(isset($_SESSION['storages'][$id]))
         {
-            $_SESSION['storages']["$id"]['value'] = $value;
+            $_SESSION['storages'][$id]['value'] = $value;
         }
     }
 
     public function update_meter_value($id, $value)
     {
         // write the given meter value to our session
-        if(isset($_SESSION['meters']["$id"]))
+        if(isset($_SESSION['meters'][$id]))
         {
-            $_SESSION['meters']["$id"]['value'] = $value;
+            $_SESSION['meters'][$id]['value'] = $value;
         }
     }
 
     public function update_session_bucket($record, $value, $session_bucket)
     {
         // write a given name-value tuple to our session (into the specified bucket)
-        $_SESSION["$session_bucket"]["$record"]["value"] = $value;
+        $_SESSION[$session_bucket][$record]["value"] = $value;
         $response = jaxon()->newResponse();
         return $response;
     }
@@ -301,7 +301,7 @@ class Interactives
     public function update_meter_detail($meter_key, $record, $value)
     {
         // write detail information about a certain meter too the current session's meter data
-        $_SESSION['meters']["$meter_key"]["$record"]['value'] = $value;
+        $_SESSION['meters'][$meter_key][$record]['value'] = $value;
     }
 
     public function step_back($current_step)
@@ -1257,9 +1257,57 @@ class Interactives
         $current_value = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'state', 'id', $recordid);
         $current_tenant = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'tenant', 'id', $recordid);
 
+        $tenant_info = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_TENANTS'], 'id', $current_tenant);
+        $tenant_info = $tenant_info[0];
+
+        $registration_info = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'id', $recordid);
+        $registration_info = $registration_info[0];
+
         $response = jaxon()->newResponse();
 
-        if($dbvalue == 'onboarding')    $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'migration_date', time(), 'id', $recordid);
+        if($dbvalue == 'onboarding')
+        {
+            $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'migration_date', time(), 'id', $recordid);
+
+            $mail_template = file_get_contents('assets/templates/mail_onboarding_started.html');
+            $mail_template = str_replace('{%FIRSTNAME%}', $registration_info['firstname'], $mail_template);
+            $mail_template = str_replace('{%LASTNAME%}', $registration_info['lastname'], $mail_template);
+            $mail_template = str_replace('{%USEREMAIL%}', $registration_info['email'], $mail_template);
+            $mail_template = str_replace('{%REFERRER%}', $tenant_info['referrer'], $mail_template);
+            $mail_template = str_replace('{%FULLNAME%}', $tenant_info['fullname'], $mail_template);
+            $mail_template = str_replace('{%SHORTNAME%}', $tenant_info['shortname'], $mail_template);
+            $mail_template = str_replace('{%SLOGAN%}', $tenant_info['slogan'], $mail_template);
+            $mail_template = str_replace('{%DOWNLOAD_TOS%}', $tenant_info['reegistry_website'] . '/' . $tenant_info['download_tos'], $mail_template);
+            $mail_template = str_replace('{%DOWNLOAD_BYLAWS%}', $tenant_info['reegistry_website'] . '/' . $tenant_info['download_bylaws'], $mail_template);
+            $mail_template = str_replace('{%DOWNLOAD_GDPR%}', $tenant_info['reegistry_website'] . '/' . $tenant_info['download_gdpr'], $mail_template);
+            $mail_template = str_replace('{%REEGISTRY_WEBSITE%}', $tenant_info['reegistry_website'], $mail_template);
+            $mail_template = str_replace('{%CONTACT_WEBSITE%}', $tenant_info['contact_website'], $mail_template);
+            $mail_template = str_replace('{%CONTACT_EMAIL%}', $tenant_info['contact_email'], $mail_template);
+            $mail_template = str_replace('{%CREDITOR_ID%}', $tenant_info['creditor_id'], $mail_template);
+
+            $this->view->object_broker->instance['email']->subject = "Deine Mitgliedschaft bei " . $tenant_info['shortname'];
+            $this->view->object_broker->instance['email']->AddRecipient($registration_info['email']);
+            $this->view->object_broker->instance['email']->messageHTML = $mail_template;
+
+            if ($this->view->object_broker->instance['email']->Send('smtp'))
+            {
+                $mail_sent = true;
+            }
+            else
+            {
+                $mail_sent = false;
+            }
+
+            if($mail_sent === false)
+            {
+                $response->alert('Fehler: Das Info-Mail konnte nicht gesendet werden.');
+            }
+            else
+            {
+                $response->alert('Info-Mail gesendet.');
+            }
+        }
+
         if($dbvalue == 'active')        $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'delivery_date', time(), 'id', $recordid);
 
         if($current_value == 'new')
@@ -1315,6 +1363,54 @@ class Interactives
         $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'state', 'id', $recordid);
         $state_nice = ['new' => 'Neu', 'onboarding' => "Onboarding", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert", 'refused' => "Abgelehnt"];
         $div_content = $state_nice[$dbvalue] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_state_init('detail_state', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
+
+        $response = jaxon()->newResponse();
+        $response->assign($div_id, 'innerHTML', $div_content);
+        return $response;
+    }
+
+    public function dashboard_inline_update_meter_state_init($div_id, $recordid)
+    {
+        $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_METERS'], 'meter_state', 'id', $recordid);
+        $input_field = "<select name=\"meter_state_$recordid\" id=\"meter_state_$recordid\" class=\"detail\" style=\"width:280px;\">";
+
+        $meter_status_arr = ['new' => 'Neu', 'onboarding' => 'In Bearbeitung', 'active' => 'Aktiv', 'suspended' => 'Gesperrt', 'deactivated' => 'Deaktiviert', 'refused' => 'Abgelehnt'];
+        if($dbvalue == null)    $dbvalue = 'new';
+
+        foreach($meter_status_arr as $meter_status => $nice_meter_status)
+        {
+            if ($dbvalue == $meter_status) $selected = 'selected="selected"'; else $selected = '';
+            $input_field .= "<option value=\"" . $meter_status . "\" $selected>" . $nice_meter_status . "</option>";
+        }
+
+        $input_field .= "            </select>
+                        
+                            <button class=\"search bg-green-gradient\" style=\"margin-top:8px;\" onclick=\"JaxonInteractives.dashboard_inline_update_meter_state_save(document.getElementById('meter_state_$recordid').value, '$div_id', '$recordid')\"><i class=\"fa fa-check\"></i></button>
+                            <button class=\"search bg-red-gradient\" style=\"margin-top:8px;\" onclick=\"JaxonInteractives.dashboard_inline_update_meter_state_cancel('" . $div_id . "', '$recordid');\"><i class=\"fa fa-ban\"></i></button>
+                        ";
+
+        $response = jaxon()->newResponse();
+        $response->assign($div_id, 'innerHTML', $input_field);
+        return $response;
+    }
+
+    public function dashboard_inline_update_meter_state_cancel($div_id, $recordid)
+    {
+        $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_METERS'], 'meter_state', 'id', $recordid);
+        if($dbvalue == null)    $dbvalue = 'new';
+        $state_nice = ['new' => 'Neu', 'onboarding' => "In Bearbeitung", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert", 'refused' => "Abgelehnt"];
+        $div_content = $state_nice[$dbvalue] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_meter_state_init('" . $div_id . "', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
+
+        $response = jaxon()->newResponse();
+        $response->assign($div_id, 'innerHTML', $div_content);
+        return $response;
+    }
+
+    public function dashboard_inline_update_meter_state_save($dbvalue, $div_id, $recordid)
+    {
+        $this->db->update_column_by_column_values($this->config->user['DBTABLE_METERS'], 'meter_state', $dbvalue, 'id', $recordid);
+        $state_nice = ['new' => 'Neu', 'onboarding' => "In Bearbeitung", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert", 'refused' => "Abgelehnt"];
+        $div_content = $state_nice[$dbvalue] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_meter_state_init('" . $div_id . "', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
 
         $response = jaxon()->newResponse();
         $response->assign($div_id, 'innerHTML', $div_content);

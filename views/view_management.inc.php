@@ -389,10 +389,18 @@ class VIEW_MANAGEMENT extends VIEW
             $registrations = $this->db->get_rows($this->config->user['DBTABLE_METERS'], $inner_joins, $filter_array, $start_index . ',' . $page_size, $order);
         }
 
+        if($search_root == 'registrations')
+        {
+            $color_identifier = 'state';
+        }
+        else
+        {
+            $color_identifier = 'meter_state';
+        }
 
         foreach($registrations as $line_id => $registration)
         {
-            switch ($registration['state'])
+            switch ($registration[$color_identifier])
             {
                 case 'new':
                     $color = '#91DAE6';
@@ -579,7 +587,22 @@ class VIEW_MANAGEMENT extends VIEW
 
             case 'state':
                 print '<select class="filter" id="filter-' . $column_name . '" name="filter-' . $column_name . '" onchange="JaxonInteractives.dashboard_set_filter(' . "'" . $column_name . "'" . ', document.getElementById(' . "'filter-" . $column_name . "'" . ').value);">';
-                $options_arr = ['new' => 'Neu', 'onboarding' => "Onboarding", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert", 'refused' => "Abgelehnt"];
+                $options_arr = ['new' => 'Neu', 'onboarding' => "In Bearbeitung", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert", 'refused' => "Abgelehnt"];
+
+                if($filter_value == 'null') $selected = 'selected'; else $selected = '';
+                print '<option ' . $selected . ' value="">&nbsp;</option>';
+
+                foreach($options_arr as $key => $value)
+                {
+                    if($filter_value == $key)  $selected = 'selected';     else    $selected = '';
+                    print '<option ' . $selected . ' value="' . $key . '">' . $value . '</option>';
+                }
+                print "</select>";
+                break;
+
+            case 'meter_state':
+                print '<select class="filter" id="filter-' . $column_name . '" name="filter-' . $column_name . '" onchange="JaxonInteractives.dashboard_set_filter(' . "'" . $column_name . "'" . ', document.getElementById(' . "'filter-" . $column_name . "'" . ').value);">';
+                $options_arr = ['new' => 'Neu', 'onboarding' => "In Bearbeitung", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert", 'refused' => "Abgelehnt"];
 
                 if($filter_value == 'null') $selected = 'selected'; else $selected = '';
                 print '<option ' . $selected . ' value="">&nbsp;</option>';
@@ -610,8 +633,13 @@ class VIEW_MANAGEMENT extends VIEW
                 return $type_conversion[$registration_arr['type']];
 
             case 'state':
-                $state_conversion = ['new' => 'Neu', 'onboarding' => "Onboarding", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert", 'refused' => "Abgelehnt"];
+                $state_conversion = ['new' => 'Neu', 'onboarding' => "In Bearbeitung", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert", 'refused' => "Abgelehnt"];
                 return $state_conversion[$registration_arr['state']];
+
+            case 'meter_state':
+
+                $state_conversion = ['new' => 'Neu', 'onboarding' => "In Bearbeitung", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert", 'refused' => "Abgelehnt"];
+                return $state_conversion[$registration_arr['meter_state']];
 
             case 'banking_consent':
             case 'network_consent':

@@ -193,6 +193,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         $upload_type_arr = ['invoice' => 'Rechnung', 'credit' => 'Gutschrift', 'photo' => 'Foto', 'id' => 'Ausweis', 'other' => 'Andere'];
         $identity_type_arr = ['passport' => 'Reisepass', 'idcard' => 'Personalausweis', 'driverslicense' => 'F&uuml;hrerschein', 'commerceid' => 'Firmenbuchnummer', 'associationid' => 'Vereinsregister'];
         $tax_type_arr = ['y' => 'Ja', 'n' => 'Nein'];
+        $meter_status_arr = ['new' => 'Neu', 'onboarding' => 'In Bearbeitung', 'active' => 'Aktiv', 'suspended' => 'Gesperrt', 'deactivated' => 'Deaktiviert', 'refused' => 'Abgelehnt'];
 
         switch ($registration['type'])
         {
@@ -242,9 +243,9 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         print "<table class=\"table\" style=\"width:700px\">";
         print "<tr class=\"stategray\"><td class=\"detailheader\">Anzahl d. E-Autos</td><td class=\"detailcontent\">" . $registration['electric_car_count'] . "</td></tr>";
         print "<tr class=\"stategray\"><td class=\"detailheader\">E-Auto Gesamt-kWh</td><td class=\"detailcontent\">" . $registration['electric_car_capacity'] . "</td></tr>";
-        print "<tr class=\"stategray\"><td class=\"detailheader\">E-Auto Jahreskilometer</td><td class=\"detailcontent\">" . $registration['electric_car_mileage '] . "</td></tr>";
+        print "<tr class=\"stategray\"><td class=\"detailheader\">E-Auto Jahreskilometer</td><td class=\"detailcontent\">" . $registration['electric_car_mileage'] . "</td></tr>";
 
-        $water_heating_arr = ['boiler' => 'Boiler', 'heatpump' => 'W&auml;rmepumpe', 'solar' => 'Solarthermie', 'district' => 'Fernw&auml;rme', 'other' => 'Andere'];
+        $water_heating_arr = ['' => 'Keine Angabe', 'boiler' => 'Boiler', 'heatpump' => 'W&auml;rmepumpe', 'solar' => 'Solarthermie', 'district' => 'Fernw&auml;rme', 'other' => 'Andere'];
         print "<tr class=\"stategray\"><td class=\"detailheader\">Hei&szlig;wasserbereitung (Sommer)</td><td class=\"detailcontent\">" . $water_heating_arr[$registration['water_heating_summer']] . "</td></tr>";
         print "</tbody></table>";
 
@@ -349,6 +350,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
             if ($meter['meter_power'] != null) $meter_power = ', Leistung: ' . $meter['meter_power'] . ' kWp'; else $meter_power = '';
             if ($meter['meter_feedlimit'] != null) $meter_feedlimit = ', R&uuml;ckspeiselimit: ' . $meter['meter_feedlimit'] . ' kVA'; else $meter_feedlimit = '';
             if ($meter['meter_estimated_consumption'] != null) $meter_estimated_consumption = ', Voraussichtl. Jahresverbrauch: ' . $meter['meter_estimated_consumption'] . ' kW'; else $meter_estimated_consumption = '';
+            if ($meter['meter_state'] == null)  $meter['meter_state'] = 'new';
 
             if($registration['tenant'] == null || $registration['state'] == 'new' || $registration['state'] == 'refused')
             {
@@ -359,6 +361,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                 $meter_short_id = $tenant_info['meter_prefix_short'] . $meter_type_shortcode . $meter['meter_oid'];
             }
 
+
             print "<tr class=\"stategray profilemeterline\">
                     <td class=\"profilemeter\" style=\"width:100px;text-align:center;vertical-align:middle;font-size:12pt;font-weight:bold\">
                         $meter_short_id
@@ -368,6 +371,9 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                         &nbsp;<br />
                         " . $meter['meter_id'] . "<br />
                         " . $meter['meter_addr_street'] . " " . $meter['meter_addr_number'] . ", " . $meter['meter_addr_zip'] . " " . $meter['meter_addr_city'] . "<br />
+                    </td>
+                    <td class=\"profilemeter\" id=\"detail_meter_state_" . $meter['id'] . "\" style=\"text-align:center;align:center;vertical-align:middle;font-weight:bold;\">
+                        " . $meter_status_arr[$meter['meter_state']] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_meter_state_init('detail_meter_state_" . $meter['id'] . "', '" . $meter['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>
                     </td>
                    </tr>";
         }

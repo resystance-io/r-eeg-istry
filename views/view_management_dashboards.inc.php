@@ -442,6 +442,21 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
                 }
                 print "</select>";
                 break;
+
+            case 'meter_state':
+                print '<select class="filter" id="filter-' . $column_name . '" name="filter-' . $column_name . '" onchange="JaxonInteractives.dashboard_set_filter(' . "'" . $column_name . "'" . ', document.getElementById(' . "'filter-" . $column_name . "'" . ').value);">';
+                $options_arr = ['new' => 'Neu', 'onboarding' => "In Bearbeitung", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert", 'refused' => "Abgelehnt"];
+
+                if($filter_value == 'null') $selected = 'selected'; else $selected = '';
+                print '<option ' . $selected . ' value="">&nbsp;</option>';
+
+                foreach($options_arr as $key => $value)
+                {
+                    if($filter_value == $key)  $selected = 'selected';     else    $selected = '';
+                    print '<option ' . $selected . ' value="' . $key . '">' . $value . '</option>';
+                }
+                print "</select>";
+                break;
         }
     }
 

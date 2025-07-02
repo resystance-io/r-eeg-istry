@@ -18,7 +18,8 @@ $database_migrations[3] = [
 ];
 
 $database_migrations[4] = [
-    "ALTER TABLE `meters` ADD `meter_state` ENUM('new','onboarding','active','suspended','deactivated','refused')  NULL  DEFAULT NULL  AFTER `meter_addr_city`;",
+    "ALTER TABLE `meters` ADD `meter_state` ENUM('new','onboarding','active','suspended','deactivated','refused')  NULL  DEFAULT 'new'  AFTER `meter_addr_city`;",
+    "UPDATE meters SET meter_state = 'active';",    // Existing meters that are already imported should be considered 'active' instead of 'new'
     "ALTER TABLE `meters` ADD `meter_date_added` INT(11)  NULL  DEFAULT NULL  AFTER `meter_state`;",
     "ALTER TABLE `meters` ADD `meter_date_requested` INT(11)  NULL  DEFAULT NULL  AFTER `meter_date_added`;",
     "ALTER TABLE `meters` ADD `meter_date_accepted` INT(11)  NULL  DEFAULT NULL  AFTER `meter_date_requested`;",
@@ -33,4 +34,9 @@ $database_migrations[5] = [
     "ALTER TABLE `registrations` ADD `banking_mandate_reference` VARCHAR(64)  NULL  DEFAULT NULL  AFTER `banking_consent`;",
     "ALTER TABLE `registrations` ADD `banking_debit_type` ENUM('core','b2b','none')  NULL  DEFAULT NULL  AFTER `banking_mandate_reference`;",
     "UPDATE `temporary` SET `value1` = '5' WHERE `feature` = 'database_version';"
+];
+
+$database_migrations[6] = [
+    "INSERT INTO `dashboard_columns` (`id`, `name`, `nicename`, `compute`, `source`, `searchable`, `filterable`, `sortable`, `visible`) VALUES (NULL, 'meter_state', 'Z&auml;hlerstatus', 'meter_state', 'meters', 'y', 'y', 'y', 'y');",
+    "UPDATE `temporary` SET `value1` = '6' WHERE `feature` = 'database_version';"
 ];
