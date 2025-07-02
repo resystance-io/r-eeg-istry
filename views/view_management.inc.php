@@ -288,6 +288,10 @@ class VIEW_MANAGEMENT extends VIEW
         {
             $sortkey_arr = explode(';', $_SESSION['dashboard']['sortkey']);
         }
+        elseif($dashboard_sort)
+        {
+            $sortkey_arr = explode(';', $dashboard_sort);
+        }
         else
         {
             $sortkey_arr[0] = null;
