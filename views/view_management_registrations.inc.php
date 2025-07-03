@@ -190,26 +190,27 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                 <tbody>
         ';
 
+        $type_arr = ['individual' => 'Privatperson', 'company' => 'Unternehmen', 'agriculture' => 'Landwirtschaft'];
         $upload_type_arr = ['invoice' => 'Rechnung', 'credit' => 'Gutschrift', 'photo' => 'Foto', 'id' => 'Ausweis', 'other' => 'Andere'];
         $identity_type_arr = ['passport' => 'Reisepass', 'idcard' => 'Personalausweis', 'driverslicense' => 'F&uuml;hrerschein', 'commerceid' => 'Firmenbuchnummer', 'associationid' => 'Vereinsregister'];
         $tax_type_arr = ['y' => 'Ja', 'n' => 'Nein'];
         $meter_status_arr = ['new' => 'Neu', 'onboarding' => 'In Bearbeitung', 'active' => 'Aktiv', 'suspended' => 'Gesperrt', 'deactivated' => 'Deaktiviert', 'refused' => 'Abgelehnt'];
 
+        print "<tr class=\"stategray\"><td class=\"detailheader\">Mitgliedsform</td><td id=\"detail_type\" class=\"detailcontent\">" . $type_arr[$registration['type']] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_type_init('detail_type', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td></tr>";
+
         switch ($registration['type'])
         {
             case 'individual':
-                print "<tr class=\"stategray\"><td class=\"detailheader\">Mitgliedsform</td><td class=\"detailcontent\">Privatperson</td></tr>";
-                print "<tr class=\"stategray\"><td class=\"detailheader\">Titel</td><td class=\"detailcontent\">" . $registration['title'] . "</td></tr>";
+                print "<tr class=\"stategray\"><td class=\"detailheader\">Titel</td><td id=\"detail_title\" class=\"detailcontent\">" . $registration['title'] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_title_init('detail_title', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td></tr>";
                 print "<tr class=\"stategray\"><td class=\"detailheader\">Vorname</td><td id=\"detail_firstname\" class=\"detailcontent\">" . $registration['firstname'] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_init('detail_firstname', 'firstname', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td></tr>";
                 print "<tr class=\"stategray\"><td class=\"detailheader\">Nachname</td><td id=\"detail_lastname\" class=\"detailcontent\">" . $registration['lastname'] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_init('detail_lastname', 'lastname', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td></tr>";
-                print "<tr class=\"stategray\"><td class=\"detailheader\">Postnomen</td><td class=\"detailcontent\">" . $registration['postnomen'] . "</td></tr>";
+                print "<tr class=\"stategray\"><td class=\"detailheader\">Postnomen</td><td id=\"detail_postnomen\" class=\"detailcontent\">" . $registration['postnomen'] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_postnomen_init('detail_postnomen', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td></tr>";
                 print "<tr class=\"stategray\"><td class=\"detailheader\">Geburtsdatum</td><td id=\"detail_birthdate\" class=\"detailcontent\">" . $registration['birthdate'] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_init('detail_birthdate', 'birthdate', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td></tr>";
-                print "<tr class=\"stategray\"><td class=\"detailheader\">Identit&auml;tsbest&auml;tigung via</td><td class=\"detailcontent\">" . $identity_type_arr[$registration['idprovider']] . "</td></tr>";
+                print "<tr class=\"stategray\"><td class=\"detailheader\">Identit&auml;tsbest&auml;tigung via</td><td id=\"detail_idprovider\" class=\"detailcontent\">" . $identity_type_arr[$registration['idprovider']] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_idprovider_init('detail_idprovider', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td></tr>";
                 print "<tr class=\"stategray\"><td class=\"detailheader\">Nummer des Identit&auml;tsdokumentes</td><td id=\"detail_idvalue\" class=\"detailcontent\">" . $registration['idvalue'] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_init('detail_idvalue', 'idvalue', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td></tr>";
                 break;
 
             case 'agriculture':
-                print "<tr class=\"stategray\"><td class=\"detailheader\">Mitgliedsform</td><td class=\"detailcontent\">Landwirtschaft</td></tr>";
                 print "<tr class=\"stategray\"><td class=\"detailheader\">Titel</td><td class=\"detailcontent\">" . $registration['title'] . "</td></tr>";
                 print "<tr class=\"stategray\"><td class=\"detailheader\">Vorname</td><td id=\"detail_firstname\" class=\"detailcontent\">" . $registration['firstname'] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_init('detail_firstname', 'firstname', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td></tr>";
                 print "<tr class=\"stategray\"><td class=\"detailheader\">Nachname</td><td id=\"detail_lastname\" class=\"detailcontent\">" . $registration['lastname'] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_init('detail_lastname', 'lastname', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td></tr>";
@@ -220,7 +221,6 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                 break;
 
             case 'company':
-                print "<tr class=\"stategray\"><td class=\"detailheader\">Mitgliedsform</td><td class=\"detailcontent\">Unternehmen</td></tr>";
                 print "<tr class=\"stategray\"><td class=\"detailheader\">Firmenwortlaut</td><td id=\"detail_company_name\" class=\"detailcontent\">" . $registration['company_name'] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_init('detail_company_name', 'company_name', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td></tr>";
                 print "<tr class=\"stategray\"><td class=\"detailheader\">UID</td><td id=\"detail_uid\" class=\"detailcontent\">" . $registration['uid'] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_init('detail_uid', 'uid', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td></tr>";
                 print "<tr class=\"stategray\"><td class=\"detailheader\">Umsatzsteuerpflichtig</td><td class=\"detailcontent\">" . $tax_type_arr[$registration['salestax']] . "</td></tr>";
@@ -229,8 +229,8 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                 break;
         }
 
-        print "<tr class=\"stategray\"><td class=\"detailheader\">Stra&szlig;e</td><td id=\"detail_street\" class=\"detailcontent\">" . $registration['street'] . ' ' . $registration['number'] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_init('detail_street', 'street', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td></tr>";
-        print "<tr class=\"stategray\"><td class=\"detailheader\">PLZ / Ort</td><td class=\"detailcontent\">" . $registration['zip'] . ' ' . $registration['city'] . "</td></tr>";
+        print "<tr class=\"stategray\"><td class=\"detailheader\">Stra&szlig;e</td><td id=\"detail_street\" class=\"detailcontent\">" . $registration['street'] . ' ' . $registration['number'] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_streetnum_init('detail_street', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td></tr>";
+        print "<tr class=\"stategray\"><td class=\"detailheader\">PLZ / Ort</td><td id=\"detail_zipcity\" class=\"detailcontent\">" . $registration['zip'] . ' ' . $registration['city'] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_zipcity_init('detail_zipcity', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td></tr>";
         print "<tr class=\"stategray\"><td class=\"detailheader\">Telefonnummer</td><td id=\"detail_phone\" class=\"detailcontent\">" . $registration['phone'] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_init('detail_phone', 'phone', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td></tr>";
         print "<tr class=\"stategray\"><td class=\"detailheader\">E-Mail-Adresse</td><td id=\"detail_email\" class=\"detailcontent\">" . $registration['email'] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_init('detail_email', 'email', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td></tr>";
         print "<tr class=\"stategray\"><td class=\"detailheader\">Kundennummer Netzbetreiber</td><td id=\"detail_network_customerid\" class=\"detailcontent\">" . $registration['network_customerid'] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_init('detail_network_customerid', 'network_customerid', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td></tr>";
@@ -255,7 +255,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         print "<table class=\"table\" style=\"width:700px\">";
         print "<tr class=\"stategray\"><td class=\"detailheader\">Kontoinhaber*in:</td><td id=\"detail_banking_name\" class=\"detailcontent\">" . $registration['banking_name'] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_init('detail_banking_name', 'banking_name', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td></tr>";
         print "<tr class=\"stategray\"><td class=\"detailheader\">Aktive IBAN:</td><td class=\"detailcontent\">" . $registration['banking_iban'] . "</td></tr>";
-        print "<tr class=\"stategray\"><td class=\"detailheader\">Name d. Bankinstituts:</td><td class=\"detailcontent\">" . $registration['banking_institute'] . "</td></tr>";
+        print "<tr class=\"stategray\"><td class=\"detailheader\">Name d. Bankinstituts:</td><td id=\"detail_banking_institute\" class=\"detailcontent\">" . $registration['banking_institute'] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_init('detail_banking_institute', 'banking_institute', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td></tr>";
         print "<tr class=\"stategray\"><td class=\"detailheader\">Einzugserm&auml;chtigung erteilt:</td><td class=\"detailcontent\">" . date("d.m.Y H:i:s", $registration['banking_consent']) . "</td></tr>";
         print "<tr class=\"stategray\"><td class=\"detailheader\">Mandatsreferenznummer:</td><td id=\"detail_banking_mandate_reference\" class=\"detailcontent\">" . $registration['banking_mandate_reference'] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_init('detail_banking_mandate_reference', 'banking_mandate_reference', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td></tr>";
         if($registration['banking_debit_type'] != null)     $debit_type_nice = $debit_type[$registration['banking_debit_type']];     else    $debit_type_nice = $debit_type['none'];

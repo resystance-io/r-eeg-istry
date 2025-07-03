@@ -1141,10 +1141,105 @@ class Interactives
 
     }
 
+    public function dashboard_inline_update_zipcity_init($div_id, $recordid)
+    {
+        $dbvaluezip = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'zip', 'id', $recordid);
+        $dbvaluecity = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'city', 'id', $recordid);
+        $input_field = "
+            <div style=\"float:left;margin-top:6px;\">
+                <INPUT type=\"text\" name=\"zip\" id=\"zip\" value=\"$dbvaluezip\" style=\"width:80px;float:left;margin-right:4px;\" class=\"detail\"><INPUT type=\"text\" name=\"city\" id=\"city\" value=\"$dbvaluecity\" style=\"width:200px;float:left\" class=\"detail\">
+            </div>
+            <div style=\"float:right\">
+                <button class=\"search bg-green-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_zipcity_save('$div_id', document.getElementById('zip').value, document.getElementById('city').value, '$recordid');\"><i class=\"fa fa-check\"></i></button>
+                <button class=\"search bg-red-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_zipcity_cancel('$div_id', '$recordid');\"><i class=\"fa fa-ban\"></i></button>
+            </div>
+        ";
+        $response = jaxon()->newResponse();
+        $response->assign($div_id, 'innerHTML', $input_field);
+
+        return $response;
+    }
+
+    public function dashboard_inline_update_zipcity_save($div_id, $dbvaluezip, $dbvaluecity, $recordid)
+    {
+        $current_valuezip = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'zip', 'id', $recordid);
+        $current_valuecity = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'city', 'id', $recordid);
+        $this->view->record_note($recordid, 'event', 'modify', "Aktualisierung PLZ / Stadt:\n<br>$current_valuezip -> $dbvaluezip\n<br>$current_valuecity -> $dbvaluecity");
+        $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'zip', $dbvaluezip, 'id', $recordid);
+        $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'city', $dbvaluecity, 'id', $recordid);
+        $input_field = "$dbvaluezip $dbvaluecity <i onclick=\"JaxonInteractives.dashboard_inline_update_zipcity_init('$div_id', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
+        $response = jaxon()->newResponse();
+        $response->assign($div_id, 'innerHTML', $input_field);
+
+        return $response;
+    }
+
+    public function dashboard_inline_update_zipcity_cancel($div_id, $recordid)
+    {
+        $current_valuezip = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'zip', 'id', $recordid);
+        $current_valuecity = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'city', 'id', $recordid);
+        $input_field = "$current_valuezip $current_valuecity <i onclick=\"JaxonInteractives.dashboard_inline_update_zipcity_init('$div_id', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
+        $response = jaxon()->newResponse();
+        $response->assign($div_id, 'innerHTML', $input_field);
+
+        return $response;
+    }
+
+    public function dashboard_inline_update_streetnum_init($div_id, $recordid)
+    {
+        $dbvaluestreet = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'street', 'id', $recordid);
+        $dbvaluenum = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'number', 'id', $recordid);
+        $input_field = "
+            <div style=\"float:left;margin-top:6px;\">
+                <INPUT type=\"text\" name=\"street\" id=\"street\" value=\"$dbvaluestreet\" style=\"width:180px;float:left;margin-right:4px;\" class=\"detail\"><INPUT type=\"text\" name=\"num\" id=\"num\" value=\"$dbvaluenum\" style=\"width:60px;float:left\" class=\"detail\">
+            </div>
+            <div style=\"float:right\">
+                <button class=\"search bg-green-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_streetnum_save('$div_id', document.getElementById('street').value, document.getElementById('num').value, '$recordid');\"><i class=\"fa fa-check\"></i></button>
+                <button class=\"search bg-red-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_streetnum_cancel('$div_id', '$recordid');\"><i class=\"fa fa-ban\"></i></button>
+            </div>
+        ";
+        $response = jaxon()->newResponse();
+        $response->assign($div_id, 'innerHTML', $input_field);
+
+        return $response;
+    }
+
+    public function dashboard_inline_update_streetnum_save($div_id, $dbvaluestreet, $dbvaluenum, $recordid)
+    {
+        $current_valuestreet = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'street', 'id', $recordid);
+        $current_valuenum = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'number', 'id', $recordid);
+        $this->view->record_note($recordid, 'event', 'modify', "Aktualisierung Stra&szlig; / Nummer:\n<br>$current_valuestreet -> $dbvaluestreet\n<br>$current_valuenum -> $dbvaluenum");
+        $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'street', $dbvaluestreet, 'id', $recordid);
+        $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'number', $dbvaluenum, 'id', $recordid);
+        $input_field = "$dbvaluestreet $dbvaluenum <i onclick=\"JaxonInteractives.dashboard_inline_update_streetnum_init('$div_id', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
+        $response = jaxon()->newResponse();
+        $response->assign($div_id, 'innerHTML', $input_field);
+
+        return $response;
+    }
+
+    public function dashboard_inline_update_streetnum_cancel($div_id, $recordid)
+    {
+        $current_valuestreet = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'street', 'id', $recordid);
+        $current_valuenum = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'number', 'id', $recordid);
+        $input_field = "$current_valuestreet $current_valuenum <i onclick=\"JaxonInteractives.dashboard_inline_update_streetnum_init('$div_id', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
+        $response = jaxon()->newResponse();
+        $response->assign($div_id, 'innerHTML', $input_field);
+
+        return $response;
+    }
     public function dashboard_inline_update_init($div_id, $dbkey, $recordid)
     {
         $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], $dbkey, 'id', $recordid);
-        $input_field = "<INPUT type=\"text\" name=\"$dbkey\" id=\"$dbkey\" value=\"$dbvalue\" style=\"width:200px;float:left\" class=\"detail\"><i onclick=\"var dbkey='$dbkey'; JaxonInteractives.dashboard_inline_update_save('$div_id', '$dbkey', document.getElementById(dbkey).value, '$recordid');\" style=\"margin-top:6px; cursor:pointer\" class=\"fa fa-save fa-pull-right\"></i>";
+        $input_field = "
+            <div style=\"float:left;margin-top:6px;\">
+                <INPUT type=\"text\" name=\"$dbkey\" id=\"$dbkey\" value=\"$dbvalue\" style=\"width:200px;float:left\" class=\"detail\">
+            </div>
+            <div style=\"float:right\">
+                <button class=\"search bg-green-gradient\" onclick=\"var dbkey='$dbkey'; JaxonInteractives.dashboard_inline_update_save('$div_id', '$dbkey', document.getElementById(dbkey).value, '$recordid');\"><i class=\"fa fa-check\"></i></button>
+                <button class=\"search bg-red-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_cancel('$div_id', '$dbkey', '$recordid');\"><i class=\"fa fa-ban\"></i></button>
+            </div>
+        ";
         $response = jaxon()->newResponse();
         $response->assign($div_id, 'innerHTML', $input_field);
 
@@ -1157,6 +1252,16 @@ class Interactives
         $this->view->record_note($recordid, 'event', 'modify', "Aktualisierung $dbkey: $current_value -> $dbvalue");
         $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], $dbkey, $dbvalue, 'id', $recordid);
         $input_field = "$dbvalue <i onclick=\"JaxonInteractives.dashboard_inline_update_init('$div_id', '$dbkey', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
+        $response = jaxon()->newResponse();
+        $response->assign($div_id, 'innerHTML', $input_field);
+
+        return $response;
+    }
+
+    public function dashboard_inline_update_cancel($div_id, $dbkey, $recordid)
+    {
+        $current_value = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], $dbkey, 'id', $recordid);
+        $input_field = "$current_value <i onclick=\"JaxonInteractives.dashboard_inline_update_init('$div_id', '$dbkey', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
         $response = jaxon()->newResponse();
         $response->assign($div_id, 'innerHTML', $input_field);
 
@@ -1200,7 +1305,15 @@ class Interactives
         }
 
 
-        $input_field = "<INPUT type=\"text\" name=\"member_id\" id=\"member_id\" value=\"$dbvalue\" placeholder=\"$highest_memberid\" style=\"width:200px;float:left\" class=\"detail\"><i onclick=\"var dbkey='member_id'; JaxonInteractives.dashboard_inline_update_save('$div_id', 'member_id', document.getElementById(dbkey).value, '$recordid');\" style=\"margin-top:6px; cursor:pointer\" class=\"fa fa-save fa-pull-right\"></i>";
+        $input_field = "
+            <div style=\"float:left\">
+                <INPUT type=\"text\" name=\"member_id\" id=\"member_id\" value=\"$dbvalue\" placeholder=\"$highest_memberid\" style=\"width:200px;float:left\" class=\"detail\">
+            </div>
+            <div style=\"float:right\">
+                <button class=\"search bg-green-gradient\" onclick=\"var dbkey='member_id'; JaxonInteractives.dashboard_inline_update_memberid_save('$div_id', document.getElementById(dbkey).value, '$recordid');\"><i class=\"fa fa-check\"></i></button>
+                <button class=\"search bg-red-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_memberid_cancel('$recordid');\"><i class=\"fa fa-ban\"></i></button>
+            </div>
+        ";
         $response = jaxon()->newResponse();
         $response->assign($div_id, 'innerHTML', $input_field);
 
@@ -1211,10 +1324,21 @@ class Interactives
     {
         $current_value = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'member_id', 'id', $recordid);
         $this->view->record_note($recordid, 'event', 'modify', "Aktualisierung member_id: $current_value -> $dbvalue");
-        $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], $dbkey, $dbvalue, 'id', $recordid);
-        $input_field = "$dbvalue <i onclick=\"JaxonInteractives.dashboard_inline_update_init('$div_id', '$dbkey', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
+        $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'member_id', $dbvalue, 'id', $recordid);
+        $input_field = "$dbvalue <i onclick=\"JaxonInteractives.dashboard_inline_update_memberid_init('detail_member_id', '" . $recordid . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
         $response = jaxon()->newResponse();
         $response->assign($div_id, 'innerHTML', $input_field);
+
+        return $response;
+    }
+
+    public function dashboard_inline_update_memberid_cancel($recordid)
+    {
+        $current_value = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'member_id', 'id', $recordid);
+        if(!$current_value) $current_value = "Noch nicht zugewiesen";
+        $input_field = "$current_value <i onclick=\"JaxonInteractives.dashboard_inline_update_memberid_init('detail_member_id', '" . $recordid . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
+        $response = jaxon()->newResponse();
+        $response->assign('detail_member_id', 'innerHTML', $input_field);
 
         return $response;
     }
@@ -1372,7 +1496,7 @@ class Interactives
     public function dashboard_inline_update_meter_state_init($div_id, $recordid)
     {
         $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_METERS'], 'meter_state', 'id', $recordid);
-        $input_field = "<select name=\"meter_state_$recordid\" id=\"meter_state_$recordid\" class=\"detail\" style=\"width:280px;\">";
+        $input_field = "<select name=\"meter_state_$recordid\" id=\"meter_state_$recordid\" class=\"detail\" style=\"width:280px;text-align:center !important;text-align-last:center !important\">";
 
         $meter_status_arr = ['new' => 'Neu', 'onboarding' => 'In Bearbeitung', 'active' => 'Aktiv', 'suspended' => 'Gesperrt', 'deactivated' => 'Deaktiviert', 'refused' => 'Abgelehnt'];
         if($dbvalue == null)    $dbvalue = 'new';
@@ -1420,7 +1544,7 @@ class Interactives
     public function dashboard_inline_update_debit_type_init($div_id, $recordid)
     {
         $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'banking_debit_type', 'id', $recordid);
-        $input_field = "<div style=\"float:left\">
+        $input_field = "<div style=\"float:left; margin-top:6px;\">
                         <select name=\"debit_type\" id=\"debit_type\" class=\"detail\" style=\"width:280px\">";
 
         if($dbvalue == null || $dbvalue == 'none') $selected = 'selected="selected"'; else $selected = '';
@@ -1482,6 +1606,242 @@ class Interactives
         }
 
         $div_content = $debit_type_nice . "<i onclick=\"JaxonInteractives.dashboard_inline_update_debit_type_init('detail_banking_debit_type', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
+
+        $response = jaxon()->newResponse();
+        $response->assign('modal', 'style.display', 'none');
+        $response->assign($div_id, 'innerHTML', $div_content);
+        return $response;
+    }
+
+    public function dashboard_inline_update_title_init($div_id, $recordid)
+    {
+        $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'title', 'id', $recordid);
+        $input_field = "<div style=\"float:left; margin-top:6px;\">
+                        <select name=\"title\" id=\"title\" class=\"detail\" style=\"width:280px\">";
+
+        if(!$dbvalue)   $selected = 'selected="selected"'; else $selected = '';
+        $input_field .= "<option value=\"\" $selected></option>";
+
+        foreach ($this->config->user['preNameTitles'] as $title)
+        {
+            if ($dbvalue == $title) $selected = 'selected="selected"'; else $selected = '';
+            $input_field .= "<option value=\"$title\" $selected>$title</option>";
+        }
+
+        $input_field .= "            </select>
+                        </div>
+                        
+                        <div style=\"float:right\">
+                            <button class=\"search bg-green-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_title_save(document.getElementById('title').value, '$recordid')\"><i class=\"fa fa-check\"></i></button>
+                            <button class=\"search bg-red-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_title_cancel('detail_title', '$recordid');\"><i class=\"fa fa-ban\"></i></button>
+                        </div>";
+
+        $response = jaxon()->newResponse();
+        $response->assign($div_id, 'innerHTML', $input_field);
+        return $response;
+    }
+
+    public function dashboard_inline_update_title_save($dbvalue, $recordid)
+    {
+        $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'title', $dbvalue, 'id', $recordid);
+
+        $div_content = $dbvalue . "<i onclick=\"JaxonInteractives.dashboard_inline_update_title_init('detail_title', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
+
+        $response = jaxon()->newResponse();
+        $response->assign('modal', 'style.display', 'none');
+        $response->assign('detail_title', 'innerHTML', $div_content);
+        return $response;
+    }
+
+    public function dashboard_inline_update_title_cancel($div_id, $recordid)
+    {
+        $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'title', 'id', $recordid);
+
+        $div_content = $dbvalue . "<i onclick=\"JaxonInteractives.dashboard_inline_update_title_init('detail_title', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
+
+        $response = jaxon()->newResponse();
+        $response->assign('modal', 'style.display', 'none');
+        $response->assign($div_id, 'innerHTML', $div_content);
+        return $response;
+    }
+
+    public function dashboard_inline_update_postnomen_init($div_id, $recordid)
+    {
+        $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'postnomen', 'id', $recordid);
+        $input_field = "<div style=\"float:left; margin-top:6px;\">
+                        <select name=\"postnomen\" id=\"postnomen\" class=\"detail\" style=\"width:280px\">";
+
+        if(!$dbvalue)   $selected = 'selected="selected"'; else $selected = '';
+        $input_field .= "<option value=\"\" $selected></option>";
+
+        foreach ($this->config->user['postNameTitles'] as $postnomen)
+        {
+            if ($dbvalue == $postnomen) $selected = 'selected="selected"'; else $selected = '';
+            $input_field .= "<option value=\"$postnomen\" $selected>$postnomen</option>";
+        }
+
+        $input_field .= "            </select>
+                        </div>
+                        
+                        <div style=\"float:right\">
+                            <button class=\"search bg-green-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_postnomen_save(document.getElementById('postnomen').value, '$recordid')\"><i class=\"fa fa-check\"></i></button>
+                            <button class=\"search bg-red-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_postnomen_cancel('detail_postnomen', '$recordid');\"><i class=\"fa fa-ban\"></i></button>
+                        </div>";
+
+        $response = jaxon()->newResponse();
+        $response->assign($div_id, 'innerHTML', $input_field);
+        return $response;
+    }
+
+    public function dashboard_inline_update_postnomen_save($dbvalue, $recordid)
+    {
+        $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'postnomen', $dbvalue, 'id', $recordid);
+
+        $div_content = $dbvalue . "<i onclick=\"JaxonInteractives.dashboard_inline_update_postnomen_init('detail_postnomen', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
+
+        $response = jaxon()->newResponse();
+        $response->assign('modal', 'style.display', 'none');
+        $response->assign('detail_postnomen', 'innerHTML', $div_content);
+        return $response;
+    }
+
+    public function dashboard_inline_update_postnomen_cancel($div_id, $recordid)
+    {
+        $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'postnomen', 'id', $recordid);
+
+        $div_content = $dbvalue . "<i onclick=\"JaxonInteractives.dashboard_inline_update_postnomen_init('detail_postnomen', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
+
+        $response = jaxon()->newResponse();
+        $response->assign('modal', 'style.display', 'none');
+        $response->assign($div_id, 'innerHTML', $div_content);
+        return $response;
+    }
+
+    public function dashboard_inline_update_idprovider_init($div_id, $recordid)
+    {
+        $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'idprovider', 'id', $recordid);
+        $input_field = "<div style=\"float:left; margin-top:6px;\">
+                        <select name=\"idprovider\" id=\"idprovider\" class=\"detail\" style=\"width:280px\">";
+
+        if(!$dbvalue)   $selected = 'selected="selected"'; else $selected = '';
+        $input_field .= "<option value=\"\" $selected></option>";
+
+        $identity_type_arr = ['passport' => 'Reisepass', 'idcard' => 'Personalausweis', 'driverslicense' => 'F&uuml;hrerschein', 'commerceid' => 'Firmenbuchnummer', 'associationid' => 'Vereinsregister'];
+        foreach ($identity_type_arr as $idprovider => $nice_idprovider)
+        {
+            if ($dbvalue == $idprovider) $selected = 'selected="selected"'; else $selected = '';
+            $input_field .= "<option value=\"$idprovider\" $selected>$nice_idprovider</option>";
+        }
+
+        $input_field .= "            </select>
+                        </div>
+                        
+                        <div style=\"float:right\">
+                            <button class=\"search bg-green-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_idprovider_save(document.getElementById('idprovider').value, '$recordid')\"><i class=\"fa fa-check\"></i></button>
+                            <button class=\"search bg-red-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_idprovider_cancel('detail_idprovider', '$recordid');\"><i class=\"fa fa-ban\"></i></button>
+                        </div>";
+
+        $response = jaxon()->newResponse();
+        $response->assign($div_id, 'innerHTML', $input_field);
+        return $response;
+    }
+
+    public function dashboard_inline_update_idprovider_save($dbvalue, $recordid)
+    {
+        $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'idprovider', $dbvalue, 'id', $recordid);
+        $identity_type_arr = ['passport' => 'Reisepass', 'idcard' => 'Personalausweis', 'driverslicense' => 'F&uuml;hrerschein', 'commerceid' => 'Firmenbuchnummer', 'associationid' => 'Vereinsregister'];
+
+        $div_content = $identity_type_arr[$dbvalue] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_idprovider_init('detail_idprovider', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
+
+        $response = jaxon()->newResponse();
+        $response->assign('modal', 'style.display', 'none');
+        $response->assign('detail_idprovider', 'innerHTML', $div_content);
+        return $response;
+    }
+
+    public function dashboard_inline_update_idprovider_cancel($div_id, $recordid)
+    {
+        $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'idprovider', 'id', $recordid);
+        $identity_type_arr = ['passport' => 'Reisepass', 'idcard' => 'Personalausweis', 'driverslicense' => 'F&uuml;hrerschein', 'commerceid' => 'Firmenbuchnummer', 'associationid' => 'Vereinsregister'];
+
+        $div_content = $identity_type_arr[$dbvalue] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_idprovider_init('detail_idprovider', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
+
+        $response = jaxon()->newResponse();
+        $response->assign('modal', 'style.display', 'none');
+        $response->assign($div_id, 'innerHTML', $div_content);
+        return $response;
+    }
+
+    public function dashboard_inline_update_type_init($div_id, $recordid)
+    {
+        $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'type', 'id', $recordid);
+        $input_field = "<div style=\"float:left; margin-top:6px;\">
+                        <select name=\"type\" id=\"type\" class=\"detail\" style=\"width:280px\">";
+
+        $type_arr = ['individual' => 'Privatperson', 'company' => 'Unternehmen', 'agriculture' => 'Landwirtschaft'];
+        foreach ($type_arr as $type => $nice_type)
+        {
+            if ($dbvalue == $type) $selected = 'selected="selected"'; else $selected = '';
+            $input_field .= "<option value=\"$type\" $selected>$nice_type</option>";
+        }
+
+        $input_field .= "            </select>
+                        </div>
+                        
+                        <div style=\"float:right\">
+                            <button class=\"search bg-green-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_type_save(document.getElementById('type').value, '$recordid')\"><i class=\"fa fa-check\"></i></button>
+                            <button class=\"search bg-red-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_type_cancel('detail_type', '$recordid');\"><i class=\"fa fa-ban\"></i></button>
+                        </div>";
+
+        $response = jaxon()->newResponse();
+        $response->assign($div_id, 'innerHTML', $input_field);
+        return $response;
+    }
+
+    public function dashboard_inline_update_type_save($dbvalue, $recordid, $confirm=false)
+    {
+        $response = jaxon()->newResponse();
+        $current_dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'type', 'id', $recordid);
+        $type_arr = ['individual' => 'Privatperson', 'company' => 'Unternehmen', 'agriculture' => 'Landwirtschaft'];
+
+        if($current_dbvalue == $dbvalue)
+        {
+            $div_content = $type_arr[$current_dbvalue] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_type_init('detail_type', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
+            $response->assign('detail_type', 'innerHTML', $div_content);
+        }
+        else
+        {
+            if(!$confirm)
+            {
+                $footer_actions = "
+                            <button class=\"search bg-green-gradient\" style=\"border: white 1px solid\" onclick=\"JaxonInteractives.dashboard_inline_update_type_save('$dbvalue', '$recordid', true);\"><i class=\"fa fa-check-circle\"></i></button>
+                            <button class=\"search bg-red-gradient\" style=\"border: white 1px solid\" onclick=\"JaxonInteractives.dashboard_inline_update_type_cancel('detail_type', '$recordid');\"><i class=\"fa fa-ban\"></i></button>
+                        ";
+
+                $response->assign('modalheadline', 'innerHTML', "&nbsp;Achtung!");
+                $response->assign('modalbody', 'innerHTML',
+                    "Die Mitgliedsformen unterscheiden sich zum Teil in den bereitgestellten Informationen.<br />" .
+                    "Eine &Auml;nderung der Mitgliedsform entfernt daher m&ouml;glicherweise bereits gespeicherte<br />
+                     Informationen dieses Mitglieds.<br />&nbsp;<br>Soll diese &Auml;nderung wirklich vorgenommen werden?");
+                $response->assign('modalfooter', 'innerHTML', $footer_actions);
+                $response->assign('modal', 'style.display', 'inline');
+            }
+            else
+            {
+                $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'type', $dbvalue, 'id', $recordid);
+                $response->script("self.location.href='/?manage_registrations&registration=$recordid';");
+            }
+        }
+
+        return $response;
+    }
+
+    public function dashboard_inline_update_type_cancel($div_id, $recordid)
+    {
+        $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'type', 'id', $recordid);
+        $type_arr = ['individual' => 'Privatperson', 'company' => 'Unternehmen', 'agriculture' => 'Landwirtschaft'];
+
+        $div_content = $type_arr[$dbvalue] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_type_init('detail_type', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
 
         $response = jaxon()->newResponse();
         $response->assign('modal', 'style.display', 'none');
