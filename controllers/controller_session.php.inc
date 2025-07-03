@@ -33,7 +33,10 @@ class CONTROLLER_SESSION
         // STEP 1 - check if there is session association data in our cookie store
 
         // first, we start a new session:
-        session_start();
+        if(session_status() == PHP_SESSION_NONE)
+        {
+            session_start();
+        }
 
         // then we get the session id for later storage and session handling:
         $this->session_key = session_id();
