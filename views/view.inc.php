@@ -30,8 +30,9 @@ class VIEW
 
         // preconfigure the mail user agent interface class
         require_once('controllers/controller_mua.inc.php');
-        class_alias("codeworxtech\PHPMailerPro\PHPMailerPro", "PHPMailerPro");
-        $this->mail = $this->object_broker->instance['email'] = new PHPMailerPro();
+        //class_alias("codeworxtech\PHPMailerPro\PHPMailerPro", "PHPMailerPro");
+
+        $this->mail = $this->object_broker->instance['email'] = new codeworxtech\PhpMailerPro\PHPMailerPro();
 
         $this->mail->SetSender($this->config->user['MAIL_FROM']);
         $this->mail->smtpHost     = $this->config->user['MAIL_MTA_ADDRESS'];
