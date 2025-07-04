@@ -6,6 +6,7 @@ class VIEW
     public $db;
     public $session;
     public $mail;
+    public $xlsx;
 
     public function __construct()
     {
@@ -41,6 +42,9 @@ class VIEW
         $this->mail->smtpUsername = $this->config->user['MAIL_MTA_USER'];
         $this->mail->smtpPassword = $this->config->user['MAIL_MTA_PASS'];
         $this->mail->smtpOptions = $this->config->user['MAIL_OPTIONS'];
+
+        require_once('controllers/controller_xlsx.inc.php');
+        $xlsx = new Shuchkin\SimpleXLSXGen;
     }
 
     public function view_handle_backend_login()
@@ -68,7 +72,9 @@ class VIEW
         }
 
         print "<div style=\"text-align: center\">";
+        print "<br />&nbsp;<br />";
         print "<h2>R:EEG:ISTRY</h2>";
+        print "<hr>";
         print "<div class=\"form-control\" style=\"width: 300px; margin-left: auto; margin-right: auto\">";
         print 'Benutzername:<br><input type="text" onfocus="this.select()" name="auth_username" id="auth_username" value="' . $username_prefill . '" onfocusout="JaxonInteractives.update_backend_credential_cache(' . "'auth_username'" . ', document.getElementById(' . "'auth_username'" . ').value);" />';
         print '<br />';

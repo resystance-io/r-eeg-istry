@@ -46,17 +46,6 @@ class VIEW_MANAGEMENT extends VIEW
 
         print '<div class="table-container" style="height:46px;vertical-align:top">';
 
-        print '<table class="navigation" style="float:right;width:160px;height:48px;">
-                <thead>
-                  <tr class="navigation">
-                    <th onclick="self.location.href=\'?manage_users\'"><li class="fa fa-users"></li></th>
-                    <th onClick="self.location.href=\'?manage_dashboards\'"><li class="fa fa-table"></li></th>
-                    <th onClick="JaxonInteractives.deauthenticate();"><li class="fa fa-door-open"></li></th>
-                  </tr>
-               </thead>
-             </table>
-        ';
-
         print '<table class="navigation" style="float:left; height:48px;">
                 <thead>
                   <tr class="navigation">';
@@ -93,7 +82,6 @@ class VIEW_MANAGEMENT extends VIEW
         ';
 
         print '<div style="width:20px; height:1px; float:left">&nbsp;</div>';
-        print '<div style="width:20px; height:1px; float:right">&nbsp;</div>';
 
         print '<table class="navigation" style="float:right; width:600px; height:46px;">
                 <thead>

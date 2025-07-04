@@ -70,7 +70,32 @@
 
         </head>
 
-        <body class="is-preload" style="min-height: 100vh; display: flex; flex-direction: column;padding-bottom: 0px; padding-left: 0px; padding-right: 0px">
+        <body class="is-preload" style="min-height: 100vh; display:flex; flex-direction:column; padding-bottom:0px; padding-left:0px; padding-right:0px;">
+            <div style="background-color: #151515; color:white; padding:0px; width:100%; height:46px; vertical-align:middle; text-align:right; position:absolute; top:0px;">
+
+                <div style="float:left; font-family:Helvetica; font-size:10pt; font-weight:bold; color:white; padding:7px; padding-left:14px;">R:EEG:ISTRY</div>
+
+                <?php
+                    if(isset($_SESSION['backend_authenticated']) && $_SESSION['backend_authenticated'] != '')
+                    {
+                ?>
+                <div style="cursor:pointer; float:right;font-size:10pt;border:1px solid #444;width:50px;height:42px;text-align:center;padding-top:5px;margin:2px" onclick="JaxonInteractives.deauthenticate();">
+                    <li class="fa fa-door-open"></li>
+                </div>
+
+                <div style="cursor:pointer; float:right;font-size:10pt;border:1px solid #444;width:50px;height:42px;text-align:center;padding-top:5px;margin:2px" onclick="self.location.href='?manage_users'">
+                    <li class="fa fa-users"></li>
+                </div>
+
+                <div style="cursor:pointer; float:right;font-size:10pt;border:1px solid #444;width:50px;height:42px;text-align:center;padding-top:5px;margin:2px" onclick="self.location.href='?manage_dashboards'">
+                    <li class="fa fa-table"></li>
+                </div>
+                <?php
+                    }
+                ?>
+
+            </div>
+
             <div style="flex: 1; padding-left: 60px; padding-right: 60px;">
 
         <?php
@@ -256,17 +281,17 @@
                 if(count($account_details) > 0)
                 {
                     $account_details = $account_details[0];
-                    $pi_menu = "Angemeldet als: " . $account_details['firstname'] . " " . $account_details['lastname'] . " (" . $account_details['username'] . ") &nbsp; <A href=\"/?logout\"><i class=\"fa fa-door-open\"></i></A>";
+                    $pi_menu = "Angemeldet als: " . $account_details['firstname'] . " " . $account_details['lastname'] . " (" . $account_details['username'] . ") &nbsp;";
                 }
             }
             else
             {
-                $pi_menu = "<a href=\"/?manage\">&#960;&nbsp;</a>";
+                $pi_menu = "<a style=\"color:white\" href=\"/?manage\">&#960;&nbsp;</a>";
             }
         ?>
 
-            <div class="" style="background-color: #151515; color: white; padding: 6px; width:100%; height: 38px; vertical-align: middle; text-align: right;">
-                <div style="float:left;font-family:Helvetica;font-size:10pt;color:dimgrey">R:EEG:ISTRY commit #c7da35fd</div><div style="float:right;font-family:Helvetica;font-size:10pt;color:dimgrey"><?php print $pi_menu; ?>&nbsp;&nbsp;</div>
+            <div style="background-color: #151515; color: white; padding: 5px; width:100%; height: 46px; vertical-align: middle; text-align: right;">
+                <div style="float:left;font-family:Helvetica;font-size:10pt;color:dimgrey;padding-left:6px;"></div><div style="float:right;font-family:Helvetica;font-size:10pt;color:dimgrey;padding-right:4px;"><?php print $pi_menu; ?>&nbsp;&nbsp;</div>
             </div>
 
             <!-- Scripts -->
