@@ -29,7 +29,7 @@ class VIEW_JOIN_BASE extends VIEW
             <br />
             <div id="container-' . $id . '">' . $caption . '<br>
                 <div class="input-box" style="width:240px;">
-                    <input type="text" name="' . $id . '_' . $meter_key . '" id="' . $id . '_' . $meter_key . '" placeholder="' . $prefill . '" value="' . $prefill . '" maxlength="4" style="width:85px;text-align:center" onfocus="this.select()" onfocusout="JaxonInteractives.update_meter_detail(' . "'" . $meter_key . "'" . ', ' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . '_' . $meter_key . "'" . ').value);" />
+                    <input type="text" name="' . $id . '_' . $meter_key . '" id="' . $id . '_' . $meter_key . '" placeholder="' . $prefill . '" value="' . $prefill . '" maxlength="5" style="width:85px;text-align:center" onfocus="this.select()" onfocusout="JaxonInteractives.update_meter_detail(' . "'" . $meter_key . "'" . ', ' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . '_' . $meter_key . "'" . ').value);" />
                     <span class="prefix">' . $unit . '&nbsp;&nbsp;&nbsp;</span>
         ';
 
