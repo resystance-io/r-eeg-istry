@@ -40,3 +40,9 @@ $database_migrations[6] = [
     "INSERT INTO `dashboard_columns` (`id`, `name`, `nicename`, `compute`, `source`, `searchable`, `filterable`, `sortable`, `visible`) VALUES (NULL, 'meter_state', 'Z&auml;hlerstatus', 'meter_state', 'meters', 'y', 'y', 'y', 'y');",
     "UPDATE `temporary` SET `value1` = '6' WHERE `feature` = 'database_version';"
 ];
+
+$database_migrations[7] = [
+    "ALTER TABLE `registrations` DROP `delivery_date`;",
+    "UPDATE `temporary` SET `value1` = '7' WHERE `feature` = 'database_version';"
+];
+

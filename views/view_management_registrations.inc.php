@@ -109,19 +109,6 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         }
         print "</tr>";
 
-
-        print "<tr class=\"stategray\"><td class=\"detailheader\">Beginn der Belieferung:</td>";
-        {
-            if ($registration['delivery_date'] != null)
-            {
-                print "<td class=\"detailheader\">" . date("d.m.Y", $registration['delivery_date']) . "</td>";
-            } else
-            {
-                print "<td class=\"detailcontent\">Noch ausstehend</td>";
-            }
-        }
-        print "</tr>";
-
         print "<tr class=\"stategray\"><td class=\"detailheader\">Letzte &Auml;nderung:</td>";
         print "<td>&nbsp;</td>";
         print "</tr>";
