@@ -618,13 +618,13 @@ sorger!)<br />';
 
                 if ($meter_object['type'] == "suppliers")
                 {
-                    $this->view_render_meter_detail_explained_inputfield($meter_key, "Maximale Leistung", 'power', 'decimal', null, 10, "&nbsp;&nbsp;&nbsp;&nbsp;kWp");
+                    $this->view_render_meter_detail_explained_inputfield($meter_key, "Maximale Leistung", 'power', 'decimal', null, 0, "&nbsp;&nbsp;&nbsp;&nbsp;kWp");
 
                     $this->view_render_meter_detail_explained_inputfield($meter_key, "Erlaubte Netzzugangsleistung", 'feedlimit', 'decimal', null, 0, "&nbsp;&nbsp;&nbsp;&nbsp;kVA");
                 }
                 else
                 {
-                    $this->view_render_meter_detail_explained_inputfield($meter_key, "Jahresstromverbrauch", 'estimated_consumption', 'decimal', null, 0, "&nbsp;&nbsp;&nbsp;&nbsp;kW");
+                    $this->view_render_meter_detail_explained_inputfield($meter_key, "Jahresstromverbrauch", 'estimated_consumption', 'decimal', null, 0, "&nbsp;&nbsp;&nbsp;&nbsp;kWh");
                 }
 
                 print "</div>";
