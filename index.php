@@ -211,6 +211,15 @@
                         $view_manage = new VIEW_MANAGEMENT();
                         $view_manage->view_render_registrations();
                     }
+                } elseif (isset($_REQUEST['manage_select']))
+                {
+                    // management
+                    if ($view->view_handle_backend_login() === true)
+                    {
+                        include_once('views/view_management.inc.php');
+                        $view_manage = new VIEW_MANAGEMENT();
+                        $view_manage->view_render_registrations(true);
+                    }
                 } elseif (isset($_REQUEST['manage_users']))
                 {
                     // management

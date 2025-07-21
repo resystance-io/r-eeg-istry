@@ -3,7 +3,7 @@
 include_once('view.inc.php');
 class VIEW_MANAGEMENT extends VIEW
 {
-    function view_render_registrations()
+    function view_render_registrations($selectable_list = false)
     {
         if(isset($_REQUEST['sortkey']))
         {
@@ -35,6 +35,10 @@ class VIEW_MANAGEMENT extends VIEW
             {
                 navigator.clipboard.writeText(window.backend_linebuffer[lineID]);
                 document.getElementById("headcol-" + lineID).className = "fa fa-check";
+            }
+            function invert_checkbox(id)
+            {
+                document.getElementById(id).checked = !document.getElementById(id).checked;
             }
         </script>
 
@@ -437,7 +441,16 @@ class VIEW_MANAGEMENT extends VIEW
             }
 
             print '<tr class="' . $class . '" onclick="self.location.href=\'/?manage_registrations&registration=' . $registration['id'] . '\'">';
-            print '<td onMouseOver="document.getElementById(\'headcol-' . $line_id . '\').className = \'fa fa-clipboard\';" onMouseOut="document.getElementById(\'headcol-' . $line_id . '\').className = \'fa ' . $icon . '\';" onClick="copy_to_clipboard(' . $line_id . '); event.stopPropagation();"><i id="headcol-' . $line_id . '" class="fa ' . $icon . '"></td>';
+
+            if($selectable_list === true)
+            {
+                print '<td style="vertical-align:middle" onClick="event.stopPropagation(); invert_checkbox(\''. $registration['meter_uuid'] .'\');"><input id="' . $registration['meter_uuid'] . '" onClick="event.stopPropagation();" class="listselector" type="checkbox" checked="checked"></td>';
+            }
+            else
+            {
+                print '<td onMouseOver="document.getElementById(\'headcol-' . $line_id . '\').className = \'fa fa-clipboard\';" onMouseOut="document.getElementById(\'headcol-' . $line_id . '\').className = \'fa ' . $icon . '\';" onClick="copy_to_clipboard(' . $line_id . '); event.stopPropagation();"><i id="headcol-' . $line_id . '" class="fa ' . $icon . '"></td>';
+            }
+
             $csv_buffer = '';
             foreach($columns as $rowindex => $column)
             {
@@ -477,7 +490,7 @@ class VIEW_MANAGEMENT extends VIEW
 
         print '
                 <div class="dataTables_pagesize">
-                    <select onchange="JaxonInteractives.dashboard_select_page_size(this.value)">
+                    <select style="margin-top:4px" onchange="JaxonInteractives.dashboard_select_page_size(this.value)">
         ';
 
         if($page_size == 5) $selected = "selected=\"selected\""; else $selected = "";
@@ -499,6 +512,15 @@ class VIEW_MANAGEMENT extends VIEW
                     </select><div style="margin-top:1px;">Ergebnisse / Seite</div>
                 </div>
         ';
+
+        if($search_root == 'meters')
+        {
+            print '
+                    <div class="dataTables_featurebutton" onClick="self.location.href=\'?manage_select\';">
+                        <i class="fa fa-check-square"></i>
+                    </div>
+            ';
+        }
 
         if($registrations_count > $page_size)
         {
