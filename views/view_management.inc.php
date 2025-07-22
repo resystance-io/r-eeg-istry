@@ -490,26 +490,26 @@ class VIEW_MANAGEMENT extends VIEW
 
         print '
                 <div class="dataTables_pagesize">
-                    <select style="margin-top:4px" onchange="JaxonInteractives.dashboard_select_page_size(this.value)">
+                    <select onchange="JaxonInteractives.dashboard_select_page_size(this.value)">
         ';
 
         if($page_size == 5) $selected = "selected=\"selected\""; else $selected = "";
-        print "         <option value=\"5\" $selected>5</option>";
+        print "         <option value=\"5\" $selected>5 Ergebnisse / Seite</option>";
         if($page_size == 10) $selected = "selected=\"selected\""; else $selected = "";
-        print "         <option value=\"10\" $selected>10</option>";
+        print "         <option value=\"10\" $selected>10 Ergebnisse / Seite</option>";
         if($page_size == 20) $selected = "selected=\"selected\""; else $selected = "";
-        print "         <option value=\"20\" $selected>20</option>";
+        print "         <option value=\"20\" $selected>20 Ergebnisse / Seite</option>";
         if($page_size == 30) $selected = "selected=\"selected\""; else $selected = "";
-        print "         <option value=\"30\" $selected>30</option>";
+        print "         <option value=\"30\" $selected>30 Ergebnisse / Seite</option>";
         if($page_size == 40) $selected = "selected=\"selected\""; else $selected = "";
-        print "         <option value=\"40\" $selected>40</option>";
+        print "         <option value=\"40\" $selected>40 Ergebnisse / Seite</option>";
         if($page_size == 50) $selected = "selected=\"selected\""; else $selected = "";
-        print "         <option value=\"50\" $selected>50</option>";
+        print "         <option value=\"50\" $selected>50 Ergebnisse / Seite</option>";
         if($page_size == 100) $selected = "selected=\"selected\""; else $selected = "";
-        print "         <option value=\"100\" $selected>100</option>";
+        print "         <option value=\"100\" $selected>100 Ergebnisse / Seite</option>";
 
         print '
-                    </select><div style="margin-top:1px;">Ergebnisse / Seite</div>
+                    </select>
                 </div>
         ';
 
@@ -517,7 +517,7 @@ class VIEW_MANAGEMENT extends VIEW
         {
             print '
                     <div class="dataTables_featurebutton" onClick="self.location.href=\'?manage_select\';">
-                        <i class="fa fa-check-square"></i>
+                        <i style="margin-top:0px;top:0px;height:0px;" class="fa fa-check-square"></i>
                     </div>
             ';
         }
@@ -545,6 +545,10 @@ class VIEW_MANAGEMENT extends VIEW
                                     $page_selector
                                 </li>
                     ";
+                }
+                if($page_selector % 15 == 0 && $page_selector != 0)
+                {
+                    print '<br>';
                 }
             }
 
