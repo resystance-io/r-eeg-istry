@@ -56,6 +56,7 @@ class SimpleXLSXGen
     const N_EURO = 166;
     const N_DATETIME = 22; // m/d/yy h:mm
     const N_CUSTOM = 197;
+    const N_TEXT   = 49;   // @ (Text)
     const F_NORMAL = 0;
     const F_HYPERLINK = 1;
     const F_BOLD = 2;
@@ -146,8 +147,23 @@ class SimpleXLSXGen
             [self::N_NORMAL, self::A_DEFAULT, self::F_NORMAL, self::FL_NONE, 0, 0, '', 0],
             [self::N_NORMAL, self::A_DEFAULT, self::F_NORMAL, self::FL_GRAY_125, 0, 0, '', 0], // hack
         ];
-        $this->XF_KEYS[implode('-', $this->XF[0])] = 0; // & keys
+        $this->XF_KEYS[implode('-', $this->XF[0])] = 0;
         $this->XF_KEYS[implode('-', $this->XF[1])] = 1;
+
+        // add a “Text” style entry up front
+        $textStyleIndex = count($this->XF);
+        $this->XF[] = [
+                self::N_TEXT,      // force Text
+                self::A_DEFAULT,   // default alignment
+                self::F_NORMAL,    // default font
+                self::FL_NONE,     // no fill
+                0,                 // font color
+                0,                 // bg color
+                '',                // no border
+                0                  // font size
+            ];
+        $this->XF_KEYS[ implode('-', $this->XF[$textStyleIndex]) ] = $textStyleIndex;
+
         $this->template = [
             '_rels/.rels' => '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'."\r\n"
                 .'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'."\r\n"
@@ -192,7 +208,7 @@ class SimpleXLSXGen
                 ."\r\n{NUMFMTS}\r\n{FONTS}\r\n{FILLS}\r\n{BORDERS}\r\n"
                 .'<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" /></cellStyleXfs>'
                 ."\r\n{XF}\r\n"
-                .'<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>',
+                .'<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0" /></cellStyles></styleSheet>',
             'xl/workbook.xml' => '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'."\r\n"
                 .'<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'."\r\n"
                 .'<fileVersion appName="{APP}"/><sheets>{SHEETS}</sheets></workbook>',
@@ -207,6 +223,7 @@ class SimpleXLSXGen
 <Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'
                 ."\r\n{TYPES}</Types>",
         ];
+
     }
     public static function create($title = null)
     {
@@ -717,7 +734,7 @@ class SimpleXLSXGen
                     }
                     $cname = self::coord2cell($CUR_COL-1) . $CUR_ROW;
                     if ($v === null || $v === '') {
-                        $row .= '<c r="' . $cname . '"/>';
+                        $row .= '<c s="0" r="' . $cname . '"/>';
                         continue;
                     }
                     $ct = $cv = $cf = null;
@@ -928,9 +945,9 @@ class SimpleXLSXGen
                     } else {
                         continue;
                     }
-                    if ($NF) {
-                        $N = $NF;
-                    }
+
+                    $N = self::N_TEXT;
+
                     $COL[$CUR_COL] = max($vl, $COL[$CUR_COL]);
                     $cs = 0;
                     if (($N + $A + $F + $FL + $FS > 0) || $BR !== '') {

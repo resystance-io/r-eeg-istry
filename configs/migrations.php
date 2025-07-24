@@ -46,3 +46,11 @@ $database_migrations[7] = [
     "UPDATE `temporary` SET `value1` = '7' WHERE `feature` = 'database_version';"
 ];
 
+$database_migrations[8] = [
+    "ALTER TABLE `tenants` ADD `network_id` VARCHAR(16)  NULL  DEFAULT NULL  AFTER `meter_prefix_short`;",
+    "ALTER TABLE `tenants` ADD `community_identifier` VARCHAR(64)  NULL  DEFAULT NULL  AFTER `meter_prefix_short`;",
+    "ALTER TABLE `tenants` ADD `community_scope` ENUM('local','regional','national')  NULL  DEFAULT NULL  AFTER `community_identifier`;",
+    "UPDATE `temporary` SET `value1` = '8' WHERE `feature` = 'database_version';"
+];
+
+

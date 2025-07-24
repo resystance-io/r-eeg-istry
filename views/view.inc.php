@@ -76,12 +76,39 @@ class VIEW
         print "<h2>R:EEG:ISTRY</h2>";
         print "<hr>";
         print "<div class=\"form-control\" style=\"width: 300px; margin-left: auto; margin-right: auto\">";
-        print 'Benutzername:<br><input type="text" onfocus="this.select()" name="auth_username" id="auth_username" value="' . $username_prefill . '" onfocusout="JaxonInteractives.update_backend_credential_cache(' . "'auth_username'" . ', document.getElementById(' . "'auth_username'" . ').value);" />';
+        print 'Benutzername:<br><input type="text" onfocus="this.select()" name="auth_username" id="auth_username" value="' . $username_prefill . '" />';
         print '<br />';
-        print 'Passwort:<br><input type="password" onfocus="this.select()" name="auth_password" id="auth_password" value="" onfocusout="JaxonInteractives.update_backend_credential_cache(' . "'auth_password'" . ', document.getElementById(' . "'auth_password'" . ').value);" />';
+        print 'Passwort:<br><input type="password" onfocus="this.select()" name="auth_password" id="auth_password" value="" />';
         print "</div><br />";
-        print '<button type="button" class="thinbtn" id="btn_authenticate" onClick="JaxonInteractives.backend_authenticate();"><i class="fa fa-bolt"></i></button>';
+        print '<button type="button" class="thinbtn" id="btn_authenticate" onClick="authenticate();"><i class="fa fa-bolt"></i></button>';
         print "</div>";
+
+        print ' 
+        <script>
+            input = document.getElementById("auth_password");
+                input.addEventListener("keydown", function(event) {
+                    if (event.key === "Enter") {
+                        authenticate();
+                }
+            });
+                
+            input = document.getElementById("auth_username");
+                input.addEventListener("keydown", function(event) {
+                    if (event.key === "Enter") {
+                        authenticate();
+                }
+            });
+                
+            async function authenticate()
+            {
+                await JaxonInteractives.update_backend_credential_cache(' . "'auth_username'" . ', document.getElementById(' . "'auth_username'" . ').value);
+                await JaxonInteractives.update_backend_credential_cache(' . "'auth_password'" . ', document.getElementById(' . "'auth_password'" . ').value);
+                JaxonInteractives.backend_authenticate();                
+            }
+        </script>
+        ';
+
+        return false;
 
     }
 

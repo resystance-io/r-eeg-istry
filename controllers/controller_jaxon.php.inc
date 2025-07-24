@@ -85,10 +85,10 @@ class Interactives
         // the management user wants to log on -
         // check if username address and password match and authenticate the session on success
 
-        $username = $_SESSION['auth_backend_username'];
-        $password = $_SESSION['auth_backend_password'];
+        $username = $_SESSION['auth_backend_username'] ?? null;
+        $password = $_SESSION['auth_backend_password'] ?? null;
 
-        if(isset($_SESSION['auth_backend_username'])) unset($_SESSION['auth_backend_password']);
+        if(isset($_SESSION['auth_backend_username']))   unset($_SESSION['auth_backend_password']);
 
         $hashed_mnemonic_provided = hash('sha256', $password);
 
@@ -135,7 +135,6 @@ class Interactives
             $response->alert("Bitte überprüfe die angegebenen Anmeldedaten (ANF)");
             return $response;
         }
-
     }
 
     public function add_meter($meter_type, $prefill)
@@ -2339,17 +2338,30 @@ class Interactives
             $registrations = $this->db->get_rows($this->config->user['DBTABLE_METERS'], $inner_joins, $filter_array);
             $registration = $registrations[0];
 
+            $tenants_data = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_TENANTS'], 'id', $registration['tenant'], 1);
+            $tenant = $tenants_data[0];
+
             if($registration['meter_type'] == 'consumer') $flow_direction = 'CONSUMPTION';  else $flow_direction = 'GENERATION';
-            if($registration['type'] == 'individual')   $business_role = 'privat';  else $business_role = 'business';
+            if($registration['type'] == 'individual' || $registration['type'] == 'agriculture')   $business_role = 'privat';  else $business_role = 'business';
             if($registration['company_name'])   $name_1 = $registration['company_name'];  else $name_1 = $registration['firstname'];
             if($registration['company_name'])   $name_2 = '';  else $name_2 = $registration['lastname'];
+            $community_scope_arr = ['local' => 'LOKAL', 'regional' => 'REGIONAL', 'national' => 'ÜBERREGIONAL'];
 
-            $meters[] = ['<style color="#FF0000">$netzbetreiber</style>','<style color="#FF0000">$gemeinschafts-id</style>','<style color="#FF0000">$ortsgebiet</style>',$registration['meter_addr_zip'],$registration['meter_addr_city'],$registration['meter_addr_street'],$registration['meter_addr_number'],'','','','',str_replace(' ', '', $registration['meter_id']), $flow_direction, $registration['network_inventoryid'], '', 'POOLED', 'SONNE', 'DYNAMIC', $registration['meter_participation'], $registration['title'], $name_1, $name_2, $registration['postnomen'], $business_role, date('d.m.Y', $registration['migration_date']), $registration['banking_iban'], $registration['banking_name'], $registration['banking_institute'], $registration['email'], $registration['phone'], '', $registration['uid'], $registration['member_id'], '', date('d.m.Y', $registration['registration_date']), '<style color="#FF0000">$meter_codes</style>'];
+            $meters[] = [$tenant['network_id'],$tenant['community_identifier'],$community_scope_arr[$tenant['community_scope']],$registration['meter_addr_zip'],$registration['meter_addr_city'],$registration['meter_addr_street'],$registration['meter_addr_number'],'','','','',str_replace(' ', '', $registration['meter_id']), $flow_direction, $registration['meter_fqoid'], '', 'POOLED', 'SONNE', 'DYNAMIC', $registration['meter_participation'], $registration['title'], $name_1, $name_2, $registration['postnomen'], $business_role, date('d.m.Y', $registration['migration_date']), $registration['banking_iban'], $registration['banking_name'], $registration['banking_institute'], $registration['email'], $registration['phone'], '', $registration['uid'], $registration['member_id'], 'NEW', date('d.m.Y', $registration['registration_date']), '1-1:1.9.0 G.01,1-1:2.9.0 G.02,1-1:2.9.0 G.03'];
         }
 
+        $account_details = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARD_USERS'], 'id', $_SESSION['backend_authenticated'], 1);
+        if(count($account_details) > 0)
+        {
+            $account_details = $account_details[0];
+        }
 
         $this->xlsx = Shuchkin\SimpleXLSXGen::fromArray( $meters );
 
+        $this->xlsx->setLanguage('de_DE');
+        $this->xlsx->setAuthor($account_details['firstname'] . ' ' . $account_details['lastname']);
+        $this->xlsx->setTitle('R-EEG-ISTRY Meter Export');
+        $this->xlsx->setSubject('formatted for EEGfaktura imports');
         $export_filename = $this->generate_uuid4();
         $this->xlsx->saveAs('download/' . $export_filename); // or downloadAs('books.xlsx') or $xlsx_content = (string) $xlsx
 
