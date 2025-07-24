@@ -282,15 +282,14 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
 
         print '
                 <div class="dataTables_pagesize" style="float:left">
-                    <div style="margin-top:1px;padding-left:8px;float:left">Farbschema: </div>
                     <select onchange="JaxonInteractives.dashboard_set_colorconfig(this.value, ' . "'" . $_REQUEST['dashboard_id'] . "'" . ');"">
         ';
 
         if($dashboard_colorconfig == 'y') $selected = "selected=\"selected\""; else $selected = "";
-        print "         <option value=\"y\" $selected>Monokai</option>";
+        print "         <option value=\"y\" $selected>Farbschema: Monokai</option>";
 
         if($dashboard_colorconfig == 'n') $selected = "selected=\"selected\""; else $selected = "";
-        print "         <option value=\"n\" $selected>Gray</option>";
+        print "         <option value=\"n\" $selected>Farbschema: Gray</option>";
 
         print '
                     </select>
@@ -444,7 +443,7 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
                 break;
 
             case 'meter_state':
-                print '<select class="filter" id="filter-' . $column_name . '" name="filter-' . $column_name . '" onchange="JaxonInteractives.dashboard_set_filter(' . "'" . $column_name . "'" . ', document.getElementById(' . "'filter-" . $column_name . "'" . ').value);">';
+                print '<select class="filter" id="filter-' . $column_name . '" name="filter-' . $column_name . '" onchange="JaxonInteractives.dashboard_set_filterconfig(' . "'" . $column_name . "'" . ', document.getElementById(' . "'filter-" . $column_name . "'" . ').value);">';
                 $options_arr = ['new' => 'Neu', 'onboarding' => "In Bearbeitung", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert", 'refused' => "Abgelehnt"];
 
                 if($filter_value == 'null') $selected = 'selected'; else $selected = '';

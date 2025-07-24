@@ -44,7 +44,7 @@ class VIEW
         $this->mail->smtpOptions = $this->config->user['MAIL_OPTIONS'];
 
         require_once('controllers/controller_xlsx.inc.php');
-        $xlsx = new Shuchkin\SimpleXLSXGen;
+        $this->xlsx = new Shuchkin\SimpleXLSXGen;
     }
 
     public function view_handle_backend_login()

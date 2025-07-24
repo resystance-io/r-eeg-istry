@@ -9,6 +9,7 @@ class Interactives
     private $config;
     private $view;
     private $db;
+    private $xlsx;
 
     public function __construct()
     {
@@ -23,6 +24,7 @@ class Interactives
 
         include_once('views/view.inc.php');
         $this->view = $this->object_broker->instance['view'] = new VIEW();
+
     }
 
     public function __destruct()
@@ -2309,6 +2311,51 @@ class Interactives
 
         return $response;
 
+    }
+
+    public function export_listing_as_excel($record_array)
+    {
+        $response = jaxon()->newResponse();
+
+        $meters = [
+            [''], // empty line needed for import format interpreter
+            [''], // empty line needed for import format interpreter
+            [''], // empty line needed for import format interpreter
+            [''], // empty line needed for import format interpreter
+            [''], // empty line needed for import format interpreter
+            [''], // empty line needed for import format interpreter
+            ['<b>Netzbetreiber</b>', '<b>Gemeinschafts-ID</b>', '<b>Ortsgebiet</b>', '<b>PLZ</b>', '<b>Ort</b>', '<b>Straße</b>', '<b>Hausnummer</b>', '<b>Stiege</b>', '<b>Stock</b>', '<b>Tür</b>', '<b>Adresszusatz</b>', '<b>Zählpunkt</b>', '<b>Energierichtung</b>', '<b>EquipmentNr</b>', '<b>Objektname</b>', '<b>Überschusseinspeisung</b>', '<b>Energiequelle</b>', '<b>Verteilungsmodell</b>', '<b>Zugeteilte Menge in Prozent</b>', '<b>TitelVor</b>', '<b>Name 1</b>', '<b>Name 2</b>', '<b>TitelNach</b>', '<b>BusinessRole</b>', '<b>Mitglied seit</b>', '<b>IBAN</b>', '<b>Kontoinhaber</b>', '<b>Bankname</b>', '<b>Email</b>', '<b>TelefonNr</b>', '<b>SteuerNr</b>', '<b>UmsatzsteuerNr</b>', '<b>MitgliedsNr</b>', '<b>Zählpunktstatus</b>', '<b>registriert seit</b>', '<b>Meter Codes</b>'],
+            [''], // empty line needed for import format interpreter
+            [''], // empty line needed for import format interpreter
+        ];
+
+        foreach (array_keys($record_array) as $record)
+        {
+            $filter_array = array($this->config->user['DBTABLE_METERS'] . '.meter_uuid = "' . $record . '"');
+            $inner_joins = [
+                [ $this->config->user['DBTABLE_REGISTRATIONS'], $this->config->user['DBTABLE_METERS'] . '.registration_id', $this->config->user['DBTABLE_REGISTRATIONS'] . '.id' ]
+            ];
+
+            $registrations = $this->db->get_rows($this->config->user['DBTABLE_METERS'], $inner_joins, $filter_array);
+            $registration = $registrations[0];
+
+            if($registration['meter_type'] == 'consumer') $flow_direction = 'CONSUMPTION';  else $flow_direction = 'GENERATION';
+            if($registration['type'] == 'individual')   $business_role = 'privat';  else $business_role = 'business';
+            if($registration['company_name'])   $name_1 = $registration['company_name'];  else $name_1 = $registration['firstname'];
+            if($registration['company_name'])   $name_2 = '';  else $name_2 = $registration['lastname'];
+
+            $meters[] = ['<style color="#FF0000">$netzbetreiber</style>','<style color="#FF0000">$gemeinschafts-id</style>','<style color="#FF0000">$ortsgebiet</style>',$registration['meter_addr_zip'],$registration['meter_addr_city'],$registration['meter_addr_street'],$registration['meter_addr_number'],'','','','',str_replace(' ', '', $registration['meter_id']), $flow_direction, $registration['network_inventoryid'], '', 'POOLED', 'SONNE', 'DYNAMIC', $registration['meter_participation'], $registration['title'], $name_1, $name_2, $registration['postnomen'], $business_role, date('d.m.Y', $registration['migration_date']), $registration['banking_iban'], $registration['banking_name'], $registration['banking_institute'], $registration['email'], $registration['phone'], '', $registration['uid'], $registration['member_id'], '', date('d.m.Y', $registration['registration_date']), '<style color="#FF0000">$meter_codes</style>'];
+        }
+
+
+        $this->xlsx = Shuchkin\SimpleXLSXGen::fromArray( $meters );
+
+        $export_filename = $this->generate_uuid4();
+        $this->xlsx->saveAs('download/' . $export_filename); // or downloadAs('books.xlsx') or $xlsx_content = (string) $xlsx
+
+        $response->script("window.open('/download/?$export_filename', '_blank');");
+        $response->script("window.location.href='/?manage';");
+        return $response;
     }
 
     private function generate_uuid4($data = null)

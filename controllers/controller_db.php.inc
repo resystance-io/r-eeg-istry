@@ -247,6 +247,7 @@ class CONTROLLER_DB
 		if($order) $order = "ORDER BY $order";
 
 		$sql = "SELECT * FROM $table $joins $selects $order $limit";
+		//error_log($sql);
 		$ret = $this->db->execute_query($sql);
 
 		return $ret->fetchAll(PDO::FETCH_ASSOC);

@@ -36,9 +36,25 @@ class VIEW_MANAGEMENT extends VIEW
                 navigator.clipboard.writeText(window.backend_linebuffer[lineID]);
                 document.getElementById("headcol-" + lineID).className = "fa fa-check";
             }
+
             function invert_checkbox(id)
             {
                 document.getElementById(id).checked = !document.getElementById(id).checked;
+            }
+
+            function export_serialized_form(formid)
+            {
+
+                    const form = document.getElementById(formid);
+                    const formData = new FormData(form);
+                    const data = {};
+
+                    for (let [key, value] of formData.entries()) {
+                        data[key] = value;
+                    }
+
+                    JaxonInteractives.export_listing_as_excel(data);
+                    return false;
             }
         </script>
 
@@ -140,6 +156,14 @@ class VIEW_MANAGEMENT extends VIEW
 
         print '
             <div class="table-container">
+        ';
+
+        if($selectable_list === true)
+        {
+            print "<form id=\"listselectors\" name=\"listselectors\"></form>";
+        }
+
+        print '
               <table class="table">
                 <thead>
                   <tr>
@@ -243,7 +267,8 @@ class VIEW_MANAGEMENT extends VIEW
             if($column['filterable'] == 'y' && $column['compute'] == null)
             {
                 if($column['source'] != NULL)   $column_path = $column['source'] . '.' . $column['name']; else $column_path = $column['name'];
-                if($_SESSION['dashboard']['filter'][$column_path] != null) $filter_value = $_SESSION['dashboard']['filter'][$column_path]; else $filter_value = '';
+
+                if(isset($_SESSION['dashboard']['filter']) && $_SESSION['dashboard']['filter'][$column_path] != null) $filter_value = $_SESSION['dashboard']['filter'][$column_path]; else $filter_value = '';
 
                 print '<td>
                             <input type="text" id="filter-' . $column['name'] . '" onclick="this.select();" onfocusout="JaxonInteractives.dashboard_set_filter(' . "'$column_path'" . ', document.getElementById(' . "'filter-" . $column['name'] . "'" . ').value);" class="filter" name="filter-' . $column['name'] . '" value="' . $filter_value . '">
@@ -444,7 +469,7 @@ class VIEW_MANAGEMENT extends VIEW
 
             if($selectable_list === true)
             {
-                print '<td style="vertical-align:middle" onClick="event.stopPropagation(); invert_checkbox(\''. $registration['meter_uuid'] .'\');"><input id="' . $registration['meter_uuid'] . '" onClick="event.stopPropagation();" class="listselector" type="checkbox" checked="checked"></td>';
+                print '<td style="vertical-align:middle" onClick="event.stopPropagation(); invert_checkbox(\''. $registration['meter_uuid'] .'\');"><input form="listselectors" id="' . $registration['meter_uuid'] . '" onClick="event.stopPropagation();" name="' . $registration['meter_uuid'] . '" class="listselector" type="checkbox" checked="checked"></td>';
             }
             else
             {
@@ -486,11 +511,9 @@ class VIEW_MANAGEMENT extends VIEW
         print '
                 </tbody>
               </table>
-        ';
-
-        print '
-                <div class="dataTables_pagesize">
-                    <select onchange="JaxonInteractives.dashboard_select_page_size(this.value)">
+        
+            <div class="dataTables_pagesize">
+                <select onchange="JaxonInteractives.dashboard_select_page_size(this.value)">
         ';
 
         if($page_size == 5) $selected = "selected=\"selected\""; else $selected = "";
@@ -515,11 +538,28 @@ class VIEW_MANAGEMENT extends VIEW
 
         if($search_root == 'meters')
         {
-            print '
-                    <div class="dataTables_featurebutton" onClick="self.location.href=\'?manage_select\';">
-                        <i style="margin-top:0px;top:0px;height:0px;" class="fa fa-check-square"></i>
+            if($selectable_list === true)
+            {
+                print '
+                    <div class="dataTables_featurebutton" style="background-color:#ffcccc44" onClick="self.location.href=\'?manage\';">
+                        <i class="fa fa-caret-square-left"></i>
                     </div>
-            ';
+                ';
+
+                print '
+                    <div class="dataTables_featurebutton" style="width:260px" onClick="export_serialized_form(\'listselectors\');">
+                        <i class="fa fa-file-excel"></i> &nbsp; Exportieren als <b>EEGfaktura XLSX</b>
+                    </div>
+                ';
+            }
+            else
+            {
+                print '
+                    <div class="dataTables_featurebutton" onClick="self.location.href=\'?manage_select\';">
+                        <i class="fa fa-check-square"></i>
+                    </div>
+                ';
+            }
         }
 
         if($registrations_count > $page_size)
