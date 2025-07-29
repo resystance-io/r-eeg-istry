@@ -9,7 +9,7 @@
 .table {
     border-collapse: collapse;
     width: 100%;
-    table-layout: fixed; /* Ensures consistent column widths */
+    table-layout: auto; /* Ensures consistent column widths */
 }
 
 /* Table cells and headers */
@@ -93,6 +93,7 @@ th.navselected:hover {
     top: 0; /* Makes the header stick to the top */
     z-index: 2; /* Keeps the header above the table body */
     white-space: nowrap;
+    min-width: fit-content;
 }
 
 /* Styling for table body */
