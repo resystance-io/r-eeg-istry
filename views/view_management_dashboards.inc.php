@@ -444,7 +444,7 @@ class VIEW_MANAGEMENT_DASHBOARDS extends VIEW
 
             case 'meter_state':
                 print '<select class="filter" id="filter-' . $column_name . '" name="filter-' . $column_name . '" onchange="JaxonInteractives.dashboard_set_filterconfig(' . "'" . $column_name . "'" . ', document.getElementById(' . "'filter-" . $column_name . "'" . ').value);">';
-                $options_arr = ['new' => 'Neu', 'onboarding' => "In Bearbeitung", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert", 'refused' => "Abgelehnt"];
+                $options_arr = ['new' => 'Neu', 'pending' => "In Bearbeitung", 'approved' => "Aktiv", 'suspended' => "Gesperrt", 'inactive' => "Deaktiviert", 'refused' => "Abgelehnt"];
 
                 if($filter_value == 'null') $selected = 'selected'; else $selected = '';
                 print '<option ' . $selected . ' value="">&nbsp;</option>';

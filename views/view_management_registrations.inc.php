@@ -12,6 +12,23 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
             <p><A href="/?manage"><i class="fa fa-arrow-alt-circle-left"></i></A>&nbsp;Registrierung anzeigen<br /></p>
         </header>
 
+        <script>
+            function export_serialized_form(formid)
+            {
+
+                const form = document.getElementById(formid);
+                const formData = new FormData(form);
+                const data = {};
+
+                for (let [key, value] of formData.entries()) {
+                    data[key] = value;
+                }
+
+                JaxonInteractives.export_listing_as_excel(data, true);
+                return false;
+            }
+        </script>
+
         <?php
 
         print "<br />";
@@ -97,26 +114,36 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                </tr>
         ";
 
-        print "<tr class=\"stategray\"><td class=\"detailheader\">EEG-Beitritt best&auml;tigt:</td>";
+        if($registration['state'] != 'refused')
         {
-            if ($registration['migration_date'] != null)
+            print "<tr class=\"stategray\"><td class=\"detailheader\">Beitritt best&auml;tigt:</td>";
             {
-                print "<td class=\"detailcontent\">" . date("d.m.Y", $registration['migration_date']) . "</td>";
-            } else
-            {
-                print "<td class=\"detailcontent\">Noch ausstehend</td>";
+                if ($registration['migration_date'] != null)
+                {
+                    print "<td class=\"detailcontent\">" . date("d.m.Y", $registration['migration_date']) . "</td>";
+                } else
+                {
+                    print "<td class=\"detailcontent\">Noch ausstehend</td>";
+                }
             }
+            print "</tr>";
+        }
+
+        print "<tr class=\"stategray\"><td class=\"detailheader\">Letzte &Auml;nderung:</td>";
+        if($registration['statechange_date'])
+        {
+            print "<td class=\"detailcontent\">" . date("d.m.Y", $registration['statechange_date']) . "</td>";
+        }
+        else
+        {
+            print "<td class=\"detailcontent\">Unbekannt</td>";
         }
         print "</tr>";
 
-        print "<tr class=\"stategray\"><td class=\"detailheader\">Letzte &Auml;nderung:</td>";
-        print "<td>&nbsp;</td>";
-        print "</tr>";
-
         print "<tr class=\"stategray\"><td class=\"detailheader\">Letztes Login:</td>";
-        if ($registration['migration_date'] != null)
+        if ($registration['last_login_date'] != null)
         {
-            print "<td class=\"detailcontent\">" . date("d.m.Y", $registration['migration_date']) . "</td>";
+            print "<td class=\"detailcontent\">" . date("d.m.Y", $registration['last_login_date']) . "</td>";
         } else
         {
             print "<td class=\"detailcontent\">Noch nie angemeldet</td>";
@@ -181,7 +208,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         $upload_type_arr = ['invoice' => 'Rechnung', 'credit' => 'Gutschrift', 'photo' => 'Foto', 'id' => 'Ausweis', 'other' => 'Andere'];
         $identity_type_arr = ['passport' => 'Reisepass', 'idcard' => 'Personalausweis', 'driverslicense' => 'F&uuml;hrerschein', 'commerceid' => 'Firmenbuchnummer', 'associationid' => 'Vereinsregister'];
         $tax_type_arr = ['y' => 'Ja', 'n' => 'Nein'];
-        $meter_status_arr = ['new' => 'Neu', 'onboarding' => 'In Bearbeitung', 'active' => 'Aktiv', 'suspended' => 'Gesperrt', 'deactivated' => 'Deaktiviert', 'refused' => 'Abgelehnt'];
+        $meter_status_arr = ['new' => 'Neu', 'pending' => 'In Bearbeitung', 'approved' => 'Aktiv', 'suspended' => 'Gesperrt', 'inactive' => 'Deaktiviert', 'refused' => 'Abgelehnt'];
 
         print "<tr class=\"stategray\"><td class=\"detailheader\">Mitgliedsform</td><td id=\"detail_type\" class=\"detailcontent\">" . $type_arr[$registration['type']] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_type_init('detail_type', '" . $registration['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td></tr>";
 
@@ -320,8 +347,18 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         ';
 
         $meters = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_METERS'], 'registration_id', $registration['id']);
+
+        $new_meters_count = 0;
+        $meters_count = 0;
+        $pending_meters_count = 0;
+        $approved_meters_count = 0;
+
+        print "<form id=\"listselectors\" name=\"listselectors\"></form>";
+
         foreach ($meters as $meter)
         {
+            $meters_count++;
+
             if ($meter['meter_type'] == 'consumer')
             {
                 $meter_nice = "Verbrauch";
@@ -348,6 +385,22 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                 $meter_short_id = $tenant_info['meter_prefix_short'] . $meter_type_shortcode . $meter['meter_oid'];
             }
 
+
+            if($meter['meter_state'] == 'new')
+            {
+                print '<input form="listselectors" id="' . $meter['meter_uuid'] . '" name="' . $meter['meter_uuid'] . '" type="hidden">';
+                $new_meters_count++;
+            }
+
+            if($meter['meter_state'] == 'pending')
+            {
+                $pending_meters_count++;
+            }
+
+            if($meter['meter_state'] == 'approved')
+            {
+                $approved_meters_count++;
+            }
 
             print "<tr class=\"stategray profilemeterline\">
                     <td class=\"profilemeter\" style=\"width:100px;text-align:center;vertical-align:middle;font-size:12pt;font-weight:bold\">
@@ -395,6 +448,201 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         print '<br />&nbsp;<br />';
         print '</div>'; // END OF MAIN CONTENT: LEFT
         print '<div style="min-width:500px; float:left">';   // TIMELINE: RIGHT
+
+        print '<h2>&nbsp;</h2>';
+        print '<h3>Workflow</h3>';
+        print '<ul class="timeline">';
+
+        if($registration['state'] == 'new')
+        {
+            print '
+                <!-- workflow item -->
+                <li>
+                  <i class="fa fa-question bg-blue"></i>
+                  <div class="timeline-item" style="width:98%">
+                    <h3 class="timeline-header">Anmeldung eingelangt</h3>
+                    <div class="timeline-body" style="font-size:12pt; text-align:center">
+                      &Uuml;berpr&uuml;fe die Daten des Bewerbers und entscheide,<br />
+                      ob er in Deine EEG aufgenommen werden soll:
+                    </div>
+                    <div class="timeline-footer" style="text-align:center !important;" id="workflow_new_registration">
+            ';
+
+            if($registration['tenant'] && $registration['member_id'])
+            {
+                // This registration already has a member ID and tenant assigned
+                print '
+                          <a class="btn btn-success btn-xs" style="font-size:14pt;padding:8px;" onClick="JaxonInteractives.dashboard_workflow_enroll(\'' . $registration['id'] . '\', \'' . $registration['tenant'] . '\')">Bewerbung annehmen</a>
+                ';
+            }
+            elseif($registration['tenant'])
+            {
+                // A tenant was (probably automatically) assigned, but no member-id yet, so tenant-changes are still possible
+                print '
+                          <a class="btn btn-success btn-xs" style="font-size:14pt;padding:8px;" onClick="JaxonInteractives.dashboard_workflow_enroll_prestage(\'' . $registration['id'] . '\')">Bewerbung annehmen</a>
+                ';
+            }
+            else
+            {
+                // Neither tenant nor member-id are currently assigned.
+                print '
+                          <a class="btn btn-success btn-xs" style="font-size:14pt;padding:8px;" onClick="JaxonInteractives.dashboard_workflow_enroll_prestage(\'' . $registration['id'] . '\')">Bewerbung annehmen</a>
+                ';
+            }
+
+            print '
+                      <a class="btn btn-danger btn-xs" style="font-size:14pt;padding:8px;" onClick="JaxonInteractives.dashboard_workflow_refuse_prestage(\'' . $registration['id'] . '\')">Bewerbung ablehnen</a>
+                    </div>
+                  </div>
+                </li>
+            ';
+        }
+        else
+        {
+            if($registration['statechange_date'])
+            {
+                $statechange_nice = ' am ' . date('d.m.Y', $registration['statechange_date']);
+            }
+            else
+            {
+                $statechange_nice = 'zu einem unbekannten Zeitpunkt';
+            }
+
+            if($registration['state'] == 'refused')
+            {
+                print '
+                    <!-- workflow item -->
+                    <li>
+                      <i class="fa fa-notes-medical bg-blue"></i>
+                      <div class="timeline-item" style="width:98%;background-color:#ffaaaaaa"">
+                        <h3 class="timeline-header">Anmeldung abgelehnt</h3>
+                        <div class="timeline-body" style="font-size:12pt; text-align:center">
+                          Diese Anmeldung wurde ' . $statechange_nice . '<br />abgelehnt.
+                        </div>
+                      </div>
+                    </li>
+                ';
+            }
+            else
+            {
+
+                if($registration['migration_date'])
+                {
+                    $statechange_nice = ' am ' . date('d.m.Y', $registration['migration_date']);
+                }
+                else
+                {
+                    $statechange_nice = 'zu einem unbekannten Zeitpunkt';
+                }
+
+                print '
+                    <!-- workflow item -->
+                    <li>
+                      <i class="fa fa-check bg-blue"></i>
+                      <div class="timeline-item" style="width:98%;background-color:#ffffffaa">
+                        <h3 class="timeline-header">Anmeldung akzeptiert</h3>
+                        <div class="timeline-body" style="font-size:12pt; text-align:center">
+                          Diese Anmeldung wurde ' . $statechange_nice . '<br />in die EEG aufgenommen.
+                        </div>
+                      </div>
+                    </li>
+                ';
+            }
+
+        }
+
+        if($registration['state'] == 'onboarding' || $registration['state'] == 'active')
+        {
+            if($meters_count == 0)
+            {
+                print '    
+                    <!-- workflow item -->
+                    <li>
+                      <i class="fa fa-envelope bg-blue"></i>
+                      <div class="timeline-item" style="width:98%;background-color:#ffffffaa"">
+                        <span class="time"><i class="fa fa-clock-o"></i> </span>
+                        <h3 class="timeline-header">Z&auml;hlpunkte an EEGfaktura &uuml;bermitteln</h3>
+                        <div class="timeline-body" style="text-align:center;font-size:12pt;">
+                          Es wurden bislang keine Z&auml;hlpunkte registriert.
+                        </div>
+                      </div>
+                    </li>
+                ';
+            }
+            elseif($new_meters_count > 0)
+            {
+                print '    
+                    <!-- workflow item -->
+                    <li>
+                      <i class="fa fa-tasks bg-blue"></i>
+                      <div class="timeline-item" style="width:98%">
+                        <span class="time"><i class="fa fa-clock-o"></i> </span>
+                        <h3 class="timeline-header">Z&auml;hlpunkte an EEGfaktura &uuml;bermitteln</h3>
+                        <div class="timeline-body" style="text-align:center;font-size:12pt;">
+                          ' . $new_meters_count . ' Z&auml;hlpunkt(e) wurde(n) noch nicht &uuml;bermittelt
+                        </div>
+                        <div class="timeline-footer" style="text-align:center">
+                          <a class="btn btn-primary btn-xs" style="font-size:12pt;padding:8px;" onClick="export_serialized_form(\'listselectors\');">&nbsp;XLSX exportieren&nbsp;</a>
+                        </div>
+                      </div>
+                    </li>
+                ';
+            }
+            else
+            {
+                print '    
+                    <!-- workflow item -->
+                    <li>
+                      <i class="fa fa-check bg-blue"></i>
+                      <div class="timeline-item" style="width:98%;background-color:#ffffffaa"">
+                        <span class="time"><i class="fa fa-clock-o"></i> </span>
+                        <h3 class="timeline-header">Z&auml;hlpunkte an EEGfaktura &uuml;bermitteln</h3>
+                        <div class="timeline-body" style="text-align:center;font-size:12pt;">
+                          Es wurden alle Z&auml;hlpunkte an EEGfaktura &uuml;bermittelt.
+                        </div>
+                      </div>
+                    </li>
+                ';
+            }
+        }
+
+        if($pending_meters_count > 0)
+        {
+            print '
+                    <!-- workflow item -->
+                    <li>
+                      <i class="fa fa-question bg-blue"></i>
+                      <div class="timeline-item" style="width:98%">
+                        <h3 class="timeline-header">Z&auml;hlpunkte best&auml;tigen</h3>
+                        <div class="timeline-body" style="font-size:12pt; text-align:center">
+                          Wurden alle Z&auml;hlpunkte vom Netzbetreiber best&auml;tigt?
+                        </div>
+                        <div class="timeline-footer" style="text-align:center">
+                          <a class="btn btn-success btn-xs" style="font-size:12pt;padding:8px;" onClick="JaxonInteractives.dashboard_workflow_fully_accepted(\''. $registration['id'] . '\')">&nbsp;Ja&nbsp;</a>
+                        </div>
+                      </div>
+                    </li>
+                ';
+        }
+        elseif($approved_meters_count > 0)
+        {
+            print '    
+                    <!-- workflow item -->
+                    <li>
+                      <i class="fa fa-check bg-blue"></i>
+                      <div class="timeline-item" style="width:98%;background-color:#ffffffaa"">
+                        <span class="time"><i class="fa fa-clock-o"></i> </span>
+                        <h3 class="timeline-header">Z&auml;hlpunkte best&auml;tigt</h3>
+                        <div class="timeline-body" style="text-align:center;font-size:12pt;">
+                          Z&auml;hlpunkte wurden best&auml;tigt, das Mitglied wurde<br />
+                          &uuml;ber die erfolgreiche Aufnahme in die EEG informiert.
+                        </div>
+                      </div>
+                    </li>
+                ';
+        }
+
+        print '</ul>';
 
         print '<h2>&nbsp;</h2>';
         print '<h3>Historie</h3>';

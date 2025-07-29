@@ -73,12 +73,13 @@
         <body class="is-preload" style="min-height: 100vh; display:flex; flex-direction:column; padding-bottom:0px; padding-left:0px; padding-right:0px;">
             <div style="background-color: #151515; color:white; padding:0px; width:100%; height:46px; vertical-align:middle; text-align:right; position:absolute; top:0px;">
 
-                <div style="float:left; font-family:Helvetica; font-size:10pt; font-weight:bold; color:white; padding:7px; padding-left:14px;">R:EEG:ISTRY</div>
+                <div style="float:left; font-family:Helvetica; font-size:10pt; font-weight:bold; color:white; padding:7px; padding-left:14px;"><A href="/" target="_self" style="color:white;">R:EEG:ISTRY</A></div>
 
                 <?php
                     if(isset($_SESSION['backend_authenticated']) && $_SESSION['backend_authenticated'] != '')
                     {
                 ?>
+
                 <div style="cursor:pointer; float:right;font-size:10pt;border:1px solid #444;width:50px;height:42px;text-align:center;padding-top:5px;margin:2px" onclick="JaxonInteractives.deauthenticate();">
                     <li class="fa fa-door-open"></li>
                 </div>
@@ -90,6 +91,11 @@
                 <div style="cursor:pointer; float:right;font-size:10pt;border:1px solid #444;width:50px;height:42px;text-align:center;padding-top:5px;margin:2px" onclick="self.location.href='?manage_dashboards'">
                     <li class="fa fa-table"></li>
                 </div>
+
+                <div style="cursor:pointer; float:right;font-size:10pt;border:1px solid #444;width:50px;height:42px;text-align:center;padding-top:5px;margin:2px" onclick="self.location.href='?manage'">
+                    <li class="fa fa-house-damage"></li>
+                </div>
+
                 <?php
                     }
                 ?>

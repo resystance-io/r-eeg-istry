@@ -29,7 +29,7 @@ class VIEW_JOIN_BASE extends VIEW
             <br />
             <div id="container-' . $id . '">' . $caption . '<br>
                 <div class="input-box" style="width:240px;">
-                    <input type="text" name="' . $id . '_' . $meter_key . '" id="' . $id . '_' . $meter_key . '" placeholder="' . $prefill . '" value="' . $prefill . '" maxlength="5" style="width:85px;text-align:center" onfocus="this.select()" onfocusout="JaxonInteractives.update_meter_detail(' . "'" . $meter_key . "'" . ', ' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . '_' . $meter_key . "'" . ').value);" />
+                    <input type="text" name="' . $id . '_' . $meter_key . '" id="' . $id . '_' . $meter_key . '" placeholder="' . $prefill . '" value="' . $prefill . '" maxlength="6" style="width:85px;text-align:center" onfocus="this.select()" onfocusout="JaxonInteractives.update_meter_detail(' . "'" . $meter_key . "'" . ', ' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . '_' . $meter_key . "'" . ').value);" />
                     <span class="prefix">' . $unit . '&nbsp;&nbsp;&nbsp;</span>
         ';
 
@@ -200,7 +200,7 @@ class VIEW_JOIN_BASE extends VIEW
         print '
             <div id="container-' . $id . '">' . $caption . '<br>
                 <div class="input-box">
-                    <input type="text" name="' . $id . '" id="' . $id . '" value="' . $prefill . '" maxlength="38" onfocus="this.select()" onfocusout="JaxonInteractives.update_meter_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
+                    <input type="text" name="' . $id . '" id="' . $id . '" value="' . $prefill . '" maxlength="37" onfocus="this.select()" onfocusout="JaxonInteractives.update_meter_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
                     <button style="background-color:darkred"  onclick="JaxonInteractives.rmv_meter(' . "'" . $id . "'" . ');"><i style="font-size:16px;color:white;" class="icon fa-trash-alt"></i></button><br>
                 </div>
                 <br />
@@ -225,7 +225,7 @@ class VIEW_JOIN_BASE extends VIEW
             <div id="container-' . $id . '">' . $caption . '<br>
                 <div class="input-box" style="width:254px;">
                     <span class="prefix">Kapazit&auml;t:&nbsp;</span>
-                    <input type="text" name="' . $id . '" id="' . $id . '" value="' . $value . '" maxlength="4" style="width:65px;text-align:center" onfocus="this.select()" onfocusout="JaxonInteractives.update_storage_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
+                    <input type="text" name="' . $id . '" id="' . $id . '" value="' . $value . '" maxlength="6" style="width:65px;text-align:center" onfocus="this.select()" onfocusout="JaxonInteractives.update_storage_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
                     <span class="prefix">kWh</span>
                     &nbsp;&nbsp;&nbsp;&nbsp;<button style="background-color:darkred"  onclick="JaxonInteractives.rmv_storage(' . "'" . $id . "'" . ');"><i style="font-size:16px;color:white;" class="icon fa-trash-alt"></i></button><br>
                 </div>

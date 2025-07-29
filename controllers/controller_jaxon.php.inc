@@ -181,7 +181,7 @@ class Interactives
         <div id="container-' . $id . '">Speicher<br>
             <div class="input-box" style="width:254px;">
                 <span class="prefix">Kapazit&auml;t:&nbsp;</span>
-                <input type="text" name="' . $id . '" id="' . $id . '" value="0" maxlength="4" style="width:65px;text-align:center" onfocus="this.select()" onfocusout="JaxonInteractives.update_storage_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
+                <input type="text" name="' . $id . '" id="' . $id . '" value="0" maxlength="6" style="width:75px;text-align:center" onfocus="this.select()" onfocusout="JaxonInteractives.update_storage_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
                 <span class="prefix">kWh</span>
                 &nbsp;&nbsp;&nbsp;&nbsp;<button style="background-color:darkred"  onclick="JaxonInteractives.rmv_storage(' . "'" . $id . "'" . ');"><i style="font-size:16px;color:white;" class="icon fa-trash-alt"></i></button><br>
             </div>
@@ -248,7 +248,7 @@ class Interactives
         // write the given storage value to our session
         if(isset($_SESSION['storages'][$id]))
         {
-            $_SESSION['storages'][$id]['value'] = $value;
+            $_SESSION['storages'][$id]['value'] = str_replace('.', ',', $value);
         }
     }
 
@@ -1326,10 +1326,8 @@ class Interactives
         $current_value = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'member_id', 'id', $recordid);
         $this->view->record_note($recordid, 'event', 'modify', "Aktualisierung member_id: $current_value -> $dbvalue");
         $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'member_id', $dbvalue, 'id', $recordid);
-        $input_field = "$dbvalue <i onclick=\"JaxonInteractives.dashboard_inline_update_memberid_init('detail_member_id', '" . $recordid . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
         $response = jaxon()->newResponse();
-        $response->assign($div_id, 'innerHTML', $input_field);
-
+        $response->script("window.location.href='/?manage_registrations&registration=$recordid';");
         return $response;
     }
 
@@ -1352,6 +1350,7 @@ class Interactives
 
         $available_states = $this->db->get_enum_array($this->config->user['DBTABLE_REGISTRATIONS'], 'state');
         $state_nice = ['new' => 'Neu', 'onboarding' => "Onboarding", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert", 'refused' => "Abgelehnt"];
+
         foreach($available_states as $available_state)
         {
             $disabled = '';
@@ -1380,6 +1379,12 @@ class Interactives
     public function dashboard_inline_update_state_save($dbvalue, $recordid)
     {
         $current_value = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'state', 'id', $recordid);
+
+        if($current_value != $dbvalue)
+        {
+            $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'statechange_date', time(), 'id', $recordid);
+        }
+
         $current_tenant = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'tenant', 'id', $recordid);
 
         $tenant_info = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_TENANTS'], 'id', $current_tenant);
@@ -1388,15 +1393,38 @@ class Interactives
         $registration_info = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'id', $recordid);
         $registration_info = $registration_info[0];
 
+        $associated_meters = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_METERS'], 'registration_id', $recordid);
+
+        $approved_meter_list = '';
+        foreach($associated_meters as $meter)
+        {
+            if($meter['meter_state'] == 'pending')
+            {
+                $this->db->update_column_by_column_values($this->config->user['DBTABLE_METERS'], 'meter_state', 'approved', 'id', $meter['id']);
+                $approved_meter_list .= $meter['meter_id'] . '<br />';
+            }
+
+            if($meter['meter_state'] == 'approved')
+            {
+                $approved_meter_list .= $meter['meter_id'] . '<br />';
+            }
+        }
+
         $response = jaxon()->newResponse();
 
-        if($dbvalue == 'onboarding')
+        if($dbvalue == 'active')
         {
-            $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'migration_date', time(), 'id', $recordid);
-
-            $mail_template = file_get_contents('assets/templates/mail_onboarding_started.html');
-            $mail_template = str_replace('{%FIRSTNAME%}', $registration_info['firstname'], $mail_template);
-            $mail_template = str_replace('{%LASTNAME%}', $registration_info['lastname'], $mail_template);
+            $mail_template = file_get_contents('assets/templates/mail_onboarding_successful.html');
+            if ($registration_info['type'] == 'company')
+            {
+                $mail_template = str_replace('{%FIRSTNAME%}', $registration_info['company_name'], $mail_template);
+                $mail_template = str_replace('{%LASTNAME%}', '', $mail_template);
+            }
+            else
+            {
+                $mail_template = str_replace('{%FIRSTNAME%}', $registration_info['firstname'], $mail_template);
+                $mail_template = str_replace('{%LASTNAME%}', $registration_info['lastname'], $mail_template);
+            }
             $mail_template = str_replace('{%USEREMAIL%}', $registration_info['email'], $mail_template);
             $mail_template = str_replace('{%REFERRER%}', $tenant_info['referrer'], $mail_template);
             $mail_template = str_replace('{%FULLNAME%}', $tenant_info['fullname'], $mail_template);
@@ -1409,6 +1437,7 @@ class Interactives
             $mail_template = str_replace('{%CONTACT_WEBSITE%}', $tenant_info['contact_website'], $mail_template);
             $mail_template = str_replace('{%CONTACT_EMAIL%}', $tenant_info['contact_email'], $mail_template);
             $mail_template = str_replace('{%CREDITOR_ID%}', $tenant_info['creditor_id'], $mail_template);
+            $mail_template = str_replace('{%APPROVED_METER_IDS%}', $approved_meter_list, $mail_template);
 
             $this->view->object_broker->instance['email']->subject = "Deine Mitgliedschaft bei " . $tenant_info['shortname'];
             $this->view->object_broker->instance['email']->AddRecipient($registration_info['email']);
@@ -1431,9 +1460,13 @@ class Interactives
             {
                 $response->alert('Info-Mail gesendet.');
             }
+
         }
 
-        if($dbvalue == 'active')        $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'delivery_date', time(), 'id', $recordid);
+        if($dbvalue == 'onboarding')
+        {
+            $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'migration_date', time(), 'id', $recordid);
+        }
 
         if($current_value == 'new')
         {
@@ -1473,6 +1506,7 @@ class Interactives
 
                     $tenant_network_substation_id = $this->db->get_column_by_column_value($this->config->user['DBTABLE_TENANTS'], 'network_substation_id', 'id', $current_tenant);
                     $this->db->update_column_by_column_values($this->config->user['DBTABLE_METERS'], 'meter_substation_id', $tenant_network_substation_id, 'id', $meter['id']);
+
                 }
             }
         }
@@ -1499,7 +1533,7 @@ class Interactives
         $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_METERS'], 'meter_state', 'id', $recordid);
         $input_field = "<select name=\"meter_state_$recordid\" id=\"meter_state_$recordid\" class=\"detail\" style=\"width:280px;text-align:center !important;text-align-last:center !important\">";
 
-        $meter_status_arr = ['new' => 'Neu', 'onboarding' => 'In Bearbeitung', 'active' => 'Aktiv', 'suspended' => 'Gesperrt', 'deactivated' => 'Deaktiviert', 'refused' => 'Abgelehnt'];
+        $meter_status_arr = ['new' => 'Neu', 'pending' => 'In Bearbeitung', 'approved' => 'Aktiv', 'suspended' => 'Gesperrt', 'inactive' => 'Deaktiviert', 'refused' => 'Abgelehnt'];
         if($dbvalue == null)    $dbvalue = 'new';
 
         foreach($meter_status_arr as $meter_status => $nice_meter_status)
@@ -1523,7 +1557,7 @@ class Interactives
     {
         $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_METERS'], 'meter_state', 'id', $recordid);
         if($dbvalue == null)    $dbvalue = 'new';
-        $state_nice = ['new' => 'Neu', 'onboarding' => "In Bearbeitung", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert", 'refused' => "Abgelehnt"];
+        $state_nice = ['new' => 'Neu', 'pending' => "In Bearbeitung", 'approved' => "Aktiv", 'suspended' => "Gesperrt", 'inactive' => "Deaktiviert", 'refused' => "Abgelehnt"];
         $div_content = $state_nice[$dbvalue] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_meter_state_init('" . $div_id . "', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
 
         $response = jaxon()->newResponse();
@@ -1533,12 +1567,22 @@ class Interactives
 
     public function dashboard_inline_update_meter_state_save($dbvalue, $div_id, $recordid)
     {
+        $old_value = $this->db->get_column_by_column_value($this->config->user['DBTABLE_METERS'], 'meter_state', 'id', $recordid);
+
         $this->db->update_column_by_column_values($this->config->user['DBTABLE_METERS'], 'meter_state', $dbvalue, 'id', $recordid);
-        $state_nice = ['new' => 'Neu', 'onboarding' => "In Bearbeitung", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert", 'refused' => "Abgelehnt"];
+        $state_nice = ['new' => 'Neu', 'pending' => "In Bearbeitung", 'approved' => "Aktiv", 'suspended' => "Gesperrt", 'inactive' => "Deaktiviert", 'refused' => "Abgelehnt"];
         $div_content = $state_nice[$dbvalue] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_meter_state_init('" . $div_id . "', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
 
         $response = jaxon()->newResponse();
-        $response->assign($div_id, 'innerHTML', $div_content);
+        if(($old_value == 'new' && $dbvalue != 'new') || ($old_value != 'new' && $dbvalue == 'new'))
+        {
+            $registration_id = $this->db->get_column_by_column_value($this->config->user['DBTABLE_METERS'], 'registration_id', 'id', $recordid);
+            $response->script("window.location.href='/?manage_registrations&registration=$registration_id';");
+        }
+        else
+        {
+            $response->assign($div_id, 'innerHTML', $div_content);
+        }
         return $response;
     }
 
@@ -2025,7 +2069,7 @@ class Interactives
                     break;
 
                 case 'numbers>0':
-                    if(is_numeric($value) && $value > 0)
+                    if(is_numeric(str_replace(',', '.', $value)) && $value > 0)
                     {
                         return true;
                     }
@@ -2312,7 +2356,7 @@ class Interactives
 
     }
 
-    public function export_listing_as_excel($record_array)
+    public function export_listing_as_excel($record_array, $return_to_registration = false)
     {
         $response = jaxon()->newResponse();
 
@@ -2347,6 +2391,8 @@ class Interactives
             if($registration['company_name'])   $name_2 = '';  else $name_2 = $registration['lastname'];
             $community_scope_arr = ['local' => 'LOKAL', 'regional' => 'REGIONAL', 'national' => 'ÜBERREGIONAL'];
 
+            $this->db->update_column_by_column_values($this->config->user['DBTABLE_METERS'], 'meter_state', 'pending', 'meter_uuid', $record);
+
             $meters[] = [$tenant['network_id'],$tenant['community_identifier'],$community_scope_arr[$tenant['community_scope']],$registration['meter_addr_zip'],$registration['meter_addr_city'],$registration['meter_addr_street'],$registration['meter_addr_number'],'','','','',str_replace(' ', '', $registration['meter_id']), $flow_direction, $registration['meter_fqoid'], '', 'POOLED', 'SONNE', 'DYNAMIC', $registration['meter_participation'], $registration['title'], $name_1, $name_2, $registration['postnomen'], $business_role, date('d.m.Y', $registration['migration_date']), $registration['banking_iban'], $registration['banking_name'], $registration['banking_institute'], $registration['email'], $registration['phone'], '', $registration['uid'], $registration['member_id'], 'NEW', date('d.m.Y', $registration['registration_date']), '1-1:1.9.0 G.01,1-1:2.9.0 G.02,1-1:2.9.0 G.03'];
         }
 
@@ -2356,7 +2402,7 @@ class Interactives
             $account_details = $account_details[0];
         }
 
-        $this->xlsx = Shuchkin\SimpleXLSXGen::fromArray( $meters );
+        $this->xlsx = Shuchkin\SimpleXLSXGen::fromArray($meters, 'EEG Stammdaten');
 
         $this->xlsx->setLanguage('de_DE');
         $this->xlsx->setAuthor($account_details['firstname'] . ' ' . $account_details['lastname']);
@@ -2366,7 +2412,240 @@ class Interactives
         $this->xlsx->saveAs('download/' . $export_filename); // or downloadAs('books.xlsx') or $xlsx_content = (string) $xlsx
 
         $response->script("window.open('/download/?$export_filename', '_blank');");
-        $response->script("window.location.href='/?manage';");
+
+        if($return_to_registration === true)
+        {
+            $response->script("window.location.href='/?manage_registrations&registration=" . $registration['id'] . "';");
+        }
+        else
+        {
+            $response->script("window.location.href='/?manage';");
+        }
+
+        return $response;
+    }
+
+    public function dashboard_workflow_enroll_prestage($recordid)
+    {
+        $tenants = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_TENANTS'], 'enabled', 'y');
+
+        $input_field = "<select name=\"tenant\" id=\"tenant\" class=\"detail\" style=\"height:40px;background-color:#00a65a;color:#ffffff;\" onChange=\"JaxonInteractives.dashboard_workflow_enroll('$recordid', document.getElementById('tenant').value);\">
+                            <option value=\"-\" selected=\"selected\">&nbsp;&nbsp;Bitte gew&uuml;nschte EEG w&auml;hlen</option>";
+
+        foreach($tenants as $tenant)
+        {
+            $input_field .= "<option value=\"" . $tenant['id'] . "\">&nbsp;&nbsp;" . $tenant['shortname'] . "</option>";
+        }
+
+        $input_field .= "</select>";
+
+        $response = jaxon()->newResponse();
+        $response->assign('workflow_new_registration', 'innerHTML', $input_field);
+
+        return $response;
+    }
+
+    public function dashboard_workflow_enroll($recordid, $tenant)
+    {
+        $dbmemberid = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'member_id', 'id', $recordid);
+        $dbtenant = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'tenant', 'id', $recordid);
+        $response = jaxon()->newResponse();
+
+        $successfully_activated = false;
+
+        if(!$dbmemberid)
+        {
+            if ($tenant)
+            {
+                // we don't have a member id yet, but a tenant has been set - calculate the next member id
+                $highest_memberid_arr = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_REGISTRATIONS'],
+                    'tenant',
+                    $tenant,
+                    1,
+                    'member_id',
+                    'DESC');
+                $highest_memberid = $highest_memberid_arr[0]['member_id'];
+                if ($highest_memberid)
+                {
+                    // the next member id is ....
+                    $highest_memberid++;
+                } else
+                {
+                    // this is the first member of this tenant, so the next member id is 1
+                    $highest_memberid = 1;
+                }
+
+                $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'member_id', $highest_memberid, 'id', $recordid);
+                $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'tenant', $tenant, 'id', $recordid);
+                $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'state', 'onboarding', 'id', $recordid);
+                $successfully_activated = true;
+            }
+            else
+            {
+                $response->alert('Bitte wählen Sie eine EEG um das neue Mitglied zuzuordnen');
+            }
+        }
+        else
+        {
+            if($dbtenant == $tenant)
+            {
+                $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'state', 'onboarding', 'id', $recordid);
+                $successfully_activated = true;
+            }
+            else
+            {
+                $response->alert('Das Mitglied konnte nicht automatisch zugeordnet werden, die Anmeldung muss manuell bearbeitet werden.');
+            }
+        }
+
+        if($successfully_activated === true)
+        {
+            $associated_meters = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_METERS'], 'registration_id', $recordid);
+
+            foreach($associated_meters as $meter)
+            {
+                $highest_meter_row = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_METERS'],
+                    NULL,
+                    NULL,
+                    1,
+                    'meter_oid',
+                    'DESC',
+                    $this->config->user['DBTABLE_REGISTRATIONS'] . '.tenant = "' . $tenant . '" AND ' . $this->config->user['DBTABLE_METERS'] . '.meter_type = "' . $meter['meter_type'] . '"',
+                    'INNER JOIN ' . $this->config->user['DBTABLE_REGISTRATIONS'] . ' ON (' . $this->config->user['DBTABLE_METERS'] . '.registration_id = ' . $this->config->user['DBTABLE_REGISTRATIONS'] . '.id) WHERE');
+                if(count($highest_meter_row) > 0)
+                {
+                    $highest_meter_row = $highest_meter_row[0];
+                    $next_meter_oid = $highest_meter_row['meter_oid'] + 1;
+                }
+                else
+                {
+                    $next_meter_oid = 1;
+                }
+
+                $this->db->update_column_by_column_values($this->config->user['DBTABLE_METERS'], 'meter_oid', $next_meter_oid, 'id', $meter['id']);
+
+                if($meter['meter_type'] == 'supplier')  $shorttype = 'ERZ'; else $shorttype = 'ABN';
+                $tenant_meter_prefix = $this->db->get_column_by_column_value($this->config->user['DBTABLE_TENANTS'], 'meter_prefix_short', 'id', $tenant);
+                $this->db->update_column_by_column_values($this->config->user['DBTABLE_METERS'], 'meter_fqoid', $tenant_meter_prefix . $shorttype . $next_meter_oid, 'id', $meter['id']);
+
+                $tenant_network_substation_id = $this->db->get_column_by_column_value($this->config->user['DBTABLE_TENANTS'], 'network_substation_id', 'id', $tenant);
+                $this->db->update_column_by_column_values($this->config->user['DBTABLE_METERS'], 'meter_substation_id', $tenant_network_substation_id, 'id', $meter['id']);
+            }
+        }
+
+        $response->script("window.location.href='/?manage_registrations&registration=$recordid';");
+        return $response;
+    }
+
+    public function dashboard_workflow_refuse_prestage($recordid)
+    {
+
+        $footer_actions = "
+                            <button class=\"search bg-green-gradient\" style=\"border: white 1px solid\" onclick=\"JaxonInteractives.dashboard_workflow_refuse('$recordid')\"><i class=\"fa fa-check-circle\"></i></button>
+                            <button class=\"search bg-red-gradient\" style=\"border: white 1px solid\" onclick=\"window.location.href='/?manage_registrations&registration=$recordid';\"><i class=\"fa fa-ban\"></i></button>
+                        ";
+
+        $response = jaxon()->newResponse();
+        $response->assign('modalheadline', 'innerHTML', "&nbsp;Achtung!");
+        $response->assign('modalbody', 'innerHTML',
+            "Der Mitgliedsantrag wird abgewiesen und der Antragsteller<br />" .
+            "wird via E-Mail &uuml;ber diese Entscheidung informiert.<br />" .
+            "Soll dieser Vorgang wirklich abgeschlossen werden?");
+        $response->assign('modalfooter', 'innerHTML', $footer_actions);
+        $response->assign('modal', 'style.display', 'inline');
+
+        return $response;
+    }
+
+    public function dashboard_workflow_refuse($recordid)
+    {
+        $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'state', 'refused', 'id', $recordid);
+        $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'statechange_date', time(), 'id', $recordid);
+
+        $response = jaxon()->newResponse();
+        $response->script("window.location.href='/?manage_registrations&registration=$recordid';");
+        return $response;
+    }
+
+    public function dashboard_workflow_fully_accepted($recordid)
+    {
+        $response = jaxon()->newResponse();
+
+        $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'state', 'active', 'id', $recordid);
+        $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'statechange_date', time(), 'id', $recordid);
+
+        $associated_meters = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_METERS'], 'registration_id', $recordid);
+
+        $approved_meter_list = '';
+        foreach($associated_meters as $meter)
+        {
+            if($meter['meter_state'] == 'pending')
+            {
+                $this->db->update_column_by_column_values($this->config->user['DBTABLE_METERS'], 'meter_state', 'approved', 'id', $meter['id']);
+                $approved_meter_list .= $meter['meter_id'] . '<br />';
+            }
+
+            if($meter['meter_state'] == 'approved')
+            {
+                $approved_meter_list .= $meter['meter_id'] . '<br />';
+            }
+        }
+
+        $mail_template = file_get_contents('assets/templates/mail_onboarding_successful.html');
+
+        $registration_info = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'id', $recordid);
+        $registration_info = $registration_info[0];
+
+        $tenant_info = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_TENANTS'], 'id', $registration_info['tenant']);
+        $tenant_info = $tenant_info[0];
+
+        if ($registration_info['type'] == 'company')
+        {
+            $mail_template = str_replace('{%FIRSTNAME%}', $registration_info['company_name'], $mail_template);
+            $mail_template = str_replace('{%LASTNAME%}', '', $mail_template);
+        }
+        else
+        {
+            $mail_template = str_replace('{%FIRSTNAME%}', $registration_info['firstname'], $mail_template);
+            $mail_template = str_replace('{%LASTNAME%}', $registration_info['lastname'], $mail_template);
+        }
+        $mail_template = str_replace('{%USEREMAIL%}', $registration_info['email'], $mail_template);
+        $mail_template = str_replace('{%REFERRER%}', $tenant_info['referrer'], $mail_template);
+        $mail_template = str_replace('{%FULLNAME%}', $tenant_info['fullname'], $mail_template);
+        $mail_template = str_replace('{%SHORTNAME%}', $tenant_info['shortname'], $mail_template);
+        $mail_template = str_replace('{%SLOGAN%}', $tenant_info['slogan'], $mail_template);
+        $mail_template = str_replace('{%DOWNLOAD_TOS%}', $tenant_info['reegistry_website'] . '/' . $tenant_info['download_tos'], $mail_template);
+        $mail_template = str_replace('{%DOWNLOAD_BYLAWS%}', $tenant_info['reegistry_website'] . '/' . $tenant_info['download_bylaws'], $mail_template);
+        $mail_template = str_replace('{%DOWNLOAD_GDPR%}', $tenant_info['reegistry_website'] . '/' . $tenant_info['download_gdpr'], $mail_template);
+        $mail_template = str_replace('{%REEGISTRY_WEBSITE%}', $tenant_info['reegistry_website'], $mail_template);
+        $mail_template = str_replace('{%CONTACT_WEBSITE%}', $tenant_info['contact_website'], $mail_template);
+        $mail_template = str_replace('{%CONTACT_EMAIL%}', $tenant_info['contact_email'], $mail_template);
+        $mail_template = str_replace('{%CREDITOR_ID%}', $tenant_info['creditor_id'], $mail_template);
+        $mail_template = str_replace('{%APPROVED_METER_IDS%}', $approved_meter_list, $mail_template);
+
+        $this->view->object_broker->instance['email']->subject = "Deine Mitgliedschaft bei " . $tenant_info['shortname'];
+        $this->view->object_broker->instance['email']->AddRecipient($registration_info['email']);
+        $this->view->object_broker->instance['email']->messageHTML = $mail_template;
+
+        if ($this->view->object_broker->instance['email']->Send('smtp'))
+        {
+            $mail_sent = true;
+        }
+        else
+        {
+            $mail_sent = false;
+        }
+
+        if($mail_sent === false)
+        {
+            $response->alert('Fehler: Das Info-Mail konnte nicht gesendet werden.');
+        }
+        else
+        {
+            $response->alert('Info-Mail gesendet.');
+        }
+
+        $response->script("window.location.href='/?manage_registrations&registration=$recordid';");
         return $response;
     }
 

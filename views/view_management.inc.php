@@ -547,7 +547,7 @@ class VIEW_MANAGEMENT extends VIEW
                 ';
 
                 print '
-                    <div class="dataTables_featurebutton" style="width:260px" onClick="export_serialized_form(\'listselectors\');">
+                    <div class="dataTables_featurebutton" style="width:260px;" onClick="export_serialized_form(\'listselectors\');">
                         <i class="fa fa-file-excel"></i> &nbsp; Exportieren als <b>EEGfaktura XLSX</b>
                     </div>
                 ';
@@ -660,7 +660,7 @@ class VIEW_MANAGEMENT extends VIEW
 
             case 'meter_state':
                 print '<select class="filter" id="filter-' . $column_name . '" name="filter-' . $column_name . '" onchange="JaxonInteractives.dashboard_set_filter(' . "'" . $column_name . "'" . ', document.getElementById(' . "'filter-" . $column_name . "'" . ').value);">';
-                $options_arr = ['new' => 'Neu', 'onboarding' => "In Bearbeitung", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert", 'refused' => "Abgelehnt"];
+                $options_arr = ['new' => 'Neu', 'pending' => "In Bearbeitung", 'approved' => "Aktiv", 'suspended' => "Gesperrt", 'inactive' => "Deaktiviert", 'refused' => "Abgelehnt"];
 
                 if($filter_value == 'null') $selected = 'selected'; else $selected = '';
                 print '<option ' . $selected . ' value="">&nbsp;</option>';
@@ -696,7 +696,7 @@ class VIEW_MANAGEMENT extends VIEW
 
             case 'meter_state':
 
-                $state_conversion = ['new' => 'Neu', 'onboarding' => "In Bearbeitung", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert", 'refused' => "Abgelehnt"];
+                $state_conversion = ['new' => 'Neu', 'pending' => "In Bearbeitung", 'approved' => "Aktiv", 'suspended' => "Gesperrt", 'inactive' => "Deaktiviert", 'refused' => "Abgelehnt"];
                 return $state_conversion[$registration_arr['meter_state']];
 
             case 'banking_consent':

@@ -824,25 +824,11 @@ sorger!)<br />';
         print "<div style=\"clear:both\"></div>";
         print "</div><br />";
 
-        print "</div></div><br />";
-
     }
 
     private function view_render_finished()
     {
         $_SESSION['finished'] = true;
-
-        print "&nbsp;<br />&nbsp;<br />";
-        print "<h2>Vielen Dank f&uuml;r Deine Anmeldung!</h2>";
-        print "&nbsp;<br>Deine Daten werden schnellstm&ouml;glich &uuml;berpr&uuml;ft und in unser System &uuml;bernommen.<br />Sobald das Datum feststeht, ab dem Du eneuerbare Energie aus unserer Gemeinschaft beziehen wirst, kontaktieren wir Dich umgehend. <br /><br />Solltest Du Fragen haben, stehen wir Dir selbstverst&auml;ndlich gerne zur Verf&uuml;gung.<br />";
-
-        print "<br />&nbsp;<br />&nbsp;<br />";
-        print "<h3>Dein Passwort:</h3>";
-        print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
-        print "<br /><h2>" . $_SESSION['mnemonic'] . "</h2>";
-        print "</div>&nbsp;<br />";
-        print "Du kannst dieses Passwort nutzen, um jederzeit den Bearbeitungsfortschritt Deines Antrages einzusehen<br />und nat&uuml;rlich um Deine Daten zu &auml;ndern.<br />&nbsp;<br /><b>Bitte bewahre es gut auf!</b>";
-        print "&nbsp;<br />";
 
         // check if this mnemonic was already stored
         $hashed_mnemonic = hash('sha256', $_SESSION['mnemonic']);
@@ -860,6 +846,22 @@ sorger!)<br />';
             $registration_array['mnemonic'] = $hashed_mnemonic;
             $registration_array['type'] = $_SESSION['generic_information']['join_type'];
             $registration_array['state'] = 'new';
+
+            $tenant_link = $this->db->get_column_by_column_value($this->config->user['DBTABLE_TENANTS'], 'contact_website', 'id', $_SESSION['tenant']);
+
+            print "&nbsp;<br />&nbsp;<br />";
+            print "<h2>Vielen Dank f&uuml;r Deine Anmeldung!</h2>";
+            print "&nbsp;<br>Deine Daten werden schnellstm&ouml;glich &uuml;berpr&uuml;ft und in unser System &uuml;bernommen.<br />Sobald das Datum feststeht, ab dem Du eneuerbare Energie aus unserer Gemeinschaft beziehen wirst, kontaktieren wir Dich umgehend. <br /><br />Solltest Du Fragen haben, stehen wir Dir selbstverst&auml;ndlich gerne zur Verf&uuml;gung.<br />";
+            print "In der Zwischenzeit, besuche gerne <a href=\"$tenant_link\">unsere Website</A><br />";
+            print "<br />&nbsp;<br />&nbsp;<br />";
+            print "<h3>Dein Passwort:</h3>";
+            print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
+            print "<br /><h2>" . $_SESSION['mnemonic'] . "</h2>";
+            print "</div>&nbsp;<br />";
+            print "Du kannst dieses Passwort nutzen, um jederzeit den Bearbeitungsfortschritt Deines Antrages einzusehen<br />und nat&uuml;rlich um Deine Daten zu &auml;ndern.<br />&nbsp;<br /><b>Bitte bewahre es gut auf!</b>";
+            print "&nbsp;<br />";
+            print "&nbsp;<br />";
+            print "&nbsp;<br />";
 
             switch($_SESSION['generic_information']['join_type'])
             {
