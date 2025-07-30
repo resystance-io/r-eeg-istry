@@ -1,7 +1,7 @@
 <?php
 
 // avoid getting messed up by poorly configured webservers
-error_reporting(null);
+error_reporting(0);
 
 function isValidUUIDv4(string $uuid): bool {
     return preg_match(
