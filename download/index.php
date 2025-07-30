@@ -1,5 +1,8 @@
 <?php
 
+// avoid getting messed up by poorly configured webservers
+error_reporting(null);
+
 function isValidUUIDv4(string $uuid): bool {
     return preg_match(
             '/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i',
