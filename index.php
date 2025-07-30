@@ -3,7 +3,7 @@
     // Turn off all error reporting since some servers do not provide a way
     // to manipulate their php.ini and we can't handle warnings that break our
     // session setup:
-    error_reporting(null);
+    error_reporting(0);
 
     include_once('views/view.inc.php');
     $view = new VIEW();
