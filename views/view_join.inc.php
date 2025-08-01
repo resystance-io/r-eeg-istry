@@ -263,10 +263,12 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                         $mail_template = str_replace('{%CONTACT_EMAIL%}', $this->tenant_info['contact_email'], $mail_template);
                         $mail_template = str_replace('{%CREDITOR_ID%}', $this->tenant_info['creditor_id'], $mail_template);
 
-
-
                         $this->object_broker->instance['email']->subject = "Deine Anmeldung an der EEG " . $this->tenant_info['shortname'];
                         $this->object_broker->instance['email']->AddRecipient($_SESSION['generic_information']['email']['value']);
+                        if($this->tenant_info['carbon_copy_email'])
+                        {
+                            $this->object_broker->instance['email']->AddBCC($this->tenant_info['carbon_copy_email']);
+                        }
                         $this->object_broker->instance['email']->messageHTML = $mail_template;
 
                         if ($this->object_broker->instance['email']->Send('smtp'))
