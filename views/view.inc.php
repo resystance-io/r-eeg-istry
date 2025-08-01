@@ -7,6 +7,7 @@ class VIEW
     public $session;
     public $mail;
     public $xlsx;
+    public $fpdf;
 
     public function __construct()
     {
@@ -45,6 +46,9 @@ class VIEW
 
         require_once('controllers/controller_xlsx.inc.php');
         $this->xlsx = new Shuchkin\SimpleXLSXGen;
+
+        require_once('controllers/controller_fpdf.inc.php');
+        $this->fpdf = new FPDF();
     }
 
     public function view_handle_backend_login()

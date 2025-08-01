@@ -561,7 +561,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                       <i class="fa fa-envelope bg-blue"></i>
                       <div class="timeline-item" style="width:98%;background-color:#ffffffaa"">
                         <span class="time"><i class="fa fa-clock-o"></i> </span>
-                        <h3 class="timeline-header">Z&auml;hlpunkte an EEGfaktura &uuml;bermitteln</h3>
+                        <h3 class="timeline-header">Z&auml;hlpunkte f&uuml;r EEGfaktura exportieren</h3>
                         <div class="timeline-body" style="text-align:center;font-size:12pt;">
                           Es wurden bislang keine Z&auml;hlpunkte registriert.
                         </div>
@@ -577,12 +577,12 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                       <i class="fa fa-tasks bg-blue"></i>
                       <div class="timeline-item" style="width:98%">
                         <span class="time"><i class="fa fa-clock-o"></i> </span>
-                        <h3 class="timeline-header">Z&auml;hlpunkte an EEGfaktura &uuml;bermitteln</h3>
+                        <h3 class="timeline-header">Z&auml;hlpunkte f&uuml;r EEGfaktura exportieren</h3>
                         <div class="timeline-body" style="text-align:center;font-size:12pt;">
-                          ' . $new_meters_count . ' Z&auml;hlpunkt(e) wurde(n) noch nicht &uuml;bermittelt
+                          ' . $new_meters_count . ' Z&auml;hlpunkt(e) wurde(n) noch nicht exportiert.
                         </div>
                         <div class="timeline-footer" style="text-align:center">
-                          <a class="btn btn-primary btn-xs" style="font-size:12pt;padding:8px;" onClick="export_serialized_form(\'listselectors\');">&nbsp;XLSX exportieren&nbsp;</a>
+                          <a class="btn btn-primary btn-xs" style="font-size:12pt;padding:8px;" onClick="export_serialized_form(\'listselectors\');">&nbsp;Neue Z&auml;hlpunkte exportieren&nbsp;</a>
                         </div>
                       </div>
                     </li>
@@ -596,14 +596,43 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                       <i class="fa fa-check bg-blue"></i>
                       <div class="timeline-item" style="width:98%;background-color:#ffffffaa"">
                         <span class="time"><i class="fa fa-clock-o"></i> </span>
-                        <h3 class="timeline-header">Z&auml;hlpunkte an EEGfaktura &uuml;bermitteln</h3>
+                        <h3 class="timeline-header">Z&auml;hlpunkte f&uuml;r EEGfaktura exportieren</h3>
                         <div class="timeline-body" style="text-align:center;font-size:12pt;">
-                          Es wurden alle Z&auml;hlpunkte an EEGfaktura &uuml;bermittelt.
+                          Es wurden alle Z&auml;hlpunkte erfolgreich exportiert.
                         </div>
                       </div>
                     </li>
                 ';
             }
+        }
+
+        $registration_uuid_pdf = hash('MD5', $registration['id'] . '_pdf');
+        $registration_uuid_xlsx = hash('MD5',$registration['id'] . '_xlsx');
+
+        if(is_file('download/' . $registration_uuid_xlsx) || is_file('download/' . $registration_uuid_pdf))
+        {
+            print '    
+                    <!-- workflow item -->
+                    <li>
+                      <i class="fa fa-download bg-blue"></i>
+                      <div class="timeline-item" style="width:98%">
+                        <span class="time"><i class="fa fa-clock-o"></i> </span>
+                        <div class="timeline-footer" style="text-align:center">';
+
+            if(is_file('download/' . $registration_uuid_xlsx))
+            {
+                print '<a class="btn btn-primary btn-xs" style="font-size:12pt;padding:8px;" onClick="window.open(\'/download/?' . $registration_uuid_xlsx . '=export.xlsx\', \'_blank\'); window.location.href=\'/?manage_registrations&registration=' . $registration['id'] . '\';">&nbsp;Download XLSX&nbsp;</a>';
+            }
+
+            if(is_file('download/' . $registration_uuid_pdf))
+            {
+                print '&nbsp;<a class="btn btn-primary btn-xs" style = "font-size:12pt;padding:8px;" onClick = "window.open(\'/download/?' . $registration_uuid_pdf . '=export.pdf\', \'_blank\'); window.location.href=\'/?manage_registrations&registration=' . $registration['id'] . '\';">&nbsp;Download PDF&nbsp;</a >';
+            }
+            
+            print '            </div>
+                      </div>
+                    </li>
+            ';
         }
 
         if($pending_meters_count > 0)

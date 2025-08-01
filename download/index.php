@@ -10,6 +10,17 @@ function isValidUUIDv4(string $uuid): bool {
         ) === 1;
 }
 
+function isValidMD5($str): bool
+{
+    // Must be a string of exactly 32 characters
+    if (!is_string($str) || strlen($str) !== 32) {
+        return false;
+    }
+
+    // All characters must be hexadecimal (0–9, a–f, A–F)
+    return ctype_xdigit($str);
+}
+
 if(count($_GET) != 1)
 {
     print '
@@ -24,9 +35,10 @@ if(count($_GET) != 1)
 }
 
 $file_uuid = array_key_first($_GET);
+$file_name = $_GET[$file_uuid];
 
 // Check if link format is correct (first array key must be a uuid4)
-if(!isValidUUIDv4($file_uuid))
+if(!isValidUUIDv4($file_uuid) && !isValidMD5($file_uuid))
 {
     print '
     <blockquote><br /><span style="color:#000000; font-size:14pt;">
@@ -57,9 +69,10 @@ if(!is_file($file_path))
 
 // Okay, we passed every check, let's provide the file
 
+if($file_name)  $filename = $file_name; else $filename = 'download';
 header('Content-Description: File Transfer');
 header('Content-Type: application/octet-stream');
-header('Content-Disposition: attachment; filename=export.xlsx');
+header('Content-Disposition: attachment; filename=' . $filename);
 header('Content-Transfer-Encoding: binary');
 header('Expires: 0');
 header('Cache-Control: must-revalidate, post-check=0, pre-check=0');

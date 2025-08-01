@@ -47,10 +47,10 @@ $database_migrations[7] = [
 ];
 
 $database_migrations[8] = [
-    "ALTER TABLE `tenants` ADD `network_id` VARCHAR(16)  NULL  DEFAULT NULL  AFTER `meter_prefix_short`;",
-    "ALTER TABLE `tenants` ADD `community_identifier` VARCHAR(64)  NULL  DEFAULT NULL  AFTER `meter_prefix_short`;",
-    "ALTER TABLE `tenants` ADD `community_scope` ENUM('local','regional','national')  NULL  DEFAULT NULL  AFTER `community_identifier`;",
-    "ALTER TABLE `registrations` ADD `statechange_date` INT(11)  NULL  DEFAULT NULL  AFTER `migration_date`;",
+    "ALTER TABLE `tenants` ADD COLUMN IF NOT EXISTS `network_id` VARCHAR(16)  NULL  DEFAULT NULL  AFTER `meter_prefix_short`;",
+    "ALTER TABLE `tenants` ADD COLUMN IF NOT EXISTS  `community_identifier` VARCHAR(64)  NULL  DEFAULT NULL  AFTER `meter_prefix_short`;",
+    "ALTER TABLE `tenants` ADD COLUMN IF NOT EXISTS  `community_scope` ENUM('local','regional','national')  NULL  DEFAULT NULL  AFTER `community_identifier`;",
+    "ALTER TABLE `registrations` ADD COLUMN IF NOT EXISTS  `statechange_date` INT(11)  NULL  DEFAULT NULL  AFTER `migration_date`;",
     "ALTER TABLE `meters` CHANGE `meter_state` `meter_state` ENUM('new','pending','approved','suspended','inactive','refused')  CHARACTER SET utf8mb4  COLLATE utf8mb4_general_ci  NULL  DEFAULT 'new';",
     "UPDATE `temporary` SET `value1` = '8' WHERE `feature` = 'database_version';"
 ];

@@ -429,6 +429,7 @@ class VIEW_MANAGEMENT extends VIEW
                     $class = 'statenew';
                     break;
 
+                case 'pending':
                 case 'onboarding':
                     $color = '#A99DEC';
                     $icon = 'fa-hourglass-half';
@@ -436,6 +437,7 @@ class VIEW_MANAGEMENT extends VIEW
                     break;
 
                 case 'active':
+                case 'approved':
                     $color = '#B3DB82';
                     $icon = 'fa-play';
                     $class = 'stateactive';
@@ -447,6 +449,7 @@ class VIEW_MANAGEMENT extends VIEW
                     $class = 'statesuspended';
                     break;
 
+                case 'inactive':
                 case 'deactivated':
                     $color = '#ED6C89';
                     $icon = 'fa-stop';
