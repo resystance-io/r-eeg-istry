@@ -199,6 +199,12 @@
                     include_once('views/view_lookup.inc.php');
                     $view_lookup = new VIEW_LOOKUP();
                     $view_lookup->view_render();
+                } elseif (isset($_REQUEST['imprint']))
+                {
+                    // people trying to look up their registration data
+                    include_once('views/view_imprint.inc.php');
+                    $view_lookup = new VIEW_IMPRINT();
+                    $view_lookup->view_render();
                 } elseif (isset($_REQUEST['debug']))
                 {
                     // people that are trying to debug this madness
@@ -307,6 +313,7 @@
 
             <div style="background-color: #151515; color: white; padding: 5px; width:100%; height: 46px; vertical-align: middle; text-align: right;">
                 <div style="float:left;font-family:Helvetica;font-size:10pt;color:dimgrey;padding-left:6px;"></div><div style="float:right;font-family:Helvetica;font-size:10pt;color:dimgrey;padding-right:4px;"><?php print $pi_menu; ?>&nbsp;&nbsp;</div>
+                <div style="float:left;font-family:Helvetica;font-size:10pt;color:dimgrey;padding-left:6px;"></div><div style="float:left;font-family:Helvetica;font-size:10pt;color:dimgrey;padding-left:4px;"><a style="color:white" href="/?imprint">&nbsp;Impressum</a></div>
             </div>
 
             <!-- Scripts -->

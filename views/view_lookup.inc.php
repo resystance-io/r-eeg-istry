@@ -4,6 +4,19 @@ include_once('view.inc.php');
 
 class VIEW_LOOKUP extends VIEW
 {
+
+    private $tenant_info;
+    public function __construct()
+    {
+        parent::__construct();
+
+        if(isset($_SESSION['tenant']) && $_SESSION['tenant'] != '')
+        {
+            $tenant_info = $this->object_broker->instance['db']->get_rows_by_column_value($this->config->user['DBTABLE_TENANTS'], 'id', $_SESSION['tenant'], $limit = 1);
+            $this->tenant_info = $tenant_info[0];
+        }
+    }
+
     public function view_render()
     {
 
@@ -20,7 +33,7 @@ class VIEW_LOOKUP extends VIEW
             default:
                 print '
                     <header id="header">
-                        <h1>Erneuerbare Energiegemeinschaft VIERE</h1>
+                        <h1>' . $this->tenant_info['fullname'] . '</h1>
                         <p>Beitrittsstatus- und Datenabfrage<br /></p>
         
                         <p style="color:white">Bitte melde Dich mit Deinen Zugangsdaten an!</p>
