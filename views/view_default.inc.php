@@ -26,6 +26,7 @@ class VIEW_DEFAULT extends VIEW
             if(isset($_SESSION['backend_authenticated']) && $_SESSION['backend_authenticated'] != null)
             {
                 print '<button type="button" class="mainbtnred" id="btn_manage" onClick="location.href=\'?manage\'"><img src="images/noun_manage.png" alt="Management" id="manage_eeg" style="height:60px"><br />Ich m&ouml;chte diese EEG verwalten</button>';
+                print '<button type="button" class="mainbtnred" id="btn_manage" onClick="location.href=\'?fastjoin\'"><img src="images/noun_analogue.png" alt="Management" id="manage_eeg" style="height:60px"><br />Analoge Registrierung eingeben</button>';
             }
 
             print '

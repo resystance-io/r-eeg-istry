@@ -72,7 +72,7 @@ class VIEW_JOIN_BASE extends VIEW
             {
                 print '
                     <script>
-                        function formatInput(input) {
+                        function formatIbanInput(input) {
                           let value = input.value;
                         
                           // Remove all dashes and spaces
@@ -86,7 +86,7 @@ class VIEW_JOIN_BASE extends VIEW
                         }
                         
                         document.getElementById(\'' . $id . '\').addEventListener(\'input\', function() {
-                            formatInput(this);
+                            formatIbanInput(this);
                         });
                     </script>
                 ';
@@ -95,7 +95,7 @@ class VIEW_JOIN_BASE extends VIEW
             {
                 print '
                     <script>
-                        function formatInput(input) {      
+                        function formatHwInput(input) {      
 
                             // removes all non-numbers
                             var number = input.value.replace(/\D/g, \'\');
@@ -119,7 +119,7 @@ class VIEW_JOIN_BASE extends VIEW
                         }
                         
                         document.getElementById(\'' . $id . '\').addEventListener(\'input\', function() {
-                            formatInput(this);
+                            formatHwInput(this);
                         });
                     </script>
                 ';

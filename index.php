@@ -193,6 +193,12 @@
                     include_once('views/view_join.inc.php');
                     $view_join = new VIEW_JOIN();
                     $view_join->view_render();
+                } elseif (isset($_REQUEST['fastjoin']))
+                {
+                    // people trying to join the eeg
+                    include_once('views/view_join.inc.php');
+                    $view_join = new VIEW_JOIN();
+                    $view_join->view_render(true);
                 } elseif (isset($_REQUEST['lookup']))
                 {
                     // people trying to look up their registration data

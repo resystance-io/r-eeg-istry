@@ -17,7 +17,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         }
     }
 
-    public function view_render()
+    public function view_render($fastjoin=false)
     {
         print '
                     <header id="header">
@@ -27,7 +27,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
 
         print "";
 
-        if(isset($_REQUEST['join']))
+        if(isset($_REQUEST['join']) || isset($_REQUEST['fastjoin']))
         {
             if(isset($_REQUEST['step']) && $_REQUEST['step'] > 0)
             {
@@ -41,13 +41,14 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                 }
             }
 
-            switch ($_REQUEST['join'])
+            if($fastjoin === true)    $selection = $_REQUEST['fastjoin']; else $selection = $_REQUEST['join'];
+            switch ($selection)
             {
                 case "individual":
                     $_SESSION['generic_information']['join_type'] = "individual";
                     if(isset($_REQUEST['step']))
                     {
-                        $this->view_render_step();
+                        $this->view_render_step($fastjoin);
                     }
                     break;
 
@@ -55,7 +56,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                     $_SESSION['generic_information']['join_type'] = "agriculture";
                     if(isset($_REQUEST['step']))
                     {
-                        $this->view_render_step();
+                        $this->view_render_step($fastjoin);
                     }
                     break;
 
@@ -63,7 +64,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                     $_SESSION['generic_information']['join_type'] = "company";
                     if(isset($_REQUEST['step']))
                     {
-                        $this->view_render_step();
+                        $this->view_render_step($fastjoin);
                     }
                     break;
 
@@ -76,29 +77,51 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                         </header>
                     ';
 
-                    $this->view_render_switch_dialogue();
+                    $this->view_render_switch_dialogue($fastjoin);
                     break;
             }
         }
     }
 
 
-    private function view_render_switch_dialogue()
+    private function view_render_switch_dialogue($fastjoin = false)
     {
-        print '
-            <div class="button_container">
-                <button type="button" class="mainbtn" style="" id="btn_enroll_company" onClick="location.href=' . "'" . "?join=company&step=0" . "'" . '"><img src="images/noun_company.png" alt="Join as Company" id="join_eeg" style="height: 60px; margin-left: 30px;"><br />Als Unternehmen beitreten</button>
-                <button type="button" class="mainbtn" style="" id="btn_enroll_individual" onClick="location.href=' . "'" . "?join=individual&step=0" . "'" . '"><img src="images/noun_individual.png" alt="Join as Individual" id="lookup_eeg" style="height: 60px; margin-left: 30px;"><br />Als Privatperson beitreten</button>
-                <button type="button" class="mainbtn" style="" id="btn_enroll_agriculture" onClick="location.href=' . "'" . "?join=agriculture&step=0" . "'" . '"><img src="images/noun_agriculture.png" alt="Join as Agriculture" id="lookup_eeg" style="height: 60px; margin-left: 30px;"><br />Als Landwirtschaft beitreten</button>
-            </div>
-        ';
+        if($fastjoin === true)
+        {
+            print '
+                <div class="button_container">
+                    <button type="button" class="mainbtn" style="" id="btn_enroll_company" onClick="location.href=' . "'?fastjoin=company&step=0'" . '"><img src="images/noun_company.png" alt="Join as Company" id="join_eeg" style="height: 60px; margin-left: 30px;"><br />Ein Unternehmen eintragen</button>
+                    <button type="button" class="mainbtn" style="" id="btn_enroll_individual" onClick="location.href=' . "'?fastjoin=individual&step=0'" . '"><img src="images/noun_individual.png" alt="Join as Individual" id="lookup_eeg" style="height: 60px; margin-left: 30px;"><br />Eine Privatperson eintragen</button>
+                    <button type="button" class="mainbtn" style="" id="btn_enroll_agriculture" onClick="location.href=' . "'?fastjoin=agriculture&step=0'" . '"><img src="images/noun_agriculture.png" alt="Join as Agriculture" id="lookup_eeg" style="height: 60px; margin-left: 30px;"><br />Eine Landwirtschaft eintragen</button>
+                </div>
+            ';
+        }
+        else
+        {
+            print '
+                <div class="button_container">
+                    <button type="button" class="mainbtn" style="" id="btn_enroll_company" onClick="location.href=' . "'?join=company&step=0'" . '"><img src="images/noun_company.png" alt="Join as Company" id="join_eeg" style="height: 60px; margin-left: 30px;"><br />Als Unternehmen beitreten</button>
+                    <button type="button" class="mainbtn" style="" id="btn_enroll_individual" onClick="location.href=' . "'?join=individual&step=0'" . '"><img src="images/noun_individual.png" alt="Join as Individual" id="lookup_eeg" style="height: 60px; margin-left: 30px;"><br />Als Privatperson beitreten</button>
+                    <button type="button" class="mainbtn" style="" id="btn_enroll_agriculture" onClick="location.href=' . "'?join=agriculture&step=0'" . '"><img src="images/noun_agriculture.png" alt="Join as Agriculture" id="lookup_eeg" style="height: 60px; margin-left: 30px;"><br />Als Landwirtschaft beitreten</button>
+                </div>
+            ';
+        }
     }
 
-    private function view_render_step()
+    private function view_render_step($fastjoin = false)
     {
+        if($fastjoin === true)
+        {
+            $join_layout = $this->config->user['FAST_JOIN_LAYOUT'];
+        }
+        else
+        {
+            $join_layout = $this->config->user['JOIN_LAYOUT'];
+        }
+
         if(isset($_REQUEST['step']))
         {
-            if($_REQUEST['step'] == count($this->config->user['JOIN_LAYOUT']))
+            if($_REQUEST['step'] == count($join_layout))
             {
                 $progress_bar_width = 640;
                 $previous_step = 0;
@@ -109,8 +132,8 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                 $previous_step = $_REQUEST['step'] - 1;
             }
 
-            $progress_fill_width = ceil(($progress_bar_width / count($this->config->user['JOIN_LAYOUT'])) * $_REQUEST['step']);
-            $progress_percent = ceil((100 / count($this->config->user['JOIN_LAYOUT'])) * $_REQUEST['step']);
+            $progress_fill_width = ceil(($progress_bar_width / count($join_layout)) * $_REQUEST['step']);
+            $progress_percent = ceil((100 / count($join_layout)) * $_REQUEST['step']);
 
             if($progress_percent == 0)
             {
@@ -123,9 +146,9 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                 $progress_text = $progress_percent . '%';
             }
 
-            if(isset($this->config->user['JOIN_LAYOUT'][$_REQUEST['step']]))
+            if(isset($join_layout[$_REQUEST['step']]))
             {
-                foreach ($this->config->user['JOIN_LAYOUT'][$_REQUEST['step']] as $panel)
+                foreach ($join_layout[$_REQUEST['step']] as $panel)
                 {
                     switch ($panel)
                     {
@@ -206,8 +229,8 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                     $step_caption = 'Weiter zum n&auml;chsten Schritt';
                 }
                 print '<div style="width:100%">';
-                print '<div style="float:left;padding-right:20px;"><button type="button" class="defaultbtn" style="float:left;max-width:100px" onClick="JaxonInteractives.step_back(\'' . $_REQUEST['step'] . '\');"><i class="fa fa-arrow-left"></i></button></div>';
-                print '<div style="float:left;padding-right:20px;"><button type="button" class="defaultbtn" style="float:left" onClick="JaxonInteractives.next_step(\'' . $_REQUEST['step'] . '\');">' . $step_caption . '</button></div>';
+                print '<div style="float:left;padding-right:20px;"><button type="button" class="defaultbtn" style="float:left;max-width:100px" onClick="JaxonInteractives.step_back(\'' . $_REQUEST['step'] . '\', true);"><i class="fa fa-arrow-left"></i></button></div>';
+                print '<div style="float:left;padding-right:20px;"><button type="button" class="defaultbtn" style="float:left" onClick="JaxonInteractives.next_step(\'' . $_REQUEST['step'] . '\', true);">' . $step_caption . '</button></div>';
                 print '<div style="float:left;padding-top:20px;text-align:center">';
                 print '    <div style="width:' . $progress_bar_width . 'px;background-color:rgba(255, 255, 255, 0.4);">';
                 print '        <div style="width:' . $progress_fill_width . 'px;background-color:lightseagreen;text-align:center">' . $progress_text . '</div>' . $progress_bar_text;
@@ -796,6 +819,7 @@ sorger!)<br />';
                 <div class="dz-message" data-dz-message><span style="color:dimgrey;font-weight:normal;">Datei zur &Uuml;bermittlung hier ablegen oder klicken um eine Datei auszuw&auml;hlen</span></div>
             </form>
         ';
+        print "</div><br />";
 
     }
 

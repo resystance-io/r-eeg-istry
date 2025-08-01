@@ -306,30 +306,54 @@ class Interactives
         $_SESSION['meters'][$meter_key][$record]['value'] = $value;
     }
 
-    public function step_back($current_step)
+    public function step_back($current_step, $fastjoin = false)
     {
         // navigate one step back (without checking the integrity of the data provided in the current step)
         $response = jaxon()->newResponse();
         if($current_step > 0)
         {
             $next_step = $current_step - 1;
-            $response->script("window.location.href='/?join=" . $_SESSION['generic_information']['join_type'] .  "&step=" . $next_step . "';");
+
+            if($fastjoin === true)
+            {
+                $response->script("window.location.href='/?fastjoin=" . $_SESSION['generic_information']['join_type'] . "&step=" . $next_step . "';");
+            }
+            else
+            {
+                $response->script("window.location.href='/?join=" . $_SESSION['generic_information']['join_type'] . "&step=" . $next_step . "';");
+            }
         }
         else
         {
-            $response->script("window.location.href='/?join';");
+            if($fastjoin === true)
+            {
+                $response->script("window.location.href='/?fastjoin';");
+            }
+            else
+            {
+                $response->script("window.location.href='/?join';");
+            }
         }
         return $response;
     }
 
-    public function next_step($current_step)
+    public function next_step($current_step, $fastjoin = false)
     {
         // navigate one step forward (and check the integrity of the data provided in the current step)
         $response = jaxon()->newResponse();
 
-        if(isset($this->config->user['JOIN_LAYOUT'][$current_step]))
+        if($fastjoin === true)
         {
-            foreach($this->config->user['JOIN_LAYOUT'][$current_step] as $panel)
+            $joinlayout = $this->config->user['FAST_JOIN_LAYOUT'];
+        }
+        else
+        {
+            $joinlayout = $this->config->user['JOIN_LAYOUT'];
+        }
+
+        if(isset($joinlayout[$current_step]))
+        {
+            foreach($joinlayout[$current_step] as $panel)
             {
                 switch($panel)
                 {
@@ -358,12 +382,6 @@ class Interactives
                         break;
 
                     case 'consumption':
-                        if($this->check_step_integrity_meters($response) === false)
-                        {
-                            return $response;
-                        }
-                        break;
-
                     case 'supply':
                         if($this->check_step_integrity_meters($response) === false)
                         {
@@ -417,7 +435,14 @@ class Interactives
 
             $next_step = $current_step + 1;
             $_SESSION['latestsave'] = $current_step;
-            $response->script("window.location.href='/?join=" . $_SESSION['generic_information']['join_type'] .  "&step=" . $next_step . "';");
+            if($fastjoin === true)
+            {
+                $response->script("window.location.href='/?fastjoin=" . $_SESSION['generic_information']['join_type'] . "&step=" . $next_step . "';");
+            }
+            else
+            {
+                $response->script("window.location.href='/?join=" . $_SESSION['generic_information']['join_type'] . "&step=" . $next_step . "';");
+            }
             return $response;
         }
     }
