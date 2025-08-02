@@ -36,7 +36,14 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                 {
                     // this step is ahead of its time. Let's go back to the next feasible one
                     $feasible_step = $_SESSION['latestsave'] + 1;
-                    print '<script>window.location.href="/?join=' . $_SESSION['generic_information']['join_type'] . '&step=' . $feasible_step . '";</script>';
+                    if(isset($_REQUEST['join']))
+                    {
+                        print '<script>window.location.href="/?join=' . $_SESSION['generic_information']['join_type'] . '&step=' . $feasible_step . '";</script>';
+                    }
+                    elseif(isset($_REQUEST['fastjoin']))
+                    {
+                        print '<script>window.location.href="/?fastjoin=' . $_SESSION['generic_information']['join_type'] . '&step=' . $feasible_step . '";</script>';
+                    }
                     return false;
                 }
             }
@@ -229,8 +236,17 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                     $step_caption = 'Weiter zum n&auml;chsten Schritt';
                 }
                 print '<div style="width:100%">';
-                print '<div style="float:left;padding-right:20px;"><button type="button" class="defaultbtn" style="float:left;max-width:100px" onClick="JaxonInteractives.step_back(\'' . $_REQUEST['step'] . '\', true);"><i class="fa fa-arrow-left"></i></button></div>';
-                print '<div style="float:left;padding-right:20px;"><button type="button" class="defaultbtn" style="float:left" onClick="JaxonInteractives.next_step(\'' . $_REQUEST['step'] . '\', true);">' . $step_caption . '</button></div>';
+
+                if($fastjoin === true)
+                {
+                    print '<div style="float:left;padding-right:20px;"><button type="button" class="defaultbtn" style="float:left;max-width:100px" onClick="JaxonInteractives.step_back(\'' . $_REQUEST['step'] . '\', true);"><i class="fa fa-arrow-left"></i></button></div>';
+                    print '<div style="float:left;padding-right:20px;"><button type="button" class="defaultbtn" style="float:left" onClick="JaxonInteractives.next_step(\'' . $_REQUEST['step'] . '\', true);">' . $step_caption . '</button></div>';
+                }
+                else
+                {
+                    print '<div style="float:left;padding-right:20px;"><button type="button" class="defaultbtn" style="float:left;max-width:100px" onClick="JaxonInteractives.step_back(\'' . $_REQUEST['step'] . '\', false);"><i class="fa fa-arrow-left"></i></button></div>';
+                    print '<div style="float:left;padding-right:20px;"><button type="button" class="defaultbtn" style="float:left" onClick="JaxonInteractives.next_step(\'' . $_REQUEST['step'] . '\', false);">' . $step_caption . '</button></div>';
+                }
                 print '<div style="float:left;padding-top:20px;text-align:center">';
                 print '    <div style="width:' . $progress_bar_width . 'px;background-color:rgba(255, 255, 255, 0.4);">';
                 print '        <div style="width:' . $progress_fill_width . 'px;background-color:lightseagreen;text-align:center">' . $progress_text . '</div>' . $progress_bar_text;
@@ -242,7 +258,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
             }
             else
             {
-                if($_REQUEST['step'] == count($this->config->user['JOIN_LAYOUT']))
+                if($_REQUEST['step'] == count($join_layout))
                 {
                     if($this->view_render_finished() === true)
                     {
@@ -892,15 +908,6 @@ sorger!)<br />';
             switch($_SESSION['generic_information']['join_type'])
             {
                 case 'agriculture':
-                    if (isset($_SESSION['generic_information']['title']['value'])) $registration_array['title'] = $_SESSION['generic_information']['title']['value'];
-                    if (isset($_SESSION['generic_information']['postnomen']['value'])) $registration_array['postnomen'] = $_SESSION['generic_information']['postnomen']['value'];
-                    if (isset($_SESSION['generic_information']['firstname']['value'])) $registration_array['firstname'] = $_SESSION['generic_information']['firstname']['value'];
-                    if (isset($_SESSION['generic_information']['lastname']['value'])) $registration_array['lastname'] = $_SESSION['generic_information']['lastname']['value'];
-                    if (isset($_SESSION['generic_information']['birthdate']['value'])) $registration_array['birthdate'] = $_SESSION['generic_information']['birthdate']['value'];
-                    if (isset($_SESSION['generic_information']['idprovider']['value'])) $registration_array['idprovider'] = $_SESSION['generic_information']['idprovider']['value'];
-                    if (isset($_SESSION['generic_information']['idvalue']['value'])) $registration_array['idvalue'] = $_SESSION['generic_information']['idvalue']['value'];
-                    break;
-
                 case 'individual':
                     if (isset($_SESSION['generic_information']['title']['value'])) $registration_array['title'] = $_SESSION['generic_information']['title']['value'];
                     if (isset($_SESSION['generic_information']['postnomen']['value'])) $registration_array['postnomen'] = $_SESSION['generic_information']['postnomen']['value'];
