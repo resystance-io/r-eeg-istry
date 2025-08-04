@@ -2422,52 +2422,6 @@ class Interactives
             $meters[] = [$tenant['network_id'],$tenant['community_identifier'],$community_scope_arr[$tenant['community_scope']],$registration['meter_addr_zip'],$registration['meter_addr_city'],$registration['meter_addr_street'],$registration['meter_addr_number'],'','','','',str_replace(' ', '', $registration['meter_id']), $flow_direction, $registration['meter_fqoid'], '', 'POOLED', 'SONNE', 'DYNAMIC', $registration['meter_participation'], $registration['title'], $name_1, $name_2, $registration['postnomen'], $business_role, date('d.m.Y', $registration['migration_date']), $registration['banking_iban'], $registration['banking_name'], $registration['banking_institute'], $registration['email'], $registration['phone'], '', $registration['uid'], $registration['member_id'], 'NEW', date('d.m.Y', $registration['registration_date']), '1-1:1.9.0 G.01,1-1:2.9.0 G.02,1-1:2.9.0 G.03'];
         }
 
-        $this->view->fpdf->AddPage();
-        $this->view->fpdf->SetFont('Arial','B',15);
-        $this->view->fpdf->Cell(40,10,'Anmeldung zur Teilnahme an einer erneuerbaren Energiegemeinschaft');
-
-        $this->view->fpdf->Ln(10);
-        $this->view->fpdf->SetFont('Arial','B',14);
-        $this->view->fpdf->Cell(40,10, $tenant['fullname']);
-
-        $this->view->fpdf->Ln(20);
-        $this->view->fpdf->SetFont('Arial','B',10);
-        if($registration['type'] == 'company')
-        {
-            $this->view->fpdf->Cell(40, 10, 'Fassung: Unternehmen');
-
-            $this->view->fpdf->Ln(20);
-            $this->view->fpdf->SetFont('Arial','B',12);
-            $this->view->fpdf->Cell(40,10,"Unternehmensbezeichnung:");
-            $this->view->fpdf->Ln(5);
-            $this->view->fpdf->SetFont('Arial','',12);
-            $this->view->fpdf->Cell(40,10,$registration['company_name']);
-        }
-        else
-        {
-            $this->view->fpdf->Cell(40, 10, 'Fassung: Privathaushalte und landwirtschaftliche Betriebe');
-
-            $this->view->fpdf->Ln(20);
-            $this->view->fpdf->SetFont('Arial','B',12);
-            $this->view->fpdf->Cell(40,10,"Name:");
-            $this->view->fpdf->Ln(5);
-            $this->view->fpdf->SetFont('Arial','',12);
-            $name = '';
-            if($registration['title'])  $name .= $registration['title'] . ' ';
-            $name .= $registration['firstname'] . ' ' . $registration['lastname'];
-            if($registration['postnomen']) $name .= ' ' . $registration['postnomen'];
-            $this->view->fpdf->Cell(40,10, $name);
-        }
-
-        $this->view->fpdf->Ln(10);
-        $this->view->fpdf->SetFont('Arial','B',12);
-        $this->view->fpdf->Cell(40,10,"Adresse:");
-        $this->view->fpdf->Ln(5);
-        $this->view->fpdf->SetFont('Arial','',12);
-        $this->view->fpdf->Cell(40,10,$registration['street'] . ' ' . $registration['number']);
-        $this->view->fpdf->Ln(5);
-        $this->view->fpdf->Cell(40,10,$registration['zip'] . ' ' . $registration['city']);
-
         $account_details = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARD_USERS'], 'id', $_SESSION['backend_authenticated'], 1);
         if(count($account_details) > 0)
         {
@@ -2493,8 +2447,6 @@ class Interactives
 
         if($return_to_registration === true)
         {
-            $export_filename = hash('MD5', $registration['id'] . '_pdf');
-            $this->view->fpdf->Output('F', 'download/' . $export_filename);
             $response->script("window.location.href='/?manage_registrations&registration=" . $registration['id'] . "';");
         }
         else
@@ -2936,12 +2888,6 @@ class Interactives
         $this->view->fpdf->SetFont('Arial','B',12);
         $this->view->fpdf->Cell(90,10,"Erlaubnis zum SEPA Lastschriftmandat:");
 
-            $this->view->fpdf->Cell(10,10,"", '');
-
-                $this->view->fpdf->SetFont('Arial','B',12);
-                $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT', 'Netzbetreibervollmacht');
-                $this->view->fpdf->Cell(40,10,$converted_string);
-
         $this->view->fpdf->Ln(5);
         $this->view->fpdf->SetFont('Arial','',12);
         if($registration['banking_consent'])
@@ -2952,19 +2898,6 @@ class Interactives
         {
             $this->view->fpdf->Cell(90, 10, 'Keine Zustimmung erfasst');
         }
-
-            $this->view->fpdf->Cell(10,10,"", '');
-
-                $this->view->fpdf->SetFont('Arial','',12);
-                if($registration['gdpr_consent'])
-                {
-                    $this->view->fpdf->Cell(40,10, 'Erteilt am ' . date('d.m.Y H:i', $registration['gdpr_consent']));
-                }
-                else
-                {
-                    $this->view->fpdf->Cell(40, 10, 'Keine Zustimmung erfasst');
-                }
-
 
         $this->view->fpdf->AddPage();
         $this->view->fpdf->SetX(-25);
@@ -2998,6 +2931,22 @@ class Interactives
 
         $this->view->fpdf->SetFont('Arial','',12);
         $this->view->fpdf->Cell(40, 10, $registration['network_inventoryid']);
+
+        $this->view->fpdf->Ln(10);
+
+        $this->view->fpdf->SetFont('Arial','',8);
+        $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT', 'Ich erteile der EEG für die Dauer der Mitgliedschaft zeitlich unbegrenzt die Vollmacht, in meinem Namen sämtliche Schritte und Abstimmungen mit dem zuständigen Netzbetreiber durchzuführen, die zur vollständigen (De-)Aktivierung der angeführten Zählpunkte in der EEG notwendig sind. Dies betrifft insbesondere auch die Registrierung u. Nutzung des E-Service Portals.');
+        $this->view->fpdf->Cell(40,10,$converted_string);
+
+        $this->view->fpdf->SetFont('Arial','',12);
+        if($registration['network_consent'])
+        {
+            $this->view->fpdf->Cell(40,10, 'Vollmacht erteilt am ' . date('d.m.Y H:i', $registration['network_consent']));
+        }
+        else
+        {
+            $this->view->fpdf->Cell(40, 10, 'Keine Vollmacht erfasst');
+        }
 
         $this->view->fpdf->Ln(20);
         $associated_meters = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_METERS'], 'registration_id', $registration['id']);
@@ -3071,22 +3020,23 @@ class Interactives
         $this->view->fpdf->Cell(0,10,'Seite 1 / 2');
 
         $this->view->fpdf->Ln(10);
-        $this->view->fpdf->SetFont('Arial','B',15);
-        $this->view->fpdf->Cell(40,10,'Anmeldung zur Teilnahme an einer erneuerbaren Energiegemeinschaft');
+        $this->view->fpdf->SetFont('Arial','B',24);
+        $this->view->fpdf->Cell(40,10,'Anmeldung');
 
         $this->view->fpdf->Ln(10);
-        $this->view->fpdf->SetFont('Arial','B',14);
-        $tenant['fullname'] = iconv('UTF-8', 'windows-1252//TRANSLIT', $tenant['fullname']);
-        $this->view->fpdf->Cell(40,10, $tenant['fullname']);
+        $this->view->fpdf->SetFont('Arial','B',12);
+        $this->view->fpdf->Cell(40,10,'zur Teilnahme an einer erneuerbaren Energiegemeinschaft:');
 
-        $this->view->fpdf->Ln(20);
+        $this->view->fpdf->Ln(8);
+        $this->view->fpdf->SetFont('Arial','B',8);
+        $tenant['contact_imprint_name'] = iconv('UTF-8', 'windows-1252//TRANSLIT', $tenant['contact_imprint_name']);
+        $this->view->fpdf->Cell(190,10, $tenant['contact_imprint_name'], 0, 0);
+
+        $this->view->fpdf->Ln(5);
         $this->view->fpdf->SetFont('Arial','B',10);
 
         if($registration['type'] == 'company')
         {
-            $this->view->fpdf->Cell(40, 10, 'Fassung: Unternehmen');
-
-
             $this->view->fpdf->Ln(20);
             $this->view->fpdf->SetFont('Arial','B',15);
             $this->view->fpdf->SetLineWidth(0.5);
@@ -3119,8 +3069,6 @@ class Interactives
         }
         else
         {
-            $this->view->fpdf->Cell(40, 10, 'Fassung: Privathaushalte und landwirtschaftliche Betriebe');
-
             $this->view->fpdf->Ln(20);
             $this->view->fpdf->SetFont('Arial','B',15);
             $this->view->fpdf->SetLineWidth(0.5);
@@ -3290,6 +3238,24 @@ class Interactives
             $this->view->fpdf->Cell(40, 10, 'Keine Zustimmung erfasst');
         }
 
+        $this->view->fpdf->Ln(20);
+        $this->view->fpdf->SetFont('Arial','B',15);
+        $this->view->fpdf->SetLineWidth(0.5);
+        $this->view->fpdf->Cell(190,10,"Beschluss", "B");
+        $this->view->fpdf->Ln(15);
+        $this->view->fpdf->SetFont('Arial','I',12);
+        $converted_string_1 = iconv('UTF-8', 'windows-1252//TRANSLIT', 'Laut Vorstandsbeschluss vom ' . date('d.m.Y', $registration['migration_date']) . ' wird die Mitgliedschaft wie oben angeführt bestätigt');
+        $this->view->fpdf->Cell(90,5, $converted_string_1, 0, 1);
+        $converted_string_2 = iconv('UTF-8', 'windows-1252//TRANSLIT', 'und das neue Mitglied mit der Nummer ' . $registration['member_id'] . ' in das Mitgliederregister eingetragen.');
+        $this->view->fpdf->Cell(90,5, $converted_string_2, 0, 1);
+
+
+
+
+        // PAGE 2 ========
+
+
+
 
         $this->view->fpdf->AddPage();
         $this->view->fpdf->SetX(-25);
@@ -3323,6 +3289,49 @@ class Interactives
 
         $this->view->fpdf->SetFont('Arial','',12);
         $this->view->fpdf->Cell(40, 10, $registration['network_inventoryid']);
+
+        $this->view->fpdf->Ln(18);
+        $this->view->fpdf->SetLineWidth(0.5);
+        $this->view->fpdf->SetDrawColor(0,0,0);
+        $this->view->fpdf->Cell(2, 5, '');
+
+        if($registration['network_consent'])
+        {
+            $this->view->fpdf->Cell(5, 5, 'X', 'LRTB', 0, 'B');
+        }
+        else
+        {
+            $this->view->fpdf->Cell(5, 5, '', 'LRTB', 0, 'B');
+        }
+
+        $this->view->fpdf->SetFont('Arial','',10);
+        $converted_string_1 = iconv('UTF-8', 'windows-1252//TRANSLIT', "Ich erteile der EEG für die Dauer der Mitgliedschaft zeitlich unbegrenzt die Vollmacht, in meinem Namen");
+        $converted_string_2 = iconv('UTF-8', 'windows-1252//TRANSLIT', "sämtliche Schritte u. Abstimmungen mit dem zuständigen Netzbetreiber durchzuführen, die zur voll-");
+        $converted_string_3 = iconv('UTF-8', 'windows-1252//TRANSLIT', "ständigen (De-)Aktivierung der angeführten Zählpunkte in der EEG notwendig sind. Dies betrifft");
+        $converted_string_4 = iconv('UTF-8', 'windows-1252//TRANSLIT', "insbesondere auch die Registrierung u. Nutzung des E-Service Portals.");
+
+        $this->view->fpdf->Cell(2,5,null, 0);
+        $this->view->fpdf->Cell(40,5,$converted_string_1, 0, 1);
+        $this->view->fpdf->Cell(9.2,5,null, 0);
+        $this->view->fpdf->Cell(40,5,$converted_string_2, 0, 1);
+        $this->view->fpdf->Cell(9.2,5,null, 0);
+        $this->view->fpdf->Cell(40,5,$converted_string_3, 0, 1);
+        $this->view->fpdf->Cell(9.2,5,null, 0);
+        $this->view->fpdf->Cell(50,5,$converted_string_4, 0, 1);
+        $this->view->fpdf->Ln(2);
+
+        if($registration['network_consent'])
+        {
+            $this->view->fpdf->SetFont('Arial','B',10);
+            $this->view->fpdf->Cell(9.2,5,null, 0);
+            $this->view->fpdf->Cell(20,5, 'Vollmacht erteilt am ' . date('d.m.Y H:i', $registration['network_consent']));
+        }
+        else
+        {
+            $this->view->fpdf->SetFont('Arial','B',10);
+            $this->view->fpdf->Cell(9.2,5,null, 0);
+            $this->view->fpdf->Cell(20, 5, 'Keine Vollmacht erfasst');
+        }
 
         $this->view->fpdf->Ln(20);
         $associated_meters = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_METERS'], 'registration_id', $registration['id']);

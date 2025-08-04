@@ -670,15 +670,30 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         print '<h3>Downloads</h3>';
         print '<ul class="timeline singleentrytimeline">';
 
-        print '    
-                <li>
-                  <div class="timeline-item" style="width:98%;padding:8px;">
-                    <div class="timeline-footer" style="text-align:center">
-                        <a class="btn btn-primary btn-xs" style="font-size:12pt;padding:8px;" onClick="JaxonInteractives.export_pdf_by_registration(' . $registration['id'] . ')">&nbsp;Best&auml;tigung erzeugen (PDF)&nbsp;</a >
-                    </div>
-                  </div>
-                </li>
-        ';
+        if($registration['state'] == 'active' && $registration['member_id'])
+        {
+            print '    
+                    <li>
+                      <div class="timeline-item" style="width:98%;padding:8px;">
+                        <div class="timeline-footer" style="text-align:center">
+                            <a class="btn btn-primary btn-xs" style="font-size:12pt;padding:8px;" onClick="JaxonInteractives.export_pdf_by_registration(' . $registration['id'] . ')">&nbsp;Best&auml;tigung erzeugen (PDF)&nbsp;</a >
+                        </div>
+                      </div>
+                    </li>
+            ';
+        }
+        else
+        {
+            print '    
+                    <li>
+                      <div class="timeline-item" style="width:98%;padding:8px;">
+                        <div class="timeline-footer" style="text-align:center">
+                            Zur Zeit stehen keine Downloads zur Verf&uuml;gung.
+                        </div>
+                      </div>
+                    </li>
+            ';
+        }
 
         print '</ul>';
 
