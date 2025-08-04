@@ -66,14 +66,29 @@ class CONTROLLER_SESSION
         {
             if($_SESSION['finished'] === true)
             {
-                // this registration was already finished.
-                // delete all session data and start over
 
-                session_unset();
-                session_regenerate_id();
+                if($_SESSION['backend_authenticated'] == 1)
+                {
+                    // this registration is finished, but we are an admin!
+                    // clear any remaining registration data and continue...
+                    unset($_SESSION['generic_information']);
+                    unset($_SESSION['mnemonic']);
+                    unset($_SESSION['latestsave']);
+                    unset($_SESSION['finished']);
+                    unset($_SESSION['meters']);
+                    unset($_SESSION['storages']);
+                    header("Location: /");
+                }
+                else
+                {
+                    // this registration is finished and we're a customer!
+                    // Delete all session data and start over
+                    session_unset();
+                    session_regenerate_id();
 
-                // we finished this session and created a new one. Do a throwback.
-                header("Location: /");
+                    // we finished this session and created a new one. Do a throwback.
+                    header("Location: /");
+                }
             }
         }
     }

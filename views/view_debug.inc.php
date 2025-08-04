@@ -18,6 +18,9 @@ class VIEW_DEBUG
         print "<h3>DEBUG PDF OUTPUT:</h3>";
         print "<div class=\"form-container\">";
         print '<button onClick="JaxonInteractives.test_fpdf();">FPDFEXP_TEST</button>';
+        print "<pre>";
+        print_r($_SESSION);
+        print "</pre>";
         print "</div>";
     }
 

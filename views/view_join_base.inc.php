@@ -184,14 +184,14 @@ class VIEW_JOIN_BASE extends VIEW
         $checked = '';
         if(isset($_SESSION["$session_bucket"]["$id"]))
         {
-            if($_SESSION["$session_bucket"]["$id"]['value'] == '1')
+            if($_SESSION["$session_bucket"]["$id"]['value'] != '')
             {
                 $checked = 'checked';
             }
         }
 
         $_SESSION["$session_bucket"]["$id"]['integrity'] = $integrity;
-        print '<div style="display: flex; align-items: center;"><input ' . $checked . ' type="checkbox" name="' . $id . '" id="' . $id . '" onchange="JaxonInteractives.update_session_bucket(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').checked, ' . "'" .  $session_bucket . "'" . ');" /><label for="' . $id . '" style="margin-top:16px;margin-left:12px;line-height: 24px;">' . $annotation . '</label></div>';
+        print '<div style="display: flex; align-items: center;"><input ' . $checked . ' type="checkbox" name="' . $id . '" id="' . $id . '" onchange="JaxonInteractives.update_session_bucket(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').checked, ' . "'" .  $session_bucket . "', true" . ');" /><label for="' . $id . '" style="margin-top:16px;margin-left:12px;line-height: 24px;">' . $annotation . '</label></div>';
 
     }
 

@@ -697,7 +697,7 @@ sorger!)<br />';
         $this->view_render_part_captioned_inputfield("Name KontoinhaberIn", "banking_name", "generic_information", "required");
         $this->view_render_part_captioned_inputfield("IBAN", "banking_iban", "generic_information", "iban");
         $this->view_render_part_captioned_inputfield("Name der Bank", "banking_institute", "generic_information", "required");
-        $this->view_render_part_annotated_checkbox("Hiermit best&auml;tige ich die Richtigkeit der angegebenen Kontoinformationen<br />und erm&auml;chtige " . $shortname . " zum Bankeinzug im Rahmen der Leistungsabrechnung. <br /> Creditor ID: " . $cid . ".", "banking_consent", "generic_information", "booltrue");
+        $this->view_render_part_annotated_checkbox("Hiermit best&auml;tige ich die Richtigkeit der angegebenen Kontoinformationen<br />und erm&auml;chtige " . $shortname . " zum Bankeinzug im Rahmen der Leistungsabrechnung. <br /> Creditor ID: " . $cid . ".", "banking_consent", "generic_information", "required");
 
         print "</div><br />";
 
@@ -720,7 +720,7 @@ sorger!)<br />';
             print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
             $this->view_render_part_annotated_checkbox(
                 "Ich best&auml;tige die Kenntnisnahme der &nbsp; <a style=\"color:lightblue;text-decoration:none;\" href=\"/download/$bylaws_asset\" target=\"_blank\"><span class=\"fa fa-download\"></span> Statuten</a> der EEG " . $this->tenant_info['shortname'],
-                "bylaws_consent", "generic_information", "booltrue");
+                "bylaws_consent", "generic_information", "required");
             print "</div><br />";
         }
 
@@ -731,7 +731,7 @@ sorger!)<br />';
             print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
             $this->view_render_part_annotated_checkbox(
                 "Ich best&auml;tige die Kenntnisnahme der  &nbsp; <a style=\"color:lightblue;text-decoration:none;\" href=\"/download/$tos_asset\" target=\"_blank\"><span class=\"fa fa-download\"></span> Allgemeinen Gesch&auml;ftsbedingungen</a> der EEG " . $this->tenant_info['shortname'],
-                "tos_consent", "generic_information", "booltrue");
+                "tos_consent", "generic_information", "required");
             print "</div><br />";
         }
 
@@ -742,7 +742,7 @@ sorger!)<br />';
             print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
             $this->view_render_part_annotated_checkbox(
                 "Ich best&auml;tige die Kenntnisnahme der  &nbsp; <a style=\"color:lightblue;text-decoration:none;\" href=\"/download/$gdpr_asset\" target=\"_blank\"><span class=\"fa fa-download\"></span> Datenschutzerkl&auml;rung</a> der EEG " . $this->tenant_info['shortname'],
-                "gdpr_consent", "generic_information", "booltrue");
+                "gdpr_consent", "generic_information", "required");
             print "</div><br />";
         }
 
@@ -754,7 +754,7 @@ sorger!)<br />';
                         (Netz O&Ouml;) durchzuf&uuml;hren, die zur vollst&auml;ndigen Aktivierung und Deaktivierung der angef&uuml;hrten<br />
                         Z&auml;hlpunkte in der EEG " . $this->tenant_info['shortname'] . " notwendig sind.<br />
                         Dies betrifft insbesondere auch die Registrierung und Nutzung des E-Service-Portals der Netz O&Ouml;.",
-            "network_consent", "generic_information", "booltrue");
+            "network_consent", "generic_information", "required");
 
         $this->view_render_part_captioned_inputfield("Kundennummer beim zust&auml;ndigen Netzbetreiber", "network_customerid", "generic_information", null, "max-width:500px;padding-left:60px;");
         print "<br />";
@@ -937,11 +937,11 @@ sorger!)<br />';
             if (isset($_SESSION['generic_information']['banking_name']['value'])) $registration_array['banking_name'] = $_SESSION['generic_information']['banking_name']['value'];
             if (isset($_SESSION['generic_information']['banking_iban']['value'])) $registration_array['banking_iban'] = strtoupper(str_replace(' ', '', $_SESSION['generic_information']['banking_iban']['value']));
             if (isset($_SESSION['generic_information']['banking_institute']['value'])) $registration_array['banking_institute'] = $_SESSION['generic_information']['banking_institute']['value'];
-            if (isset($_SESSION['generic_information']['banking_consent']['value']) && $_SESSION['generic_information']['banking_consent']['value'] == '1') $registration_array['banking_consent'] = time();
-            if (isset($_SESSION['generic_information']['bylaws_consent']['value']) && $_SESSION['generic_information']['bylaws_consent']['value'] == '1') $registration_array['bylaws_consent'] = time();
-            if (isset($_SESSION['generic_information']['tos_consent']['value']) && $_SESSION['generic_information']['tos_consent']['value'] == '1') $registration_array['tos_consent'] = time();
-            if (isset($_SESSION['generic_information']['gdpr_consent']['value']) && $_SESSION['generic_information']['gdpr_consent']['value'] == '1') $registration_array['gdpr_consent'] = time();
-            if (isset($_SESSION['generic_information']['network_consent']['value']) && $_SESSION['generic_information']['network_consent']['value'] == '1') $registration_array['network_consent'] = time();
+            if (isset($_SESSION['generic_information']['banking_consent']['value']) && $_SESSION['generic_information']['banking_consent']['value'] != '') $registration_array['banking_consent'] = $_SESSION['generic_information']['banking_consent']['value'];
+            if (isset($_SESSION['generic_information']['bylaws_consent']['value']) && $_SESSION['generic_information']['bylaws_consent']['value'] != '') $registration_array['bylaws_consent'] = $_SESSION['generic_information']['bylaws_consent']['value'];
+            if (isset($_SESSION['generic_information']['tos_consent']['value']) && $_SESSION['generic_information']['tos_consent']['value'] != '') $registration_array['tos_consent'] = $_SESSION['generic_information']['tos_consent']['value'];
+            if (isset($_SESSION['generic_information']['gdpr_consent']['value']) && $_SESSION['generic_information']['gdpr_consent']['value'] != '') $registration_array['gdpr_consent'] = $_SESSION['generic_information']['gdpr_consent']['value'];
+            if (isset($_SESSION['generic_information']['network_consent']['value']) && $_SESSION['generic_information']['network_consent']['value'] != '') $registration_array['network_consent'] = $_SESSION['generic_information']['network_consent']['value'];
             if (isset($_SESSION['generic_information']['network_customerid']['value'])) $registration_array['network_customerid'] = $_SESSION['generic_information']['network_customerid']['value'];
             if (isset($_SESSION['generic_information']['network_inventoryid']['value'])) $registration_array['network_inventoryid'] = $_SESSION['generic_information']['network_inventoryid']['value'];
 

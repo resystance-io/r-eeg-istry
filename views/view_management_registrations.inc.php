@@ -120,10 +120,11 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
             {
                 if ($registration['migration_date'] != null)
                 {
-                    print "<td class=\"detailcontent\">" . date("d.m.Y", $registration['migration_date']) . "</td>";
-                } else
+                    print "<td id=\"detail_migrationdate\" class=\"detailcontent\">" . date("d.m.Y", $registration['migration_date']) . "<i onclick=\"JaxonInteractives.dashboard_inline_update_datestamp_init('detail_migrationdate', 'migration_date', " . $registration['id'] . ")\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td>";
+                }
+                else
                 {
-                    print "<td class=\"detailcontent\">Noch ausstehend</td>";
+                    print "<td id=\"detail_migrationdate\" class=\"detailcontent\">Noch nicht festgelegt <i onclick=\"JaxonInteractives.dashboard_inline_update_datestamp_init('detail_migrationdate', 'migration_date', " . $registration['id'] . ")\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></td>";
                 }
             }
             print "</tr>";
@@ -670,7 +671,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         print '<h3>Downloads</h3>';
         print '<ul class="timeline singleentrytimeline">';
 
-        if($registration['state'] == 'active' && $registration['member_id'])
+        if(($registration['state'] == 'active' || $registration['state'] == 'onboarding') && $registration['member_id'])
         {
             print '    
                     <li>

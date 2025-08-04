@@ -264,11 +264,26 @@ class Interactives
         }
     }
 
-    public function update_session_bucket($record, $value, $session_bucket)
+    public function update_session_bucket($record, $value, $session_bucket, $timestamp_on_true = false)
     {
-        // write a given name-value tuple to our session (into the specified bucket)
-        $_SESSION[$session_bucket][$record]["value"] = $value;
         $response = jaxon()->newResponse();
+        // write a given name-value tuple to our session (into the specified bucket)
+        if($timestamp_on_true === true)
+        {
+            if($value)
+            {
+                $_SESSION[$session_bucket][$record]["value"] = time();
+            }
+            else
+            {
+                $_SESSION[$session_bucket][$record]["value"] = null;
+            }
+        }
+        else
+        {
+            $_SESSION[$session_bucket][$record]["value"] = $value;
+        }
+
         return $response;
     }
 
@@ -1253,6 +1268,68 @@ class Interactives
         $current_valuestreet = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'street', 'id', $recordid);
         $current_valuenum = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'number', 'id', $recordid);
         $input_field = "$current_valuestreet $current_valuenum <i onclick=\"JaxonInteractives.dashboard_inline_update_streetnum_init('$div_id', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
+        $response = jaxon()->newResponse();
+        $response->assign($div_id, 'innerHTML', $input_field);
+
+        return $response;
+    }
+
+    public function dashboard_inline_update_datestamp_init($div_id, $dbkey, $recordid)
+    {
+        $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], $dbkey, 'id', $recordid);
+        $dbvalue = date('d.m.Y', $dbvalue);
+        $input_field = "
+            <div style=\"float:left;margin-top:6px;\">
+                <INPUT type=\"text\" name=\"$dbkey\" id=\"$dbkey\" value=\"$dbvalue\" style=\"width:200px;float:left\" class=\"detail\">
+            </div>
+            <div style=\"float:right\">
+                <button class=\"search bg-green-gradient\" onclick=\"var dbkey='$dbkey'; JaxonInteractives.dashboard_inline_update_datestamp_save('$div_id', '$dbkey', document.getElementById(dbkey).value, '$recordid');\"><i class=\"fa fa-check\"></i></button>
+                <button class=\"search bg-red-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_datestamp_cancel('$div_id', '$dbkey', '$recordid');\"><i class=\"fa fa-ban\"></i></button>
+            </div>
+        ";
+        $response = jaxon()->newResponse();
+        $response->assign($div_id, 'innerHTML', $input_field);
+
+        return $response;
+    }
+
+    public function dashboard_inline_update_datestamp_save($div_id, $dbkey, $dbvalue, $recordid)
+    {
+        $current_value = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], $dbkey, 'id', $recordid);
+        $current_value = date('d.m.Y', $current_value);
+
+        // Convert date string to timestamp
+        $date = DateTime::createFromFormat('d.m.Y', $dbvalue);
+        if ($date === false)
+        {
+            $response = jaxon()->newResponse();
+            $response->alert("Ungültiges Datumsformat. Bitte verwenden Sie TT.MM.JJJJ");
+            return $response;
+        }
+        $timestamp = $date->getTimestamp();
+
+        $this->view->record_note($recordid, 'event', 'modify', "Aktualisierung $dbkey: $current_value -> $dbvalue");
+        $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], $dbkey, $timestamp, 'id', $recordid);
+        $input_field = "$dbvalue <i onclick=\"JaxonInteractives.dashboard_inline_update_datestamp_init('$div_id', '$dbkey', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
+
+        $response = jaxon()->newResponse();
+        $response->assign($div_id, 'innerHTML', $input_field);
+
+        return $response;
+    }
+
+    public function dashboard_inline_update_datestamp_cancel($div_id, $dbkey, $recordid)
+    {
+        $current_value = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], $dbkey, 'id', $recordid);
+        if(!$current_value)
+        {
+            $current_value = 'Noch nicht festgelegt';
+        }
+        else
+        {
+            $current_value = date('d.m.Y', $current_value);
+        }
+        $input_field = "$current_value <i onclick=\"JaxonInteractives.dashboard_inline_update_datestamp_init('$div_id', '$dbkey', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
         $response = jaxon()->newResponse();
         $response->assign($div_id, 'innerHTML', $input_field);
 
@@ -2511,6 +2588,7 @@ class Interactives
                 $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'member_id', $highest_memberid, 'id', $recordid);
                 $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'tenant', $tenant, 'id', $recordid);
                 $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'state', 'onboarding', 'id', $recordid);
+                $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'migration_date', time(), 'id', $recordid);
                 $successfully_activated = true;
             }
             else
@@ -3244,7 +3322,14 @@ class Interactives
         $this->view->fpdf->Cell(190,10,"Beschluss", "B");
         $this->view->fpdf->Ln(15);
         $this->view->fpdf->SetFont('Arial','I',12);
-        $converted_string_1 = iconv('UTF-8', 'windows-1252//TRANSLIT', 'Laut Vorstandsbeschluss vom ' . date('d.m.Y', $registration['migration_date']) . ' wird die Mitgliedschaft wie oben angeführt bestätigt');
+        if(!$registration['migration_date'])
+        {
+            $converted_string_1 = iconv('UTF-8', 'windows-1252//TRANSLIT', 'Laut Vorstandsbeschluss wird die Mitgliedschaft des Antragstellers wie oben angeführt bestätigt');
+        }
+        else
+        {
+            $converted_string_1 = iconv('UTF-8', 'windows-1252//TRANSLIT', 'Laut Vorstandsbeschluss vom ' . date('d.m.Y', $registration['migration_date']) . ' wird die Mitgliedschaft wie oben angeführt bestätigt');
+        }
         $this->view->fpdf->Cell(90,5, $converted_string_1, 0, 1);
         $converted_string_2 = iconv('UTF-8', 'windows-1252//TRANSLIT', 'und das neue Mitglied mit der Nummer ' . $registration['member_id'] . ' in das Mitgliederregister eingetragen.');
         $this->view->fpdf->Cell(90,5, $converted_string_2, 0, 1);
