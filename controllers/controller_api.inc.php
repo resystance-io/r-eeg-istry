@@ -52,7 +52,7 @@ class CONTROLLER_API
                     NULL,
                     NULL,
                     NULL,
-                    $this->config->user['DBTABLE_REGISTRATIONS'] . '.tenant = "' . $tenant_info[0]['id'] . '" AND ' . $this->config->user['DBTABLE_REGISTRATIONS'] . '.state = "active"',
+                    $this->config->user['DBTABLE_REGISTRATIONS'] . '.tenant = "' . $tenant_info[0]['id'] . '" AND ' . $this->config->user['DBTABLE_REGISTRATIONS'] . '.state = "active" AND ' . $this->config->user['DBTABLE_METERS'] . '.meter_state = "approved"',
                     'INNER JOIN ' . $this->config->user['DBTABLE_REGISTRATIONS'] . ' ON (' . $this->config->user['DBTABLE_METERS'] . '.registration_id = ' . $this->config->user['DBTABLE_REGISTRATIONS'] . '.id) WHERE');
 
                 foreach($meters as $meter)
@@ -61,6 +61,8 @@ class CONTROLLER_API
                     {
                         //print "DBG: Supplier found: LIMIT(" . $meter['meter_feedlimit'] . ") POWER(" . $meter['meter_power'] . ") PARTICIPATION(" . $meter['meter_participation'] . ")\n";
                         $total_supplying_meters++;
+                        $meter['meter_feedlimit'] = str_replace('.', ',', $meter['meter_feedlimit']);
+                        $meter['meter_power'] = str_replace('.', ',', $meter['meter_power']);
                         if($meter['meter_feedlimit'])   $meter_power = $meter['meter_feedlimit'];   else    $meter_power = $meter['meter_power'];
                         $total_supplier_kwp += $meter_power / 100 * $meter['meter_participation'];
                     }
@@ -81,6 +83,7 @@ class CONTROLLER_API
 
                 foreach($storages as $storage)
                 {
+                    $storage['storage_capacity'] = str_replace('.', ',', $storage['storage_capacity']);
                     $total_storage_kwh += $storage['storage_capacity'];
                 }
 
