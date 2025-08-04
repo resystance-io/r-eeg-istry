@@ -24,27 +24,90 @@ class CONTROLLER_API
     {
         header('Content-Type: application/json; charset=utf-8');
 
-        // public statistics API
         $clean_tenant = preg_replace("/[^a-zA-Z]/", '', $_REQUEST['tenant']);
-        if(!$clean_tenant)
+        if($clean_tenant)
         {
-            print '{"error":"malformed request"}';
-            die();
-        }
-        $tenant_info = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_TENANTS'], 'referrer', $clean_tenant, 1);
+            // A tenant was selected
+            $tenant_info = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_TENANTS'], 'referrer', $clean_tenant, 1);
 
-        if(isset($tenant_info[0]))
-        {
             $total_supplier_kwp = 0;
             $total_storage_kwh = 0;
             $total_supplying_meters = 0;
             $total_consuming_meters = 0;
+            $total_registration_count = 0;
             $result_array = array();
 
-            if($tenant_info[0]['enabled'] == 'y')
+            if (isset($tenant_info[0]))
             {
-                $active_registration_count = $this->db->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_REGISTRATIONS'],'tenant',$tenant_info[0]['id'], $this->config->user['DBTABLE_REGISTRATIONS'] . '.state = "active"');
-                $result_array['active_registration_count'] = $active_registration_count;
+
+                if ($tenant_info[0]['enabled'] == 'y')
+                {
+                    $total_registration_count = $this->db->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_REGISTRATIONS'], 'tenant', $tenant_info[0]['id'], $this->config->user['DBTABLE_REGISTRATIONS'] . '.state = "active"');
+
+                    $meters = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_METERS'],
+                        NULL,
+                        NULL,
+                        NULL,
+                        NULL,
+                        NULL,
+                        $this->config->user['DBTABLE_REGISTRATIONS'] . '.tenant = "' . $tenant_info[0]['id'] . '" AND ' . $this->config->user['DBTABLE_REGISTRATIONS'] . '.state = "active" AND ' . $this->config->user['DBTABLE_METERS'] . '.meter_state = "approved"',
+                        'INNER JOIN ' . $this->config->user['DBTABLE_REGISTRATIONS'] . ' ON (' . $this->config->user['DBTABLE_METERS'] . '.registration_id = ' . $this->config->user['DBTABLE_REGISTRATIONS'] . '.id) WHERE');
+
+                    foreach ($meters as $meter)
+                    {
+                        if ($meter['meter_type'] == 'supplier')
+                        {
+                            //print "DBG: Supplier found: LIMIT(" . $meter['meter_feedlimit'] . ") POWER(" . $meter['meter_power'] . ") PARTICIPATION(" . $meter['meter_participation'] . ")\n";
+                            $total_supplying_meters++;
+                            $meter['meter_feedlimit'] = str_replace('.', ',', $meter['meter_feedlimit']);
+                            $meter['meter_power'] = str_replace('.', ',', $meter['meter_power']);
+                            if ($meter['meter_feedlimit']) $meter_power = $meter['meter_feedlimit']; else    $meter_power = $meter['meter_power'];
+                            $total_supplier_kwp += $meter_power / 100 * $meter['meter_participation'];
+                        } else
+                        {
+                            $total_consuming_meters++;
+                        }
+                    }
+
+                    $storages = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_STORAGES'],
+                        NULL,
+                        NULL,
+                        NULL,
+                        NULL,
+                        NULL,
+                        $this->config->user['DBTABLE_REGISTRATIONS'] . '.tenant = "' . $tenant_info[0]['id'] . '" AND ' . $this->config->user['DBTABLE_REGISTRATIONS'] . '.state = "active"',
+                        'INNER JOIN ' . $this->config->user['DBTABLE_REGISTRATIONS'] . ' ON (' . $this->config->user['DBTABLE_STORAGES'] . '.registration_id = ' . $this->config->user['DBTABLE_REGISTRATIONS'] . '.id) WHERE');
+
+                    foreach ($storages as $storage)
+                    {
+                        $storage['storage_capacity'] = str_replace('.', ',', $storage['storage_capacity']);
+                        $total_storage_kwh += $storage['storage_capacity'];
+                    }
+
+                    $result_array['total_kwp_generated'] = $total_supplier_kwp;
+                    $result_array['total_kwh_capacity'] = $total_storage_kwh;
+                    $result_array['supplying_meters_count'] = $total_supplying_meters;
+                    $result_array['consuming_meters_count'] = $total_consuming_meters;
+                    $result_array['active_registration_count'] = $total_registration_count;
+                    $result_json = json_encode($result_array);
+                    print $result_json;
+                    exit();
+                }
+            } else
+            {
+                print '{"error":"could not retrieve data"}';
+                die();
+            }
+        }
+        else
+        {
+            // No tenant was selected - cumulate the information for all of them
+
+            $tenants = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_TENANTS'], 'enabled', 'y');
+
+            foreach($tenants as $tenant)
+            {
+                $total_registration_count += $this->db->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_REGISTRATIONS'], 'tenant', $tenant['id'], $this->config->user['DBTABLE_REGISTRATIONS'] . '.state = "active"');
 
                 $meters = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_METERS'],
                     NULL,
@@ -52,18 +115,18 @@ class CONTROLLER_API
                     NULL,
                     NULL,
                     NULL,
-                    $this->config->user['DBTABLE_REGISTRATIONS'] . '.tenant = "' . $tenant_info[0]['id'] . '" AND ' . $this->config->user['DBTABLE_REGISTRATIONS'] . '.state = "active" AND ' . $this->config->user['DBTABLE_METERS'] . '.meter_state = "approved"',
+                    $this->config->user['DBTABLE_REGISTRATIONS'] . '.tenant = "' . $tenant['id'] . '" AND ' . $this->config->user['DBTABLE_REGISTRATIONS'] . '.state = "active" AND ' . $this->config->user['DBTABLE_METERS'] . '.meter_state = "approved"',
                     'INNER JOIN ' . $this->config->user['DBTABLE_REGISTRATIONS'] . ' ON (' . $this->config->user['DBTABLE_METERS'] . '.registration_id = ' . $this->config->user['DBTABLE_REGISTRATIONS'] . '.id) WHERE');
 
-                foreach($meters as $meter)
+                foreach ($meters as $meter)
                 {
-                    if($meter['meter_type'] == 'supplier')
+                    if ($meter['meter_type'] == 'supplier')
                     {
                         //print "DBG: Supplier found: LIMIT(" . $meter['meter_feedlimit'] . ") POWER(" . $meter['meter_power'] . ") PARTICIPATION(" . $meter['meter_participation'] . ")\n";
                         $total_supplying_meters++;
                         $meter['meter_feedlimit'] = str_replace('.', ',', $meter['meter_feedlimit']);
                         $meter['meter_power'] = str_replace('.', ',', $meter['meter_power']);
-                        if($meter['meter_feedlimit'])   $meter_power = $meter['meter_feedlimit'];   else    $meter_power = $meter['meter_power'];
+                        if ($meter['meter_feedlimit']) $meter_power = $meter['meter_feedlimit']; else    $meter_power = $meter['meter_power'];
                         $total_supplier_kwp += $meter_power / 100 * $meter['meter_participation'];
                     }
                     else
@@ -78,28 +141,25 @@ class CONTROLLER_API
                     NULL,
                     NULL,
                     NULL,
-                    $this->config->user['DBTABLE_REGISTRATIONS'] . '.tenant = "' . $tenant_info[0]['id'] . '" AND ' . $this->config->user['DBTABLE_REGISTRATIONS'] . '.state = "active"',
+                    $this->config->user['DBTABLE_REGISTRATIONS'] . '.tenant = "' . $tenant['id'] . '" AND ' . $this->config->user['DBTABLE_REGISTRATIONS'] . '.state = "active"',
                     'INNER JOIN ' . $this->config->user['DBTABLE_REGISTRATIONS'] . ' ON (' . $this->config->user['DBTABLE_STORAGES'] . '.registration_id = ' . $this->config->user['DBTABLE_REGISTRATIONS'] . '.id) WHERE');
 
-                foreach($storages as $storage)
+                foreach ($storages as $storage)
                 {
                     $storage['storage_capacity'] = str_replace('.', ',', $storage['storage_capacity']);
                     $total_storage_kwh += $storage['storage_capacity'];
                 }
-
-                $result_array['total_kwp_generated'] = $total_supplier_kwp;
-                $result_array['total_kwh_capacity'] = $total_storage_kwh;
-                $result_array['supplying_meters_count'] = $total_supplying_meters;
-                $result_array['consuming_meters_count'] = $total_consuming_meters;
-                $result_json = json_encode($result_array);
-                print $result_json;
-                exit();
             }
-        }
-        else
-        {
-            print '{"error":"could not retrieve data"}';
-            die();
+
+            $result_array['total_kwp_generated'] = $total_supplier_kwp;
+            $result_array['total_kwh_capacity'] = $total_storage_kwh;
+            $result_array['supplying_meters_count'] = $total_supplying_meters;
+            $result_array['consuming_meters_count'] = $total_consuming_meters;
+            $result_array['active_registration_count'] = $total_registration_count;
+
+            $result_json = json_encode($result_array);
+            print $result_json;
+            exit();
         }
     }
 
