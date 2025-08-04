@@ -3090,12 +3090,22 @@ class Interactives
         $tenants_data = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_TENANTS'], 'id', $registration['tenant'], 1);
         $tenant = $tenants_data[0];
 
+        $associated_meters = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_METERS'], 'registration_id', $registration['id']);
+        if(count($associated_meters) <= 12)
+        {
+            $total_pages = 2;
+        }
+        else
+        {
+            $total_pages = floor((count($associated_meters) - 12) / 20) + 3;
+        }
+
         $this->view->fpdf->AddPage();
         $this->view->fpdf->SetX(-25);
         // Arial italic 8
         $this->view->fpdf->SetFont('Arial','I',8);
         // Page number
-        $this->view->fpdf->Cell(0,10,'Seite 1 / 2');
+        $this->view->fpdf->Cell(0,10,'Seite 1 / ' . $total_pages);
 
         $this->view->fpdf->Ln(10);
         $this->view->fpdf->SetFont('Arial','B',24);
@@ -3334,20 +3344,14 @@ class Interactives
         $converted_string_2 = iconv('UTF-8', 'windows-1252//TRANSLIT', 'und das neue Mitglied mit der Nummer ' . $registration['member_id'] . ' in das Mitgliederregister eingetragen.');
         $this->view->fpdf->Cell(90,5, $converted_string_2, 0, 1);
 
-
-
-
         // PAGE 2 ========
-
-
-
 
         $this->view->fpdf->AddPage();
         $this->view->fpdf->SetX(-25);
         // Arial italic 8
         $this->view->fpdf->SetFont('Arial','I',8);
         // Page number
-        $this->view->fpdf->Cell(0,10,'Seite 2 / 2');
+        $this->view->fpdf->Cell(0,10,'Seite 2 / ' . $total_pages);
         $this->view->fpdf->Ln(20);
 
         $this->view->fpdf->SetFont('Arial','B',15);
@@ -3419,7 +3423,6 @@ class Interactives
         }
 
         $this->view->fpdf->Ln(20);
-        $associated_meters = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_METERS'], 'registration_id', $registration['id']);
 
         // Colors, line width and bold font
         $this->view->fpdf->SetFillColor(200,210,255);
@@ -3443,11 +3446,13 @@ class Interactives
         $this->view->fpdf->SetFont('');
 
         $fill = false;
+        $meter_count = 0;
 
         foreach($associated_meters as $meter)
         {
             if($meter['meter_state'] == 'pending' || $meter['meter_state'] == 'approved')
             {
+                $meter_count++;
                 $meter['meter_addr_street'] = iconv('UTF-8', 'windows-1252//TRANSLIT', $meter['meter_addr_street']);
                 $meter['meter_addr_city'] = iconv('UTF-8', 'windows-1252//TRANSLIT', $meter['meter_addr_city']);
                 $this->view->fpdf->Cell(2,6,'');
@@ -3464,6 +3469,46 @@ class Interactives
                 $this->view->fpdf->Cell(18,6,'', 'LRB', 0, 'L', $fill);
                 $this->view->fpdf->Ln();
                 $fill = !$fill;
+
+                // on the first page we allow for 12 meters,
+                // every subsequent page will provide space for 20 additional meters,
+                // so if we subtract 12 from the total number of meters, every pagebreak will happen on a mod 20
+
+                if($meter_count == 12 || ($meter_count - 12) % 20 == 0)
+                {
+                    $page = (($meter_count - 12) / 20) + 3;
+
+                    $this->view->fpdf->AddPage();
+                    $this->view->fpdf->SetX(-25);
+                    // Arial italic 8
+                    $this->view->fpdf->SetFont('Arial','I',8);
+                    // Page number
+                    $this->view->fpdf->Cell(0,10,'Seite ' . $page . ' / ' . $total_pages);
+                    $this->view->fpdf->Ln(20);
+
+                    // Colors, line width and bold font
+                    $this->view->fpdf->SetFillColor(200,210,255);
+                    $this->view->fpdf->SetTextColor(0);
+                    $this->view->fpdf->SetDrawColor(0,0,0);
+                    $this->view->fpdf->SetLineWidth(.3);
+                    $this->view->fpdf->SetFont('Arial','B', 10);
+
+                    // Header
+                    $this->view->fpdf->Cell(2,7,'');
+                    $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT','Zählpunktnummer');
+                    $this->view->fpdf->Cell(80,7,' ' . $converted_string,1,0,'L',true);
+                    $this->view->fpdf->Cell(60,7,' Adresse',1,0,'L',true);
+                    $this->view->fpdf->Cell(18,7,' Typ ',1,0,'C',true);
+                    $this->view->fpdf->Cell(18,7,' TF ',1,0,'C',true);
+                    $this->view->fpdf->Ln();
+
+                    // Color and font restoration
+                    $this->view->fpdf->SetFillColor(224,235,255);
+                    $this->view->fpdf->SetTextColor(0);
+                    $this->view->fpdf->SetFont('');
+
+                    $fill = false;
+                }
             }
         }
 
