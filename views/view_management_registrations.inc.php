@@ -412,7 +412,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                         " . $meter['meter_id'] . "<br />
                         " . $meter['meter_addr_street'] . " " . $meter['meter_addr_number'] . ", " . $meter['meter_addr_zip'] . " " . $meter['meter_addr_city'] . "<br />
                     </td>
-                    <td class=\"profilemeter\" id=\"detail_meter_state_" . $meter['id'] . "\" style=\"text-align:center;align:center;vertical-align:middle;font-weight:bold;\">
+                    <td class=\"profilemeter\" id=\"detail_meter_state_" . $meter['id'] . "\" style=\"text-align:center;vertical-align:middle;font-weight:bold;\">
                         " . $meter_status_arr[$meter['meter_state']] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_meter_state_init('detail_meter_state_" . $meter['id'] . "', '" . $meter['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>
                     </td>
                    </tr>";
@@ -606,10 +606,8 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
             }
         }
 
-        $registration_uuid_pdf = hash('MD5', $registration['id'] . '_pdf');
         $registration_uuid_xlsx = hash('MD5',$registration['id'] . '_xlsx');
-
-        if(is_file('download/' . $registration_uuid_xlsx) || is_file('download/' . $registration_uuid_pdf))
+        if(is_file('download/' . $registration_uuid_xlsx))
         {
             print '    
                     <!-- workflow item -->
@@ -622,11 +620,6 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
             if(is_file('download/' . $registration_uuid_xlsx))
             {
                 print '<a class="btn btn-primary btn-xs" style="font-size:12pt;padding:8px;" onClick="window.open(\'/download/?' . $registration_uuid_xlsx . '=export.xlsx\', \'_blank\'); window.location.href=\'/?manage_registrations&registration=' . $registration['id'] . '\';">&nbsp;Download XLSX&nbsp;</a>';
-            }
-
-            if(is_file('download/' . $registration_uuid_pdf))
-            {
-                print '&nbsp;<a class="btn btn-primary btn-xs" style = "font-size:12pt;padding:8px;" onClick = "window.open(\'/download/?' . $registration_uuid_pdf . '=export.pdf\', \'_blank\'); window.location.href=\'/?manage_registrations&registration=' . $registration['id'] . '\';">&nbsp;Download PDF&nbsp;</a >';
             }
             
             print '            </div>
@@ -670,6 +663,22 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                     </li>
                 ';
         }
+
+        print '</ul>';
+
+        print '<h2>&nbsp;</h2>';
+        print '<h3>Downloads</h3>';
+        print '<ul class="timeline singleentrytimeline">';
+
+        print '    
+                <li>
+                  <div class="timeline-item" style="width:98%;padding:8px;">
+                    <div class="timeline-footer" style="text-align:center">
+                        <a class="btn btn-primary btn-xs" style="font-size:12pt;padding:8px;" onClick="JaxonInteractives.export_pdf_by_registration(' . $registration['id'] . ')">&nbsp;Best&auml;tigung erzeugen (PDF)&nbsp;</a >
+                    </div>
+                  </div>
+                </li>
+        ';
 
         print '</ul>';
 
@@ -744,9 +753,11 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
             print '</ul>';
 
         }
+
         print '<br />&nbsp;<br />';
         print '</div>'; // END OF TIMELINE: RIGHT
 
+        return true;
     }
 
     public function handle_download_request($download_fsid)

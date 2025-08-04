@@ -46,9 +46,7 @@ body {
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
   position: relative;
 }
-.layout-boxed {
-  background: url('../img/boxed-bg.jpg') repeat fixed;
-}
+
 /*
  * Content Wrapper - contains the main content
  * ```.right-side has been deprecated as of v2.0.0 in favor of .content-wrapper  ```
@@ -2100,6 +2098,16 @@ a:focus {
   margin: 0;
   border-radius: 2px;
 }
+.singleentrytimeline:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0px;
+  left: 31px;
+  margin: 0;
+  border-radius: 2px;
+}
 .timeline > li {
   position: relative;
   margin-right: 10px;
@@ -2177,6 +2185,8 @@ a:focus {
 .timeline-inverse > li > .timeline-item > .timeline-header {
   border-bottom-color: #ddd;
 }
+
+
 /*
  * Component: Button
  * -----------------

@@ -196,6 +196,8 @@ class Interactives
 
     public function rmv_meter($id)
     {
+        $response = jaxon()->newResponse();
+
         // remove a meter input block from the current layout
         if(isset($_SESSION['meters'][$id]))
         {
@@ -224,24 +226,24 @@ class Interactives
                 {
                     unset($_SESSION['meters'][$id]);
 
-                    $response = jaxon()->newResponse();
                     $response->remove('container-' . $id);
-                    return $response;
                 }
             }
         }
+
+        return $response;
     }
 
     public function rmv_storage($id)
     {
+        $response = jaxon()->newResponse();
         // remove a storage input block from the current layout
         if(isset($_SESSION['storages'][$id]))
         {
             unset($_SESSION['storages'][$id]);
-            $response = jaxon()->newResponse();
             $response->remove('container-' . $id);
-            return $response;
         }
+        return $response;
     }
 
     public function update_storage_value($id, $value)
@@ -443,8 +445,9 @@ class Interactives
             {
                 $response->script("window.location.href='/?join=" . $_SESSION['generic_information']['join_type'] . "&step=" . $next_step . "';");
             }
-            return $response;
         }
+
+        return $response;
     }
 
     public function check_step_integrity_company(&$jaxon_response_object)
@@ -1297,6 +1300,8 @@ class Interactives
 
     public function dashboard_inline_update_memberid_init($div_id, $recordid)
     {
+        $response = jaxon()->newResponse();
+
         $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'member_id', 'id', $recordid);
         $tenant = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'tenant', 'id', $recordid);
 
@@ -1325,6 +1330,8 @@ class Interactives
                 // this is the first member of this tenant, so the next member id is 1
                 $highest_memberid = 1;
             }
+
+            $response->alert('Die nächste freie MitgliedsID wurde automatisch eingefügt');
         }
         else
         {
@@ -1334,14 +1341,13 @@ class Interactives
 
         $input_field = "
             <div style=\"float:left\">
-                <INPUT type=\"text\" name=\"member_id\" id=\"member_id\" value=\"$dbvalue\" placeholder=\"$highest_memberid\" style=\"width:200px;float:left\" class=\"detail\">
+                <INPUT type=\"text\" name=\"member_id\" id=\"member_id\" value=\"$highest_memberid\" placeholder=\"$highest_memberid\" style=\"width:200px;float:left\" class=\"detail\">
             </div>
             <div style=\"float:right\">
                 <button class=\"search bg-green-gradient\" onclick=\"var dbkey='member_id'; JaxonInteractives.dashboard_inline_update_memberid_save('$div_id', document.getElementById(dbkey).value, '$recordid');\"><i class=\"fa fa-check\"></i></button>
                 <button class=\"search bg-red-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_memberid_cancel('$recordid');\"><i class=\"fa fa-ban\"></i></button>
             </div>
         ";
-        $response = jaxon()->newResponse();
         $response->assign($div_id, 'innerHTML', $input_field);
 
         return $response;
@@ -1393,7 +1399,7 @@ class Interactives
                         </div>
                         <div style=\"float:right\">
                             <button class=\"search bg-green-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_state_save(document.getElementById('state').value, $recordid)\"><i class=\"fa fa-check\"></i></button>
-                            <button class=\"search bg-red-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_state_cancel('detail_state', $recordid);\"><i class=\"fa fa-ban\"></i></button>
+                            <button class=\"search bg-red-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_state_cancel('detail_state', $recordid)\"><i class=\"fa fa-ban\"></i></button>
                         </div>";
 
         $response = jaxon()->newResponse();
@@ -2175,12 +2181,6 @@ class Interactives
                         {
                             return true;
                         }
-                        else
-                        {
-                            // only throw an error if a provided information is obviously wrong,
-                            // empty values are allowed
-                            return false;
-                        }
                     }
                     else
                     {
@@ -2764,7 +2764,7 @@ class Interactives
 
             $this->view->fpdf->Ln(20);
             $this->view->fpdf->SetFont('Arial','B',15);
-            $this->view->fpdf->SetLineWidth(1);
+            $this->view->fpdf->SetLineWidth(0.5);
             $this->view->fpdf->SetDrawColor(0,0,0);
             $this->view->fpdf->Cell(90,10,"Unternehmensdaten:", 'B');
 
@@ -2798,7 +2798,7 @@ class Interactives
 
             $this->view->fpdf->Ln(20);
             $this->view->fpdf->SetFont('Arial','B',15);
-            $this->view->fpdf->SetLineWidth(1);
+            $this->view->fpdf->SetLineWidth(0.5);
             $this->view->fpdf->SetDrawColor(0,0,0);
             $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT', 'PERSÖNLICHE DATEN');
             $this->view->fpdf->Cell(90,10, $converted_string, 'B');
@@ -2843,40 +2843,447 @@ class Interactives
 
         $this->view->fpdf->Ln(20);
         $this->view->fpdf->SetFont('Arial','B',15);
-        $this->view->fpdf->SetLineWidth(1);
+        $this->view->fpdf->SetLineWidth(0.5);
         $this->view->fpdf->SetDrawColor(0,0,0);
         $this->view->fpdf->Cell(90,10,"Kontoinformationen:", 'B');
         $this->view->fpdf->SetFont('Arial','B',12);
 
+            $this->view->fpdf->Cell(10,10,"", '');
+
+                $this->view->fpdf->SetFont('Arial','B',15);
+                $this->view->fpdf->SetLineWidth(0.5);
+                $this->view->fpdf->SetDrawColor(0,0,0);
+                $this->view->fpdf->Cell(90,10,"Zustimmungen:", 'B');
+                $this->view->fpdf->SetFont('Arial','B',12);
+
         $this->view->fpdf->Ln(15);
         $this->view->fpdf->SetFont('Arial','B',12);
-        $this->view->fpdf->Cell(40,10,"Kontoinhaber:");
+        $this->view->fpdf->Cell(90,10,"Kontoinhaber:");
+
+            $this->view->fpdf->Cell(10,10,"", '');
+
+                $this->view->fpdf->Cell(40,10,"Statuen der " . $tenant['shortname']);
+
         $this->view->fpdf->Ln(5);
         $this->view->fpdf->SetFont('Arial','',12);
-        $this->view->fpdf->Cell(40,10,$registration['banking_name']);
+        $this->view->fpdf->Cell(90,10,$registration['banking_name']);
+
+            $this->view->fpdf->Cell(10,10,"", '');
+
+                $this->view->fpdf->SetFont('Arial','',12);
+                if($registration['bylaws_consent'])
+                {
+                    $this->view->fpdf->Cell(40,10, 'Zur Kenntnis genommen: ' . date('d.m.Y H:i', $registration['bylaws_consent']));
+                }
+                else
+                {
+                    $this->view->fpdf->Cell(40, 10, 'Keine Zustimmung erfasst');
+                }
 
         $this->view->fpdf->Ln(10);
         $this->view->fpdf->SetFont('Arial','B',12);
-        $this->view->fpdf->Cell(40,10,"Kontonummer:");
+        $this->view->fpdf->Cell(90,10,"Kontonummer:");
+
+            $this->view->fpdf->Cell(10,10,"", '');
+
+                $this->view->fpdf->SetFont('Arial','B',12);
+                $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT', 'Allgemeine Geschäftsbedingungen');
+                $this->view->fpdf->Cell(40,10,$converted_string);
+
         $this->view->fpdf->Ln(5);
         $this->view->fpdf->SetFont('Arial','',12);
-        $this->view->fpdf->Cell(40,10,$registration['banking_iban']);
+        $this->view->fpdf->Cell(90,10,$registration['banking_iban']);
+
+            $this->view->fpdf->Cell(10,10,"", '');
+
+                $this->view->fpdf->SetFont('Arial','',12);
+                if($registration['tos_consent'])
+                {
+                    $this->view->fpdf->Cell(40,10, 'Zur Kenntnis genommen: ' . date('d.m.Y H:i', $registration['tos_consent']));
+                }
+                else
+                {
+                    $this->view->fpdf->Cell(40, 10, 'Keine Zustimmung erfasst');
+                }
 
         $this->view->fpdf->Ln(10);
         $this->view->fpdf->SetFont('Arial','B',12);
-        $this->view->fpdf->Cell(40,10,"Bankinstitut:");
+        $this->view->fpdf->Cell(90,10,"Bankinstitut:");
+
+            $this->view->fpdf->Cell(10,10,"", '');
+
+                $this->view->fpdf->SetFont('Arial','B',12);
+                $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT', 'Datenschutzerklärung der ');
+                $this->view->fpdf->Cell(40,10,$converted_string . $tenant['shortname']);
+
         $this->view->fpdf->Ln(5);
         $this->view->fpdf->SetFont('Arial','',12);
-        $this->view->fpdf->Cell(40,10,$registration['banking_institute']);
+        $this->view->fpdf->Cell(90,10,$registration['banking_institute']);
+
+            $this->view->fpdf->Cell(10,10,"", '');
+
+                $this->view->fpdf->SetFont('Arial','',12);
+                if($registration['gdpr_consent'])
+                {
+                    $this->view->fpdf->Cell(40,10, 'Zur Kenntnis genommen: ' . date('d.m.Y H:i', $registration['gdpr_consent']));
+                }
+                else
+                {
+                    $this->view->fpdf->Cell(40, 10, 'Keine Zustimmung erfasst');
+                }
 
         $this->view->fpdf->Ln(10);
         $this->view->fpdf->SetFont('Arial','B',12);
-        $this->view->fpdf->Cell(40,10,"Erlaubnis zum SEPA Lastschriftmandat:");
+        $this->view->fpdf->Cell(90,10,"Erlaubnis zum SEPA Lastschriftmandat:");
+
+            $this->view->fpdf->Cell(10,10,"", '');
+
+                $this->view->fpdf->SetFont('Arial','B',12);
+                $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT', 'Netzbetreibervollmacht');
+                $this->view->fpdf->Cell(40,10,$converted_string);
+
         $this->view->fpdf->Ln(5);
         $this->view->fpdf->SetFont('Arial','',12);
         if($registration['banking_consent'])
         {
-            $this->view->fpdf->Cell(40,10, 'Erteilt am ' . date('d.m.Y H:i', $registration['banking_consent']));
+            $this->view->fpdf->Cell(90,10, 'Erteilt am ' . date('d.m.Y H:i', $registration['banking_consent']));
+        }
+        else
+        {
+            $this->view->fpdf->Cell(90, 10, 'Keine Zustimmung erfasst');
+        }
+
+            $this->view->fpdf->Cell(10,10,"", '');
+
+                $this->view->fpdf->SetFont('Arial','',12);
+                if($registration['gdpr_consent'])
+                {
+                    $this->view->fpdf->Cell(40,10, 'Erteilt am ' . date('d.m.Y H:i', $registration['gdpr_consent']));
+                }
+                else
+                {
+                    $this->view->fpdf->Cell(40, 10, 'Keine Zustimmung erfasst');
+                }
+
+
+        $this->view->fpdf->AddPage();
+        $this->view->fpdf->SetX(-25);
+        // Arial italic 8
+        $this->view->fpdf->SetFont('Arial','I',8);
+        // Page number
+        $this->view->fpdf->Cell(0,10,'Seite 2 / 2');
+        $this->view->fpdf->Ln(20);
+
+        $this->view->fpdf->SetFont('Arial','B',15);
+        $this->view->fpdf->SetLineWidth(0.5);
+        $this->view->fpdf->SetDrawColor(0,0,0);
+        $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT', 'Informationen für den Netzbetreiber');
+        $this->view->fpdf->Cell(90,10,$converted_string, 'B');
+        $this->view->fpdf->SetFont('Arial','B',12);
+
+        $this->view->fpdf->Ln(20);
+        $this->view->fpdf->SetFont('Arial','B',12);
+        $this->view->fpdf->Cell(90,10,"Netzbetreiber Kundennummer:");
+
+        $this->view->fpdf->Cell(10,10,"", '');
+
+        $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT', 'Inventarnummer eines Zählers');
+        $this->view->fpdf->Cell(40,10, $converted_string);
+
+        $this->view->fpdf->Ln(5);
+        $this->view->fpdf->SetFont('Arial','',12);
+        $this->view->fpdf->Cell(90,10, $registration['network_customerid']);
+
+        $this->view->fpdf->Cell(10,10,"", '');
+
+        $this->view->fpdf->SetFont('Arial','',12);
+        $this->view->fpdf->Cell(40, 10, $registration['network_inventoryid']);
+
+        $this->view->fpdf->Ln(20);
+        $associated_meters = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_METERS'], 'registration_id', $registration['id']);
+
+        // Colors, line width and bold font
+        $this->view->fpdf->SetFillColor(200,210,255);
+        $this->view->fpdf->SetTextColor(0);
+        $this->view->fpdf->SetDrawColor(0,0,0);
+        $this->view->fpdf->SetLineWidth(.3);
+        $this->view->fpdf->SetFont('Arial','B', 10);
+
+        // Header
+        $this->view->fpdf->Cell(2,7,'');
+        $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT','Zählpunktnummer');
+        $this->view->fpdf->Cell(80,7,' ' . $converted_string,1,0,'L',true);
+        $this->view->fpdf->Cell(60,7,' Adresse',1,0,'L',true);
+        $this->view->fpdf->Cell(18,7,' Typ ',1,0,'C',true);
+        $this->view->fpdf->Cell(18,7,' TF ',1,0,'C',true);
+        $this->view->fpdf->Ln();
+
+        // Color and font restoration
+        $this->view->fpdf->SetFillColor(224,235,255);
+        $this->view->fpdf->SetTextColor(0);
+        $this->view->fpdf->SetFont('');
+
+        $fill = false;
+
+        foreach($associated_meters as $meter)
+        {
+            if($meter['meter_state'] == 'pending' || $meter['meter_state'] == 'approved')
+            {
+                $meter['meter_addr_street'] = iconv('UTF-8', 'windows-1252//TRANSLIT', $meter['meter_addr_street']);
+                $meter['meter_addr_city'] = iconv('UTF-8', 'windows-1252//TRANSLIT', $meter['meter_addr_city']);
+                $this->view->fpdf->Cell(2,6,'');
+                $this->view->fpdf->Cell(80,6,' ' . $meter['meter_id'],'LR',0,'L',$fill);
+                $this->view->fpdf->Cell(60,6,' ' . $meter['meter_addr_street'] . ' ' . $meter['meter_addr_number'] ,'LR',0,'L',$fill);
+                if($meter['meter_type'] == 'consumer')  $nice_type_short = 'CNSM'; else $nice_type_short = 'GNRT';
+                $this->view->fpdf->Cell(18,6,$nice_type_short ,'LR',0,'C',$fill);
+                $this->view->fpdf->Cell(18,6,$meter['meter_participation'] . '%' ,'LR',0,'C',$fill);
+                $this->view->fpdf->Ln();
+                $this->view->fpdf->Cell(2,6,'');
+                $this->view->fpdf->Cell(80,6,'','LRB',0,'C',$fill);
+                $this->view->fpdf->Cell(60,6,' ' . $meter['meter_addr_zip'] . ' ' . $meter['meter_addr_city'] ,'LRB',0,'L',$fill);
+                $this->view->fpdf->Cell(18,6,'', 'LRB', 0, 'L', $fill);
+                $this->view->fpdf->Cell(18,6,'', 'LRB', 0, 'L', $fill);
+                $this->view->fpdf->Ln();
+                $fill = !$fill;
+            }
+        }
+
+        $response = jaxon()->newResponse();
+        $export_filename = $this->generate_uuid4();
+        $this->view->fpdf->Output('F', 'download/' . $export_filename);
+        $response->script("window.open('/download/?$export_filename=registration.pdf', '_blank');");
+        return $response;
+    }
+
+    public function export_pdf_by_registration($registration_id)
+    {
+        $registrations = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'id', $registration_id, 1);
+        $registration = $registrations[0];
+
+        $tenants_data = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_TENANTS'], 'id', $registration['tenant'], 1);
+        $tenant = $tenants_data[0];
+
+        $this->view->fpdf->AddPage();
+        $this->view->fpdf->SetX(-25);
+        // Arial italic 8
+        $this->view->fpdf->SetFont('Arial','I',8);
+        // Page number
+        $this->view->fpdf->Cell(0,10,'Seite 1 / 2');
+
+        $this->view->fpdf->Ln(10);
+        $this->view->fpdf->SetFont('Arial','B',15);
+        $this->view->fpdf->Cell(40,10,'Anmeldung zur Teilnahme an einer erneuerbaren Energiegemeinschaft');
+
+        $this->view->fpdf->Ln(10);
+        $this->view->fpdf->SetFont('Arial','B',14);
+        $tenant['fullname'] = iconv('UTF-8', 'windows-1252//TRANSLIT', $tenant['fullname']);
+        $this->view->fpdf->Cell(40,10, $tenant['fullname']);
+
+        $this->view->fpdf->Ln(20);
+        $this->view->fpdf->SetFont('Arial','B',10);
+
+        if($registration['type'] == 'company')
+        {
+            $this->view->fpdf->Cell(40, 10, 'Fassung: Unternehmen');
+
+
+            $this->view->fpdf->Ln(20);
+            $this->view->fpdf->SetFont('Arial','B',15);
+            $this->view->fpdf->SetLineWidth(0.5);
+            $this->view->fpdf->SetDrawColor(0,0,0);
+            $this->view->fpdf->Cell(90,10,"Unternehmensdaten:", 'B');
+
+            $this->view->fpdf->Ln(15);
+            $this->view->fpdf->SetFont('Arial','B',12);
+            $this->view->fpdf->Cell(40,10,"Unternehmensbezeichnung:");
+            $this->view->fpdf->Ln(5);
+            $this->view->fpdf->SetFont('Arial','',12);
+            $registration['company_name'] = iconv('UTF-8', 'windows-1252//TRANSLIT', $registration['company_name']);
+            $this->view->fpdf->Cell(40,10,$registration['company_name']);
+
+            $this->view->fpdf->Ln(10);
+            $this->view->fpdf->SetFont('Arial','B',12);
+            $this->view->fpdf->Cell(40,10,"UID:");
+            $this->view->fpdf->Ln(5);
+            $this->view->fpdf->SetFont('Arial','',12);
+            $this->view->fpdf->Cell(40,10,$registration['uid']);
+
+            $this->view->fpdf->Ln(10);
+            $this->view->fpdf->SetFont('Arial','B',12);
+            $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT', 'Sonstige Identifikationsdaten:');
+            $this->view->fpdf->Cell(40,10,$converted_string);
+            $this->view->fpdf->Ln(5);
+            $this->view->fpdf->SetFont('Arial','',12);
+            $identity_type_arr = ['passport' => 'Reisepass', 'idcard' => 'Personalausweis', 'driverslicense' => 'F&uuml;hrerschein', 'commerceid' => 'Firmenbuchnummer', 'associationid' => 'Vereinsregister'];
+            $this->view->fpdf->Cell(40,10,$identity_type_arr[$registration['idprovider']] . ': ' . $registration['idvalue']);
+        }
+        else
+        {
+            $this->view->fpdf->Cell(40, 10, 'Fassung: Privathaushalte und landwirtschaftliche Betriebe');
+
+            $this->view->fpdf->Ln(20);
+            $this->view->fpdf->SetFont('Arial','B',15);
+            $this->view->fpdf->SetLineWidth(0.5);
+            $this->view->fpdf->SetDrawColor(0,0,0);
+            $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT', 'PERSÖNLICHE DATEN');
+            $this->view->fpdf->Cell(90,10, $converted_string, 'B');
+
+            $this->view->fpdf->Ln(15);
+            $this->view->fpdf->SetFont('Arial','B',12);
+            $this->view->fpdf->Cell(40,10,"Name:");
+            $this->view->fpdf->Ln(5);
+            $this->view->fpdf->SetFont('Arial','',12);
+            $registration['firstname'] = iconv('UTF-8', 'windows-1252//TRANSLIT', $registration['firstname']);
+            $registration['lastname'] = iconv('UTF-8', 'windows-1252//TRANSLIT', $registration['lastname']);
+            $name = '';
+            if($registration['title'])  $name .= $registration['title'] . ' ';
+            $name .= $registration['firstname'] . ' ' . $registration['lastname'];
+            if($registration['postnomen']) $name .= ' ' . $registration['postnomen'];
+            $this->view->fpdf->Cell(40,10, $name);
+
+            $this->view->fpdf->Ln(10);
+            $this->view->fpdf->SetFont('Arial','B',12);
+            $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT', 'Identitätsnachweis:');
+            $this->view->fpdf->Cell(40,10,$converted_string);
+            $this->view->fpdf->Ln(5);
+            $this->view->fpdf->SetFont('Arial','',12);
+            $this->view->fpdf->Cell(40,10,'Geboren am: ' . $registration['birthdate']);
+            $this->view->fpdf->Ln(5);
+            $this->view->fpdf->SetFont('Arial','',12);
+            $identity_type_arr = ['passport' => 'Reisepass', 'idcard' => 'Personalausweis', 'driverslicense' => 'F&uuml;hrerschein', 'commerceid' => 'Firmenbuchnummer', 'associationid' => 'Vereinsregister'];
+            $this->view->fpdf->Cell(40,10,'Personaldokument: ' . $identity_type_arr[$registration['idprovider']] . ' (' . $registration['idvalue'] . ')');
+        }
+
+        $this->view->fpdf->Ln(10);
+        $this->view->fpdf->SetFont('Arial','B',12);
+        $this->view->fpdf->Cell(40,10,"Adresse:");
+        $this->view->fpdf->Ln(5);
+        $this->view->fpdf->SetFont('Arial','',12);
+        $registration['street'] = iconv('UTF-8', 'windows-1252//TRANSLIT', $registration['street']);
+        $this->view->fpdf->Cell(40,10,$registration['street'] . ' ' . $registration['number']);
+        $this->view->fpdf->Ln(5);
+        $registration['city'] = iconv('UTF-8', 'windows-1252//TRANSLIT', $registration['city']);
+        $this->view->fpdf->Cell(40,10,$registration['zip'] . ' ' . $registration['city']);
+
+
+        $this->view->fpdf->Ln(20);
+        $this->view->fpdf->SetFont('Arial','B',15);
+        $this->view->fpdf->SetLineWidth(0.5);
+        $this->view->fpdf->SetDrawColor(0,0,0);
+        $this->view->fpdf->Cell(90,10,"Kontoinformationen:", 'B');
+        $this->view->fpdf->SetFont('Arial','B',12);
+
+        $this->view->fpdf->Cell(10,10,"", '');
+
+        $this->view->fpdf->SetFont('Arial','B',15);
+        $this->view->fpdf->SetLineWidth(0.5);
+        $this->view->fpdf->SetDrawColor(0,0,0);
+        $this->view->fpdf->Cell(90,10,"Zustimmungen:", 'B');
+        $this->view->fpdf->SetFont('Arial','B',12);
+
+        $this->view->fpdf->Ln(15);
+        $this->view->fpdf->SetFont('Arial','B',12);
+        $this->view->fpdf->Cell(90,10,"Kontoinhaber:");
+
+        $this->view->fpdf->Cell(10,10,"", '');
+
+        $this->view->fpdf->Cell(40,10,"Statuen der " . $tenant['shortname']);
+
+        $this->view->fpdf->Ln(5);
+        $this->view->fpdf->SetFont('Arial','',12);
+        $this->view->fpdf->Cell(90,10,$registration['banking_name']);
+
+        $this->view->fpdf->Cell(10,10,"", '');
+
+        $this->view->fpdf->SetFont('Arial','',12);
+        if($registration['bylaws_consent'])
+        {
+            $this->view->fpdf->Cell(40,10, 'Zur Kenntnis genommen: ' . date('d.m.Y H:i', $registration['bylaws_consent']));
+        }
+        else
+        {
+            $this->view->fpdf->Cell(40, 10, 'Keine Zustimmung erfasst');
+        }
+
+        $this->view->fpdf->Ln(10);
+        $this->view->fpdf->SetFont('Arial','B',12);
+        $this->view->fpdf->Cell(90,10,"Kontonummer:");
+
+        $this->view->fpdf->Cell(10,10,"", '');
+
+        $this->view->fpdf->SetFont('Arial','B',12);
+        $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT', 'Allgemeine Geschäftsbedingungen');
+        $this->view->fpdf->Cell(40,10,$converted_string);
+
+        $this->view->fpdf->Ln(5);
+        $this->view->fpdf->SetFont('Arial','',12);
+        $this->view->fpdf->Cell(90,10,$registration['banking_iban']);
+
+        $this->view->fpdf->Cell(10,10,"", '');
+
+        $this->view->fpdf->SetFont('Arial','',12);
+        if($registration['tos_consent'])
+        {
+            $this->view->fpdf->Cell(40,10, 'Zur Kenntnis genommen: ' . date('d.m.Y H:i', $registration['tos_consent']));
+        }
+        else
+        {
+            $this->view->fpdf->Cell(40, 10, 'Keine Zustimmung erfasst');
+        }
+
+        $this->view->fpdf->Ln(10);
+        $this->view->fpdf->SetFont('Arial','B',12);
+        $this->view->fpdf->Cell(90,10,"Bankinstitut:");
+
+        $this->view->fpdf->Cell(10,10,"", '');
+
+        $this->view->fpdf->SetFont('Arial','B',12);
+        $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT', 'Datenschutzerklärung der ');
+        $this->view->fpdf->Cell(40,10,$converted_string . $tenant['shortname']);
+
+        $this->view->fpdf->Ln(5);
+        $this->view->fpdf->SetFont('Arial','',12);
+        $this->view->fpdf->Cell(90,10,$registration['banking_institute']);
+
+        $this->view->fpdf->Cell(10,10,"", '');
+
+        $this->view->fpdf->SetFont('Arial','',12);
+        if($registration['gdpr_consent'])
+        {
+            $this->view->fpdf->Cell(40,10, 'Zur Kenntnis genommen: ' . date('d.m.Y H:i', $registration['gdpr_consent']));
+        }
+        else
+        {
+            $this->view->fpdf->Cell(40, 10, 'Keine Zustimmung erfasst');
+        }
+
+        $this->view->fpdf->Ln(10);
+        $this->view->fpdf->SetFont('Arial','B',12);
+        $this->view->fpdf->Cell(90,10,"Erlaubnis zum SEPA Lastschriftmandat:");
+
+        $this->view->fpdf->Cell(10,10,"", '');
+
+        $this->view->fpdf->SetFont('Arial','B',12);
+        $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT', 'Netzbetreibervollmacht');
+        $this->view->fpdf->Cell(40,10,$converted_string);
+
+        $this->view->fpdf->Ln(5);
+        $this->view->fpdf->SetFont('Arial','',12);
+        if($registration['banking_consent'])
+        {
+            $this->view->fpdf->Cell(90,10, 'Erteilt am ' . date('d.m.Y H:i', $registration['banking_consent']));
+        }
+        else
+        {
+            $this->view->fpdf->Cell(90, 10, 'Keine Zustimmung erfasst');
+        }
+
+        $this->view->fpdf->Cell(10,10,"", '');
+
+        $this->view->fpdf->SetFont('Arial','',12);
+        if($registration['gdpr_consent'])
+        {
+            $this->view->fpdf->Cell(40,10, 'Erteilt am ' . date('d.m.Y H:i', $registration['gdpr_consent']));
         }
         else
         {
@@ -2890,85 +3297,34 @@ class Interactives
         $this->view->fpdf->SetFont('Arial','I',8);
         // Page number
         $this->view->fpdf->Cell(0,10,'Seite 2 / 2');
-
         $this->view->fpdf->Ln(20);
+
         $this->view->fpdf->SetFont('Arial','B',15);
-        $this->view->fpdf->SetLineWidth(1);
+        $this->view->fpdf->SetLineWidth(0.5);
         $this->view->fpdf->SetDrawColor(0,0,0);
-        $this->view->fpdf->Cell(90,10,"Zustimmungen:", 'B');
-        $this->view->fpdf->SetFont('Arial','B',12);
-
-        $this->view->fpdf->Ln(15);
-        $this->view->fpdf->Cell(40,10,"Zustimmung zu den Statuen der " . $tenant['shortname']);
-        $this->view->fpdf->Ln(5);
-        $this->view->fpdf->SetFont('Arial','',12);
-        if($registration['bylaws_consent'])
-        {
-            $this->view->fpdf->Cell(40,10, 'Zur Kenntnis genommen am ' . date('d.m.Y H:i', $registration['bylaws_consent']));
-        }
-        else
-        {
-            $this->view->fpdf->Cell(40, 10, 'Keine Zustimmung erfasst');
-        }
-
-        $this->view->fpdf->Ln(10);
-        $this->view->fpdf->SetFont('Arial','B',12);
-        $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT', 'Zustimmung zu den Allgemeinen Geschäftsbedingungen der ');
-        $this->view->fpdf->Cell(40,10,$converted_string . $tenant['shortname']);
-        $this->view->fpdf->Ln(5);
-        $this->view->fpdf->SetFont('Arial','',12);
-        if($registration['tos_consent'])
-        {
-            $this->view->fpdf->Cell(40,10, 'Zur Kenntnis genommen am ' . date('d.m.Y H:i', $registration['tos_consent']));
-        }
-        else
-        {
-            $this->view->fpdf->Cell(40, 10, 'Keine Zustimmung erfasst');
-        }
-
-        $this->view->fpdf->Ln(10);
-        $this->view->fpdf->SetFont('Arial','B',12);
-        $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT', 'Zustimmung zur Datenschutzerklärung der ');
-        $this->view->fpdf->Cell(40,10,$converted_string . $tenant['shortname']);
-        $this->view->fpdf->Ln(5);
-        $this->view->fpdf->SetFont('Arial','',12);
-        if($registration['gdpr_consent'])
-        {
-            $this->view->fpdf->Cell(40,10, 'Zur Kenntnis genommen am ' . date('d.m.Y H:i', $registration['gdpr_consent']));
-        }
-        else
-        {
-            $this->view->fpdf->Cell(40, 10, 'Keine Zustimmung erfasst');
-        }
-
-        $this->view->fpdf->Ln(10);
-        $this->view->fpdf->SetFont('Arial','B',12);
-        $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT', 'Vollmacht gegenüber des für den Antragsteller zuständigen Netzbetreibers');
-        $this->view->fpdf->Cell(40,10,$converted_string);
-        $this->view->fpdf->Ln(5);
-        $this->view->fpdf->SetFont('Arial','',12);
-        if($registration['gdpr_consent'])
-        {
-            $this->view->fpdf->Cell(40,10, 'Vollmacht erteilt am ' . date('d.m.Y H:i', $registration['gdpr_consent']));
-        }
-        else
-        {
-            $this->view->fpdf->Cell(40, 10, 'Keine Zustimmung erfasst');
-        }
-
-
-
-        $this->view->fpdf->Ln(20);
-        $this->view->fpdf->SetFont('Arial','B',15);
-        $this->view->fpdf->SetLineWidth(1);
-        $this->view->fpdf->SetDrawColor(0,0,0);
-        $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT', 'Zählpunktinformationen');
+        $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT', 'Informationen für den Netzbetreiber');
         $this->view->fpdf->Cell(90,10,$converted_string, 'B');
         $this->view->fpdf->SetFont('Arial','B',12);
 
         $this->view->fpdf->Ln(20);
+        $this->view->fpdf->SetFont('Arial','B',12);
+        $this->view->fpdf->Cell(90,10,"Netzbetreiber Kundennummer:");
 
+        $this->view->fpdf->Cell(10,10,"", '');
 
+        $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT', 'Inventarnummer eines Zählers');
+        $this->view->fpdf->Cell(40,10, $converted_string);
+
+        $this->view->fpdf->Ln(5);
+        $this->view->fpdf->SetFont('Arial','',12);
+        $this->view->fpdf->Cell(90,10, $registration['network_customerid']);
+
+        $this->view->fpdf->Cell(10,10,"", '');
+
+        $this->view->fpdf->SetFont('Arial','',12);
+        $this->view->fpdf->Cell(40, 10, $registration['network_inventoryid']);
+
+        $this->view->fpdf->Ln(20);
         $associated_meters = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_METERS'], 'registration_id', $registration['id']);
 
         // Colors, line width and bold font

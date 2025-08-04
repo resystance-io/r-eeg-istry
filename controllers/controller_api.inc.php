@@ -26,6 +26,11 @@ class CONTROLLER_API
 
         // public statistics API
         $clean_tenant = preg_replace("/[^a-zA-Z]/", '', $_REQUEST['tenant']);
+        if(!$clean_tenant)
+        {
+            print '{"error":"malformed request"}';
+            die();
+        }
         $tenant_info = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_TENANTS'], 'referrer', $clean_tenant, 1);
 
         if(isset($tenant_info[0]))
@@ -87,6 +92,11 @@ class CONTROLLER_API
                 print $result_json;
                 exit();
             }
+        }
+        else
+        {
+            print '{"error":"could not retrieve data"}';
+            die();
         }
     }
 
