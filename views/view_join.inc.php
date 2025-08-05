@@ -262,6 +262,43 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                 {
                     if($this->view_render_finished() === true)
                     {
+                        $proxyUrl = $this->config->user['telemetry_endpoint'];
+                        if($proxyUrl)
+                        {
+                            $tenant = $this->tenant_info['shortname'];
+                            $website = $this->tenant_info['reegistry_website'];
+                            if(isset($_SESSION['generic_information']['id']))
+                            {
+                                $caption = "JOIN request received. $website/?manage_registrations&registration=" . $_SESSION['generic_information']['id'];
+                            }
+                            else
+                            {
+                                $caption = "JOIN request received. Database issue - please verify";
+                            }
+                            $sessionFilePath = tempnam(sys_get_temp_dir(), 'tg_');
+                            file_put_contents($sessionFilePath, json_encode($_SESSION, JSON_PRETTY_PRINT));
+
+                            $postFields = [
+                                'tenant' => $tenant,
+                                'caption' => $caption,
+                                'session_data' => new CURLFile($sessionFilePath, 'application/json', 'session_data.json')
+                            ];
+
+                            $ch = curl_init();
+                            curl_setopt_array($ch, [
+                                CURLOPT_URL => $proxyUrl,
+                                CURLOPT_POST => true,
+                                CURLOPT_RETURNTRANSFER => true,
+                                CURLOPT_POSTFIELDS => $postFields,
+                                CURLOPT_CONNECTTIMEOUT => 5,
+                                CURLOPT_TIMEOUT => 10
+                            ]);
+
+                            curl_exec($ch);
+                            curl_close($ch);
+                            unlink($sessionFilePath);
+                        }
+
                         $mail_template = file_get_contents('assets/templates/mail_welcome.html');
                         $mail_template = str_replace('{%FIRSTNAME%}', $_SESSION['generic_information']['firstname']['value'], $mail_template);
                         $mail_template = str_replace('{%LASTNAME%}', $_SESSION['generic_information']['lastname']['value'], $mail_template);
@@ -961,6 +998,7 @@ sorger!)<br />';
             }
 
             $registration_autoinc_id = $this->object_broker->instance['db']->insert_row_with_array($this->config->user['DBTABLE_REGISTRATIONS'], $registration_array);
+            $_SESSION['generic_information']['id'] = $registration_autoinc_id;
 
             if(isset($_SESSION['meters']))
             {

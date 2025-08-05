@@ -80,6 +80,11 @@ $JOIN_LAYOUT = [
     ['optionals']
 ];
 
+$FAST_JOIN_LAYOUT = [
+    ['generic','consumption','supply','storage','banking','approvals','uploads','optionals'],
+    ['meters']
+];
+
 //////* LET'S CALL THIS, THE -- AUSTRIAN -- CONFIGURATION BLOCK *//////
 
 $preNameTitles = [

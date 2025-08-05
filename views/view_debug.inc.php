@@ -15,9 +15,9 @@ class VIEW_DEBUG
 
 <?php
         print "<br />&nbsp;<br />&nbsp;<br />";
-        print "<h3>DEBUG PDF OUTPUT:</h3>";
         print "<div class=\"form-container\">";
         print '<button onClick="JaxonInteractives.test_fpdf();">FPDFEXP_TEST</button>';
+        print '<button onClick="JaxonInteractives.test_telemetry();">TELEMETRY_TEST</button>';
         print "<pre>";
         print_r($_SESSION);
         print "</pre>";

