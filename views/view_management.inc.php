@@ -120,7 +120,7 @@ class VIEW_MANAGEMENT extends VIEW
             {
                 $selected = 'selected="selected"';
                 if($searchable_field['source'] != null) $searchable_path = $searchable_field['source'] . '.' . $searchable_field['name']; else $searchable_path = $searchable_field['name'];
-                $searchprefill = $_SESSION['dashboard']['search'][$searchable_path];
+                $searchprefill = $_SESSION['dashboard']['search'][$searchable_field['name']];
             }
             else
             {

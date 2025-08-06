@@ -861,7 +861,7 @@ sorger!)<br />';
             print "</div><br />";
         }
 
-        print "<h3>Foto eines (oder mehrerer) Z&auml;hler (bitte beachte, dass die Aufkleber gut sichbar sind)</h3>";
+        print "<h3>Foto eines (oder mehrerer) Z&auml;hler (bitte beachte, dass die INV.Nr. gut sichbar sind)</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
         print '
             <script>

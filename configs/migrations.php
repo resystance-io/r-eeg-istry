@@ -63,3 +63,8 @@ $database_migrations[9] = [
     "UPDATE `temporary` SET `value1` = '9' WHERE `feature` = 'database_version';"
 ];
 
+$database_migrations[10] = [
+    "DELETE FROM `dashboard_columns` WHERE `name` = 'id';",
+    "DELETE FROM `dashboard_layout` WHERE `data` = 'id';",
+    "UPDATE `temporary` SET `value1` = '10' WHERE `feature` = 'database_version';"
+];
