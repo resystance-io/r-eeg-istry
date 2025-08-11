@@ -14,7 +14,7 @@ class VIEW_JOIN_BASE extends VIEW
         print '<div style="padding:8px;' . $style . '">' . $caption . '<br><input type="text" name="' . $id . '_' . $meter_key . '" value="' . $prefill . '" id="' . $id . '_' . $meter_key . '" onfocus="this.select()" onfocusout="JaxonInteractives.update_meter_detail(' . "'" . $meter_key . "'" . ', ' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . '_' . $meter_key . "'" . ').value);" /></div>';
     }
 
-    protected function view_render_meter_detail_explained_inputfield($meter_key, $caption, $id, $integrity, $style=null, $default=null, $unit=null, $explanation=null)
+    protected function view_render_meter_detail_explained_inputfield($meter_key, $caption, $id, $integrity, $style=null, $default=null, $unit=null, $explanation=null, $autocheckbox=false)
     {
         $prefill = (isset($_SESSION['meters']["$meter_key"]["$id"]['value'])) ? $_SESSION['meters']["$meter_key"]["$id"]['value'] : '';
         if($prefill == '' && $default)
@@ -47,6 +47,14 @@ class VIEW_JOIN_BASE extends VIEW
 
         print '
                 </div>
+        ';
+
+        if($autocheckbox === true)
+        {
+            print "<div style=\"font-weight:normal;font-size:12pt\"><input type=\"checkbox\" id=\"" . $id . "_" . $meter_key . "_unknown\" style=\"width:18px;height:18px;margin-top:12px;vertical-align:bottom !important\" onchange=\"if(this.checked){document.getElementById('$id" . '_' . $meter_key . "').value=0;JaxonInteractives.update_meter_detail('$meter_key', '$id', '0');}else{document.getElementById('$id" . "_" . $meter_key . "').value='';JaxonInteractives.update_meter_detail('$meter_key', '$id', '');}\">
+            Angabe ist mir nicht bekannt</div><br />";
+        }
+        print '
                 <br />
             </div>
         ';
@@ -200,7 +208,7 @@ class VIEW_JOIN_BASE extends VIEW
         print '
             <div id="container-' . $id . '">' . $caption . '<br>
                 <div class="input-box">
-                    <input type="text" name="' . $id . '" id="' . $id . '" value="' . $prefill . '" maxlength="37" onfocus="this.select()" onfocusout="JaxonInteractives.update_meter_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
+                    <input type="text" name="' . $id . '" id="' . $id . '" value="' . $prefill . '" maxlength="37" onfocus="this.setSelectionRange(this.value.length, this.value.length)" onfocusout="JaxonInteractives.update_meter_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
                     <button style="background-color:darkred"  onclick="JaxonInteractives.rmv_meter(' . "'" . $id . "'" . ');"><i style="font-size:16px;color:white;" class="icon fa-trash-alt"></i></button><br>
                 </div>
                 <br />
@@ -212,7 +220,7 @@ class VIEW_JOIN_BASE extends VIEW
             <div id="container-' . $id . '">' . $caption . '<br>
                 <div class="input-box">
                     <span class="prefix">' . $prefix . '</span>
-                    <input type="text" name="' . $id . '" id="' . $id . '" value="' . $value . '" maxlength="7" onfocus="this.select()" onfocusout="JaxonInteractives.update_meter_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
+                    <input type="text" name="' . $id . '" id="' . $id . '" value="' . $value . '" maxlength="7" onfocus="this.setSelectionRange(this.value.length, this.value.length)" onfocusout="JaxonInteractives.update_meter_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
                     <button style="background-color:darkred"  onclick="JaxonInteractives.rmv_meter(' . "'" . $id . "'" . ');"><i style="font-size:16px;color:white;" class="icon fa-trash-alt"></i></button><br>
                 </div>
                 <br />

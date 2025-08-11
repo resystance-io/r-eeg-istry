@@ -150,7 +150,7 @@ class Interactives
 
         $element = '
             Z&auml;hlpunktnummer <div class="input-box">
-                <input type="text" name="' . $id . '" id="' . $id . '" value="' . $prefill . '" maxlength="37" onfocus="this.select()"  onfocusout="JaxonInteractives.update_meter_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
+                <input type="text" name="' . $id . '" id="' . $id . '" value="' . $prefill . '" maxlength="37" onfocus="this.setSelectionRange(this.value.length, this.value.length)"  onfocusout="JaxonInteractives.update_meter_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
                 <button style="background-color:darkred"  onclick="JaxonInteractives.rmv_meter(' . "'" . $id . "'" . ', ' . "'" . $meter_type . "'" . ');"><i style="font-size:16px;color:white;" class="icon fa-trash-alt"></i></button>
             </div>
             <br />
@@ -3550,7 +3550,27 @@ class Interactives
 
         unlink($sessionFilePath);
 
-        return $jaxon_response;
+        return jaxon()->newResponse();
+    }
+
+    public function test_mail()
+    {
+        $response = jaxon()->newResponse();
+
+        $this->view->object_broker->instance['email']->subject = "DEBUG EMAIL TEST";
+        $this->view->object_broker->instance['email']->AddRecipient('creo@blackmesa.at');
+        $this->view->object_broker->instance['email']->messageHTML = "This is a test message.";
+
+        if ($this->view->object_broker->instance['email']->Send('smtp'))
+        {
+            $response->alert("eMail sent successfully");
+        }
+        else
+        {
+            $response->alert("eMail could not be sent");
+        }
+
+        return $response;
     }
 
     private function generate_uuid4($data = null)

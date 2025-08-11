@@ -698,7 +698,7 @@ sorger!)<br />';
                 {
                     $this->view_render_meter_detail_explained_inputfield($meter_key, "Maximale Leistung", 'power', 'decimal', null, 0, "&nbsp;&nbsp;&nbsp;&nbsp;kWp");
 
-                    $this->view_render_meter_detail_explained_inputfield($meter_key, "Erlaubte Netzzugangsleistung", 'feedlimit', 'decimal', null, 0, "&nbsp;&nbsp;&nbsp;&nbsp;kVA");
+                    $this->view_render_meter_detail_explained_inputfield($meter_key, "Erlaubte Netzzugangsleistung", 'feedlimit', 'decimal', null, 0, "&nbsp;&nbsp;&nbsp;&nbsp;kVA", null, true);
                 }
                 else
                 {
@@ -818,7 +818,8 @@ sorger!)<br />';
             <script>
               Dropzone.options.DropzoneInvoice = {
                 maxFilesize: "20M",
-                maxFiles: 1
+                maxFiles: 1,
+                addRemoveLinks: true
               };
             </script>
             <form action="?upload&type=invoice" class="dropzone" id="DropzoneInvoice">
@@ -833,7 +834,8 @@ sorger!)<br />';
             <script>
               Dropzone.options.DropzoneCredit = {
                 maxFilesize: "20M",
-                maxFiles: 1
+                maxFiles: 1,
+                addRemoveLinks: true
               };
             </script>
             <form action="?upload&type=credit" class="dropzone" id="DropzoneCredit">
@@ -851,7 +853,8 @@ sorger!)<br />';
                 <script>
                   Dropzone.options.DropzoneID = {
                     maxFilesize: "20M",
-                    maxFiles: 1
+                    maxFiles: 1,
+                    addRemoveLinks: true
                   };
                 </script>
                 <form action="?upload&type=id" class="dropzone" id="DropzoneID">
@@ -867,7 +870,8 @@ sorger!)<br />';
             <script>
               Dropzone.options.DropzonePhoto = {
                 maxFilesize: "20M",
-                maxFiles: 1
+                maxFiles: 1,
+                addRemoveLinks: true
               };
             </script>
             <form action="?upload&type=photo" class="dropzone" id="DropzonePhoto">
