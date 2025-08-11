@@ -148,12 +148,18 @@ class Interactives
         $_SESSION['meters']["$id"]['type'] = $meter_type;
         $_SESSION['meters'][$id]['value'] = $prefill;
 
+        $remaining_characters = 33 - strlen(str_replace(' ', '', $prefill));
+
         $element = '
-            Z&auml;hlpunktnummer <div class="input-box">
-                <input type="text" name="' . $id . '" id="' . $id . '" value="' . $prefill . '" maxlength="37" onfocus="this.setSelectionRange(this.value.length, this.value.length)"  onfocusout="JaxonInteractives.update_meter_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
-                <button style="background-color:darkred"  onclick="JaxonInteractives.rmv_meter(' . "'" . $id . "'" . ', ' . "'" . $meter_type . "'" . ');"><i style="font-size:16px;color:white;" class="icon fa-trash-alt"></i></button>
+            <div id="container-' . $id . '">Z&auml;hlpunktnummer<br>
+                <div class="input-box" style="float:left">
+                    <input type="text" name="' . $id . '" id="' . $id . '" value="' . $prefill . '" maxlength="37" oninput="document.getElementById(\'counter_' . $id . '\').textContent=33 - this.value.replace(/\s+/g,\'\').length" onfocus="this.setSelectionRange(this.value.length, this.value.length)"  onfocusout="JaxonInteractives.update_meter_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
+                    <button style="background-color:darkred"  onclick="JaxonInteractives.rmv_meter(' . "'" . $id . "'" . ', ' . "'" . $meter_type . "'" . ');"><i style="font-size:16px;color:white;" class="icon fa-trash-alt"></i></button>
+                </div>
+                &nbsp; <span id="counter_' . $id . '">' . $remaining_characters . '</span> Stelle(n) verbleiben
+                &nbsp;<br />
+                <br style="clear:both" />
             </div>
-            <br />
         ';
 
         if($meter_type == 'suppliers')

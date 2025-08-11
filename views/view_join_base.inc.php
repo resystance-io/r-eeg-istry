@@ -205,13 +205,16 @@ class VIEW_JOIN_BASE extends VIEW
 
     protected function view_render_prefilled_meter($caption, $prefill, $id)
     {
+        $remaining_characters = 33 - strlen(str_replace(' ', '', $prefill));
         print '
             <div id="container-' . $id . '">' . $caption . '<br>
-                <div class="input-box">
-                    <input type="text" name="' . $id . '" id="' . $id . '" value="' . $prefill . '" maxlength="37" onfocus="this.setSelectionRange(this.value.length, this.value.length)" onfocusout="JaxonInteractives.update_meter_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
-                    <button style="background-color:darkred"  onclick="JaxonInteractives.rmv_meter(' . "'" . $id . "'" . ');"><i style="font-size:16px;color:white;" class="icon fa-trash-alt"></i></button><br>
+                <div class="input-box" style="float:left">
+                    <input type="text" name="' . $id . '" id="' . $id . '" value="' . $prefill . '" maxlength="37" oninput="document.getElementById(\'counter_' . $id . '\').textContent=33 - this.value.replace(/\s+/g,\'\').length" onfocus="this.setSelectionRange(this.value.length, this.value.length)" onfocusout="JaxonInteractives.update_meter_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
+                    <button style="background-color:darkred" onclick="JaxonInteractives.rmv_meter(' . "'" . $id . "'" . ');"><i style="font-size:16px;color:white;" class="icon fa-trash-alt"></i></button><br />
                 </div>
-                <br />
+                &nbsp; <span id="counter_' . $id . '">' . $remaining_characters . '</span> Stelle(n) verbleiben
+                &nbsp;<br />
+                <br style="clear:both" />
             </div>';
     }
     protected function view_render_prefixed_meter($caption, $prefix, $id, $value="0000000")
@@ -221,7 +224,7 @@ class VIEW_JOIN_BASE extends VIEW
                 <div class="input-box">
                     <span class="prefix">' . $prefix . '</span>
                     <input type="text" name="' . $id . '" id="' . $id . '" value="' . $value . '" maxlength="7" onfocus="this.setSelectionRange(this.value.length, this.value.length)" onfocusout="JaxonInteractives.update_meter_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
-                    <button style="background-color:darkred"  onclick="JaxonInteractives.rmv_meter(' . "'" . $id . "'" . ');"><i style="font-size:16px;color:white;" class="icon fa-trash-alt"></i></button><br>
+                    <button style="background-color:darkred" onclick="JaxonInteractives.rmv_meter(' . "'" . $id . "'" . ');"><i style="font-size:16px;color:white;" class="icon fa-trash-alt"></i></button><br>
                 </div>
                 <br />
             </div>';
