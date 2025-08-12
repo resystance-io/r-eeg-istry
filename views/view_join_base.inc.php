@@ -209,10 +209,10 @@ class VIEW_JOIN_BASE extends VIEW
         print '
             <div id="container-' . $id . '">' . $caption . '<br>
                 <div class="input-box" style="float:left">
-                    <input type="text" name="' . $id . '" id="' . $id . '" value="' . $prefill . '" maxlength="37" oninput="document.getElementById(\'counter_' . $id . '\').textContent=33 - this.value.replace(/\s+/g,\'\').length" onfocus="this.setSelectionRange(this.value.length, this.value.length)" onfocusout="JaxonInteractives.update_meter_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
+                    <input type="text" name="' . $id . '" id="' . $id . '" value="' . $prefill . '" maxlength="37" oninput="document.getElementById(\'counter_' . $id . '\').textContent=33 - this.value.replace(/\s+/g,\'\').length; format_meter_id(\'' . $id . '\')" onfocus="this.setSelectionRange(this.value.length, this.value.length)" onfocusout="JaxonInteractives.update_meter_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
                     <button style="background-color:darkred" onclick="JaxonInteractives.rmv_meter(' . "'" . $id . "'" . ');"><i style="font-size:16px;color:white;" class="icon fa-trash-alt"></i></button><br />
                 </div>
-                &nbsp; <span id="counter_' . $id . '">' . $remaining_characters . '</span> Stelle(n) verbleiben
+                &nbsp; <span id="counter_' . $id . '">' . $remaining_characters . '</span> Stelle(n) ben&ouml;tigt
                 &nbsp;<br />
                 <br style="clear:both" />
             </div>';

@@ -20,6 +20,20 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
     public function view_render($fastjoin=false)
     {
         print '
+<script>
+    function format_meter_id($id)
+    {
+        const positions = [2, 8, 13, 23];
+        meter_id = document.getElementById($id).value.replace(/\s+/g,\'\');
+        positions.forEach((pos, i) => {
+            if (meter_id.length > pos + i) {
+                meter_id =  meter_id.slice(0, pos + i) + \' \' + meter_id.slice(pos + i);
+            }
+        });
+        document.getElementById($id).value = meter_id;
+    }
+</script>';
+        print '
                     <header id="header">
                         <h1>' . $this->tenant_info['fullname'] . '</h1>
                     </header>
