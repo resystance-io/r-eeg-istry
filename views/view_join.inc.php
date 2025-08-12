@@ -25,6 +25,17 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
     {
         const positions = [2, 8, 13, 23];
         meter_id = document.getElementById($id).value.replace(/\s+/g,\'\');
+        document.getElementById(\'counter_\' + $id).textContent=33 - meter_id.length;
+        if(meter_id.length === 33)
+        {
+            document.getElementById(\'cta-\' + $id).style.display = \'none\';
+            document.getElementById(\'poa-\' + $id).style.display = \'block\';
+        }
+        else
+        {
+            document.getElementById(\'cta-\' + $id).style.display = \'block\';
+            document.getElementById(\'poa-\' + $id).style.display = \'none\';
+        }
         positions.forEach((pos, i) => {
             if (meter_id.length > pos + i) {
                 meter_id =  meter_id.slice(0, pos + i) + \' \' + meter_id.slice(pos + i);

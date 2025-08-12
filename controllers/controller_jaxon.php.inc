@@ -149,15 +149,24 @@ class Interactives
         $_SESSION['meters'][$id]['value'] = $prefill;
 
         $remaining_characters = 33 - strlen(str_replace(' ', '', $prefill));
-
+        if($remaining_characters == 0)
+        {
+            $cta_display = 'none';
+            $poa_display = 'block';
+        }
+        else
+        {
+            $cta_display = 'block';
+            $poa_display = 'none';
+        }
         $element = '
             <div id="container-' . $id . '">Z&auml;hlpunktnummer<br>
                 <div class="input-box" style="float:left">
-                    <input type="text" name="' . $id . '" id="' . $id . '" value="' . $prefill . '" maxlength="37" oninput="document.getElementById(\'counter_' . $id . '\').textContent=33 - this.value.replace(/\s+/g,\'\').length; format_meter_id(\'' . $id . '\')" onfocus="this.setSelectionRange(this.value.length, this.value.length)"  onfocusout="JaxonInteractives.update_meter_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
+                    <input type="text" name="' . $id . '" id="' . $id . '" value="' . $prefill . '" maxlength="37" oninput="format_meter_id(\'' . $id . '\')" onfocus="this.setSelectionRange(this.value.length, this.value.length)"  onfocusout="JaxonInteractives.update_meter_value(' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . "'" . ').value);" />
                     <button style="background-color:darkred"  onclick="JaxonInteractives.rmv_meter(' . "'" . $id . "'" . ', ' . "'" . $meter_type . "'" . ');"><i style="font-size:16px;color:white;" class="icon fa-trash-alt"></i></button>
                 </div>
-                &nbsp; <span id="counter_' . $id . '">' . $remaining_characters . '</span> Stelle(n) ben&ouml;tigt
-                &nbsp;<br />
+                <div id="cta-' . $id . '" style="display:' . $cta_display . ';">&nbsp; noch <span id="counter_' . $id . '">' . $remaining_characters . '</span> Stelle(n) ben&ouml;tigt</div>
+                <div id="poa-' . $id . '" style="display:' . $poa_display . ';">&nbsp; <i class="fa fa-check" style="color:greenyellow"></i></div>                
                 <br style="clear:both" />
             </div>
         ';
