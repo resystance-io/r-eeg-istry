@@ -28,7 +28,7 @@ class VIEW_JOIN_BASE extends VIEW
         print '
             <br />
             <div id="container-' . $id . '">' . $caption . '<br>
-                <div class="input-box" style="width:240px;">
+                <div class="input-box" style="width:240px;margin-bottom:4px;">
                     <input type="text" name="' . $id . '_' . $meter_key . '" id="' . $id . '_' . $meter_key . '" placeholder="' . $prefill . '" value="' . $prefill . '" maxlength="6" style="width:85px;text-align:center" onfocus="this.select()" onfocusout="JaxonInteractives.update_meter_detail(' . "'" . $meter_key . "'" . ', ' . "'" . $id . "'" . ', document.getElementById(' . "'" . $id . '_' . $meter_key . "'" . ').value);" />
                     <span class="prefix">' . $unit . '&nbsp;&nbsp;&nbsp;</span>
         ';
@@ -51,8 +51,8 @@ class VIEW_JOIN_BASE extends VIEW
 
         if($autocheckbox === true)
         {
-            print "<div style=\"font-weight:normal;font-size:12pt\"><input type=\"checkbox\" id=\"" . $id . "_" . $meter_key . "_unknown\" style=\"width:18px;height:18px;margin-top:12px;vertical-align:bottom !important\" onchange=\"if(this.checked){document.getElementById('$id" . '_' . $meter_key . "').value=0;JaxonInteractives.update_meter_detail('$meter_key', '$id', '0');}else{document.getElementById('$id" . "_" . $meter_key . "').value='';JaxonInteractives.update_meter_detail('$meter_key', '$id', '');}\">
-            Angabe ist mir nicht bekannt</div><br />";
+            print "<input type=\"checkbox\" id=\"" . $id . "_" . $meter_key . "_unknown\" style=\"width:19px;height:19px;margin-top:8px !important;\" onchange=\"if(this.checked){document.getElementById('$id" . '_' . $meter_key . "').value=0;document.getElementById('$id" . '_' . $meter_key . "').disabled=true;JaxonInteractives.update_meter_detail('$meter_key', '$id', '0');}else{document.getElementById('$id" . "_" . $meter_key . "').value='';document.getElementById('$id" . '_' . $meter_key . "').disabled=false;JaxonInteractives.update_meter_detail('$meter_key', '$id', '');}\">";
+            print "<span style=\"font-weight:normal;font-size:12pt;vertical-align:top !important\">Angabe ist mir nicht bekannt</span>";
         }
         print '
                 <br />
