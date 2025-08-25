@@ -1563,7 +1563,7 @@ class Interactives
             $mail_template = str_replace('{%CREDITOR_ID%}', $tenant_info['creditor_id'], $mail_template);
             $mail_template = str_replace('{%APPROVED_METER_IDS%}', $approved_meter_list, $mail_template);
 
-            $this->view->object_broker->instance['email']->subject = "Deine Mitgliedschaft bei " . $tenant_info['shortname'];
+            $this->view->object_broker->instance['email']->subject = "Deine Mitgliedschaft bei der " . $tenant_info['shortname'];
             $this->view->object_broker->instance['email']->AddRecipient($registration_info['email']);
             $this->view->object_broker->instance['email']->messageHTML = $mail_template;
 
@@ -2749,7 +2749,7 @@ class Interactives
         $mail_template = str_replace('{%CREDITOR_ID%}', $tenant_info['creditor_id'], $mail_template);
         $mail_template = str_replace('{%APPROVED_METER_IDS%}', $approved_meter_list, $mail_template);
 
-        $this->view->object_broker->instance['email']->subject = "Deine Mitgliedschaft bei " . $tenant_info['shortname'];
+        $this->view->object_broker->instance['email']->subject = "Deine Mitgliedschaft bei der " . $tenant_info['shortname'];
         $this->view->object_broker->instance['email']->AddRecipient($registration_info['email']);
         $this->view->object_broker->instance['email']->messageHTML = $mail_template;
 
