@@ -343,10 +343,6 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
         print '<br />&nbsp;<br />';
         print '<h3>Registrierte Z&auml;hlpunkte</h3>';
 
-        print '
-              <table class="table" style="width:700px">
-        ';
-
         $meters = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_METERS'], 'registration_id', $registration['id']);
 
         $new_meters_count = 0;
@@ -362,12 +358,10 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
 
             if ($meter['meter_type'] == 'consumer')
             {
-                $meter_nice = "Verbrauch";
                 $meter_type_shortcode = "ABN";
             } 
             else
             {
-                $meter_nice = "Einspeisung";
                 $meter_type_shortcode = "ERZ";
             }
             
@@ -403,20 +397,29 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                 $approved_meters_count++;
             }
 
-            print "<tr class=\"stategray profilemeterline\">
-                    <td class=\"profilemeter\" style=\"width:100px;text-align:center;vertical-align:middle;font-size:12pt;font-weight:bold\">
-                        $meter_short_id
-                    </td>
-                    <td class=\"profilemeter\" style=\"text-align:left\">
-                        <span class=\"metertype\">$meter_nice ($meter_participation$meter_power$meter_feedlimit$meter_estimated_consumption)</span><br />
-                        &nbsp;<br />
-                        " . $meter['meter_id'] . "<br />
-                        " . $meter['meter_addr_street'] . " " . $meter['meter_addr_number'] . ", " . $meter['meter_addr_zip'] . " " . $meter['meter_addr_city'] . "<br />
-                    </td>
-                    <td class=\"profilemeter\" id=\"detail_meter_state_" . $meter['id'] . "\" style=\"text-align:center;vertical-align:middle;font-weight:bold;\">
-                        " . $meter_status_arr[$meter['meter_state']] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_meter_state_init('detail_meter_state_" . $meter['id'] . "', '" . $meter['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>
-                    </td>
-                   </tr>";
+            print "<a id=\"meter_" . $meter['id'] . "\"></a>
+                    <table class=\"table\" style=\"width:700px\">
+                        <tr class=\"stategray profilemeterline\">
+                            <td class=\"profilemeter\" style=\"width:100px;text-align:center;vertical-align:middle;font-size:12pt;font-weight:bold\">
+                                $meter_short_id
+                            </td>
+                            <td class=\"profilemeter\" style=\"text-align:left;padding:0;width:450px;\">
+                                <table style=\"width:100%; height:100%; padding:0; margin:0;\">
+                                    <tr><td style=\"text-align:left;color:black\"><span class=\"metertype\">" . $meter['meter_id'] . "</span></td></tr>
+                                    <tr><td style=\"text-align:left;color:black\"><span class=\"metertype\" style=\"font-weight:normal\">" . $meter['meter_addr_street'] . " " . $meter['meter_addr_number'] . ", " . $meter['meter_addr_zip'] . " " . $meter['meter_addr_city'] . "</span></td></tr>
+                                    <tr id=\"meter_data_" . $meter['id'] . "\"><td style=\"text-align:left;color:black\"><span class=\"metertype\" style=\"font-weight:normal\">$meter_participation$meter_power$meter_feedlimit$meter_estimated_consumption</span></td></tr>
+                                    <tr id=\"meter_action_" . $meter['id'] . "\"><td style=\"text-align:left;color:black\"><span class=\"metertype\" style=\"font-weight:normal\"><i onclick=\"JaxonInteractives.dashboard_inline_update_meter_data_init('" . $meter['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></span> </td></tr>
+                                </table>
+                            </td>
+                            <td class=\"profilemeter\" id=\"detail_meter_state_" . $meter['id'] . "\" style=\"text-align:center;vertical-align:middle;font-weight:bold;padding:0;height:100px;\">
+                                <table style=\"width:100%; height:100%; padding:0; margin:0;\">
+                                    <tr><td style=\"height:112px;vertical-align:middle\"><span class=\"metertype\" style=\"color:black\">" . $meter_status_arr[$meter['meter_state']] . "</span></td></tr>
+                                    <tr><td><span class=\"metertype\" style=\"color:black\"><i onclick=\"JaxonInteractives.dashboard_inline_update_meter_state_init('detail_meter_state_" . $meter['id'] . "', '" . $meter['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></span></td></tr>
+                                </table>
+                            </td>
+                       </tr>
+                  </table><br />";
+
         }
 
         print "</table>";

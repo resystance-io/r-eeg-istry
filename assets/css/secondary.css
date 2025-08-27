@@ -362,3 +362,10 @@ span.metertype {
 .modal-content h3 {
     margin: 0;
 }
+
+.dz-details {
+   z-index: 0;
+}
+.dz-preview .dz-remove.dz-remove {
+   z-index: 100;
+}

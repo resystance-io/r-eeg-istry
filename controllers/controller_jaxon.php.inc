@@ -1245,6 +1245,107 @@ class Interactives
         return $response;
     }
 
+    public function dashboard_inline_update_meter_data_init($meter_id)
+    {
+        $response = jaxon()->newResponse();
+
+        $meter_data = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_METERS'], 'id', $meter_id);
+        $meter = $meter_data[0];
+
+        if($meter['meter_type'] == 'supplier')
+        {
+            $input_fields = "
+                <td>
+                    <table style=\"width:100%;height:100%;border:0;font-weight:bold;\">
+                        <tr>
+                            <td style=\"color:black;\">Faktor</td>
+                            <td style=\"color:black;\">Leistung</td>
+                            <td style=\"color:black;\">Limit</td>
+                            <td style=\"vertical-align:middle\" rowspan=\"2\">
+                                <button class=\"search bg-green-gradient\" style=\"margin-bottom:4px\" onclick=\"JaxonInteractives.dashboard_inline_update_meter_data_save('$meter_id', document.getElementById('meter_participation_" . $meter_id . "').value, document.getElementById('meter_power_" . $meter_id . "').value, document.getElementById('meter_feedlimit_" . $meter_id . "').value);\"><i class=\"fa fa-check\"></i></button>
+                                <button class=\"search bg-red-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_meter_data_cancel('$meter_id');\"><i class=\"fa fa-ban\"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style=\"color:black;\"><input type=\"text\" id=\"meter_participation_" . $meter_id . "\" style=\"width:100px;float:left;margin-bottom:6px;text-align:center;\" class=\"detail\" value=\"" . $meter['meter_participation'] . "\"><br />&percnt;</td>
+                            <td style=\"color:black;\"><input type=\"text\" id=\"meter_power_" . $meter_id . "\" style=\"width:100px;float:left;margin-bottom:6px;text-align:center;\" class=\"detail\" value=\"" . $meter['meter_power'] . "\"><br />kWp</td>
+                            <td style=\"color:black;\"><input type=\"text\" id=\"meter_feedlimit_" . $meter_id . "\" style=\"width:100px;float:left;margin-bottom:6px;text-align:center;\" class=\"detail\" value=\"" . $meter['meter_feedlimit'] . "\"><br />kVA</td>
+                        </tr>
+                    </table>' 
+                </td>
+            ";
+        }
+        else
+        {
+            $input_fields = "
+                <td>
+                    <table style=\"width:100%;height:100%;border:0;font-weight:bold;\">
+                        <tr>
+                            <td colspan=\"3\" style=\"color:black;\">Faktor</td>
+                            <td style=\"vertical-align:middle\" rowspan=\"2\">
+                                <button class=\"search bg-green-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_meter_data_save('$meter_id', document.getElementById('meter_participation_" . $meter_id . "').value);\"><i class=\"fa fa-check\"></i></button>
+                                <button class=\"search bg-red-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_meter_data_cancel('$meter_id');\"><i class=\"fa fa-ban\"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td style=\"color:black;text-align:center;width:140px;\"><input type=\"text\" id=\"meter_participation_" . $meter_id . "\" style=\"width:100px;float:left;text-align:center;\" class=\"detail\" value=\"" . $meter['meter_participation'] . "\"><span style=\"float:left;padding-left:8px;padding-top:4px;\">&percnt;</span></td>
+                            <td>&nbsp;</td>
+                        </tr>
+                    </table>' 
+                </td>
+            ";
+        }
+
+        $response->assign('meter_action_' . $meter_id, 'style.display', 'none');
+        $response->assign('meter_data_' . $meter_id, 'innerHTML', $input_fields);
+
+        return $response;
+    }
+
+    public function dashboard_inline_update_meter_data_save($meter_id, $meter_participation, $meter_power = null, $meter_feedlimit = null)
+    {
+        if($meter_participation)    $this->db->update_column_by_column_values($this->config->user['DBTABLE_METERS'], 'meter_participation', $meter_participation, 'id', $meter_id);
+        if($meter_power)            $this->db->update_column_by_column_values($this->config->user['DBTABLE_METERS'], 'meter_power', $meter_power, 'id', $meter_id);
+        if($meter_feedlimit)            $this->db->update_column_by_column_values($this->config->user['DBTABLE_METERS'], 'meter_feedlimit', $meter_feedlimit, 'id', $meter_id);
+
+        $meter_data = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_METERS'], 'id', $meter_id);
+        $meter = $meter_data[0];
+
+        if ($meter['meter_participation'] != null) $meter_participation = 'Faktor: ' . $meter['meter_participation'] . '%'; else $meter_participation = '';
+        if ($meter['meter_power'] != null) $meter_power = ', Leistung: ' . $meter['meter_power'] . ' kWp'; else $meter_power = '';
+        if ($meter['meter_feedlimit'] != null) $meter_feedlimit = ', R&uuml;ckspeiselimit: ' . $meter['meter_feedlimit'] . ' kVA'; else $meter_feedlimit = '';
+        if ($meter['meter_estimated_consumption'] != null) $meter_estimated_consumption = ', Voraussichtl. Jahresverbrauch: ' . $meter['meter_estimated_consumption'] . ' kW'; else $meter_estimated_consumption = '';
+
+        $response = jaxon()->newResponse();
+        $input_fields = "
+            <td style=\"text-align:left;color:black\"><span class=\"metertype\" style=\"font-weight:normal\">" . $meter_participation . $meter_power . $meter_feedlimit . $meter_estimated_consumption . "</span></td>
+        ";
+        $response->assign('meter_action_' . $meter_id, 'style.display', 'contents');
+        $response->assign('meter_data_' . $meter_id, 'innerHTML', $input_fields);
+
+        return $response;
+    }
+    public function dashboard_inline_update_meter_data_cancel($meter_id)
+    {
+        $meter_data = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_METERS'], 'id', $meter_id);
+        $meter = $meter_data[0];
+
+        if ($meter['meter_participation'] != null) $meter_participation = 'Faktor: ' . $meter['meter_participation'] . '%'; else $meter_participation = '';
+        if ($meter['meter_power'] != null) $meter_power = ', Leistung: ' . $meter['meter_power'] . ' kWp'; else $meter_power = '';
+        if ($meter['meter_feedlimit'] != null) $meter_feedlimit = ', R&uuml;ckspeiselimit: ' . $meter['meter_feedlimit'] . ' kVA'; else $meter_feedlimit = '';
+        if ($meter['meter_estimated_consumption'] != null) $meter_estimated_consumption = ', Voraussichtl. Jahresverbrauch: ' . $meter['meter_estimated_consumption'] . ' kW'; else $meter_estimated_consumption = '';
+
+        $response = jaxon()->newResponse();
+        $input_fields = "
+            <td style=\"text-align:left;color:black\"><span class=\"metertype\" style=\"font-weight:normal\">" . $meter_participation . $meter_power . $meter_feedlimit . $meter_estimated_consumption . "</span></td>
+        ";
+        $response->assign('meter_action_' . $meter_id, 'style.display', 'contents');
+        $response->assign('meter_data_' . $meter_id, 'innerHTML', $input_fields);
+
+        return $response;
+    }
+
     public function dashboard_inline_update_streetnum_init($div_id, $recordid)
     {
         $dbvaluestreet = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'street', 'id', $recordid);
@@ -1655,7 +1756,7 @@ class Interactives
     public function dashboard_inline_update_meter_state_init($div_id, $recordid)
     {
         $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_METERS'], 'meter_state', 'id', $recordid);
-        $input_field = "<select name=\"meter_state_$recordid\" id=\"meter_state_$recordid\" class=\"detail\" style=\"width:280px;text-align:center !important;text-align-last:center !important\">";
+        $input_field = "<select name=\"meter_state_$recordid\" id=\"meter_state_$recordid\" class=\"detail\" style=\"width:150px;height:40px !important;margin:8px !important;text-align:center !important;text-align-last:center !important\">";
 
         $meter_status_arr = ['new' => 'Neu', 'pending' => 'In Bearbeitung', 'approved' => 'Aktiv', 'suspended' => 'Gesperrt', 'inactive' => 'Deaktiviert', 'refused' => 'Abgelehnt'];
         if($dbvalue == null)    $dbvalue = 'new';
@@ -1682,7 +1783,12 @@ class Interactives
         $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_METERS'], 'meter_state', 'id', $recordid);
         if($dbvalue == null)    $dbvalue = 'new';
         $state_nice = ['new' => 'Neu', 'pending' => "In Bearbeitung", 'approved' => "Aktiv", 'suspended' => "Gesperrt", 'inactive' => "Deaktiviert", 'refused' => "Abgelehnt"];
-        $div_content = $state_nice[$dbvalue] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_meter_state_init('" . $div_id . "', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
+        $div_content = "
+            <table style=\"width:100%; height:100%; padding:0; margin:0;\">
+                <tr><td style=\"height:112px;vertical-align:middle\"><span class=\"metertype\" style=\"color:black\">" . $state_nice[$dbvalue] . "</span></td></tr>
+                <tr><td><span class=\"metertype\" style=\"color:black\"><i onclick=\"JaxonInteractives.dashboard_inline_update_meter_state_init('detail_meter_state_" . $recordid . "', '" . $recordid . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></span></td></tr>
+            </table>
+        ";
 
         $response = jaxon()->newResponse();
         $response->assign($div_id, 'innerHTML', $div_content);
