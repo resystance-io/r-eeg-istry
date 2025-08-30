@@ -369,7 +369,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
             if ($meter['meter_participation'] != null) $meter_participation = 'Faktor: ' . $meter['meter_participation'] . '%'; else $meter_participation = '';
             if ($meter['meter_power'] != null) $meter_power = ', Leistung: ' . $meter['meter_power'] . ' kWp'; else $meter_power = '';
             if ($meter['meter_feedlimit'] != null) $meter_feedlimit = ', R&uuml;ckspeiselimit: ' . $meter['meter_feedlimit'] . ' kVA'; else $meter_feedlimit = '';
-            if ($meter['meter_estimated_consumption'] != null) $meter_estimated_consumption = ', Voraussichtl. Jahresverbrauch: ' . $meter['meter_estimated_consumption'] . ' kW'; else $meter_estimated_consumption = '';
+            if ($meter['meter_estimated_consumption'] != null) $meter_estimated_consumption = ', Voraussichtl. Jahresverbrauch: ' . $meter['meter_estimated_consumption'] . ' kWh'; else $meter_estimated_consumption = '';
             if ($meter['meter_state'] == null)  $meter['meter_state'] = 'new';
 
             if($registration['tenant'] == null || $registration['state'] == 'new' || $registration['state'] == 'refused')
@@ -422,6 +422,119 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                   </table><br />";
 
         }
+
+        print "
+                    <table class=\"table\" id=\"new_meter_button\" style=\"width:700px\" onclick=\"document.getElementById('new_meter_dialogue').style.display = 'block';document.getElementById('new_meter_button').style.display = 'none';\">
+                        <tr class=\"stategray profilemeterline\">
+                            <td class=\"profilemeter\" style=\"width:100px;text-align:center;vertical-align:middle;font-size:12pt;font-weight:bold\">
+                                <i class=\"fa fa-plus-circle\"></i>
+                            </td>
+                            <td class=\"profilemeter\" style=\"text-align:left;padding:10px;width:600px;font-weight:bold;\">
+                                Einen neuen Z&auml;hlpunkt hinzuf&uuml;gen
+                            </td>
+                       </tr>
+                  </table><br />
+        ";
+
+        print "
+                    <script>
+                        function toggleMeterInputs() {
+                          const meterType = document.getElementById(\"new_meter_type\").value;
+                          const consumptionData = document.getElementById(\"new_meter_consumption_data\");
+                          const consumptionHeadline = document.getElementById(\"new_meter_consumption_headline\");
+                          const powerData = document.getElementById(\"new_meter_power_data\");
+                          const powerHeadline = document.getElementById(\"new_meter_power_headline\");
+                          const limitData = document.getElementById(\"new_meter_limit_data\");
+                          const limitHeadline = document.getElementById(\"new_meter_limit_headline\");
+                          const placeholderData = document.getElementById(\"new_meter_placeholder_data\");
+                          const placeholderHeadline = document.getElementById(\"new_meter_placeholder_headline\");
+                        
+                          if (meterType === \"consumer\") {
+                            consumptionData.style.setProperty(\"display\", \"table-cell\");
+                            consumptionHeadline.style.setProperty(\"display\", \"table-cell\");
+                            powerData.style.setProperty(\"display\", \"none\");
+                            powerHeadline.style.setProperty(\"display\", \"none\");
+                            limitData.style.setProperty(\"display\", \"none\");
+                            limitHeadline.style.setProperty(\"display\", \"none\");
+                            placeholderData.style.setProperty(\"display\", \"table-cell\");
+                            placeholderHeadline.style.setProperty(\"display\", \"table-cell\");
+                          } 
+                          else
+                          {
+                            consumptionData.style.setProperty(\"display\", \"none\");
+                            consumptionHeadline.style.setProperty(\"display\", \"none\");
+                            powerData.style.setProperty(\"display\", \"table-cell\");
+                            powerHeadline.style.setProperty(\"display\", \"table-cell\");
+                            limitData.style.setProperty(\"display\", \"table-cell\");
+                            limitHeadline.style.setProperty(\"display\", \"table-cell\");
+                            placeholderData.style.setProperty(\"display\", \"none\");
+                            placeholderHeadline.style.setProperty(\"display\", \"none\");
+                          }
+                        }
+                        
+                        function format_meter_id (\$id) {
+                            const positions = [2, 8, 13, 23];
+                            meter_id = document.getElementById(\$id).value.replace(/\s+/g,'');
+                            positions.forEach((pos, i) => {
+                                if (meter_id.length > pos + i) {
+                                    meter_id =  meter_id.slice(0, pos + i) + ' ' + meter_id.slice(pos + i);
+                                }
+                            });
+                            document.getElementById(\$id).value = meter_id;
+                        }
+                    </script>
+                    
+                    <table class=\"table\" id=\"new_meter_dialogue\" style=\"width:700px;display:none\">
+                        <tr class=\"stategray profilemeterline\">
+                            <td class=\"profilemeter\" style=\"width:100px !important; min-width:100px; text-align:center;vertical-align:middle;font-size:12pt;font-weight:bold\">
+                               <select class=\"detail\" id=\"new_meter_type\" style=\"width:80px;height:40px !important; text-align:center !important;text-align-last:center !important\" onchange=\"toggleMeterInputs()\">>
+                                <option value=\"consumer\">ABN</option>
+                                <option value=\"supplier\">ERZ</option>
+                               </select> 
+                            </td>
+                            <td class=\"profilemeter\" style=\"text-align:left;padding:0;width:600px;\">
+                                <table style=\"width:100%; height:100%; padding:0; margin:0;\">
+                                    <tr>
+                                        <td style=\"text-align:left;color:black;font-weight:bold;width:171px !important;\"><span class=\"metertype\">Z&auml;hlpunktnummer</span></td>
+                                        <td style=\"text-align:left;color:black\"><span class=\"metertype\"><INPUT type=\"text\" id=\"new_meter_id\" class=\"detail\" oninput=\"format_meter_id('new_meter_id');\" value=\"AT 003000 00000 0000000000 0000000000\"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td style=\"text-align:left;color:black;font-weight:bold;min-width:171px !important;\"><span class=\"metertype\">Stra&szlig;e / Nr.</span></td>
+                                        <td style=\"text-align:left;color:black\"><span class=\"metertype\" style=\"font-weight:normal\"><INPUT type=\"text\" id=\"new_meter_street\" style=\"float:left;width:306px;\" class=\"detail\" value=\"" . $meter['meter_addr_street'] . "\"><INPUT type=\"text\" id=\"new_meter_streetnum\" style=\"float:right;width:90px;margin-left:12px;text-align:center;\" class=\"detail\" value=\"" . $meter['meter_addr_number'] . "\"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td style=\"text-align:left;color:black;font-weight:bold;width:171px !important;\"><span class=\"metertype\">PLZ / Stadt</span></td>
+                                        <td style=\"text-align:left;color:black\"><span class=\"metertype\" style=\"font-weight:normal\"><INPUT type=\"text\" id=\"new_meter_zip\" style=\"float:left;width:90px;\" class=\"detail\" value=\"" . $meter['meter_addr_zip'] . "\"><INPUT type=\"text\" id=\"new_meter_city\" style=\"float:right;width:306px;\" class=\"detail\" value=\"" . $meter['meter_addr_city'] . "\"></span></td>
+                                    </tr>
+                                    <tr id=\"meter_data_" . $meter['id'] . "\">
+                                        <td style=\"text-align:left;color:black;font-weight:bold;width:171px !important;\"><span class=\"metertype\">Techn. Details</span></td>
+                                        <td style=\"text-align:left;color:black\">
+                                            <table style=\"width:100%;height:100%;border:0;font-weight:bold;\">
+                                                <tr>
+                                                    <td style=\"color:black;\">Faktor</td>
+                                                    <td id=\"new_meter_consumption_headline\" style=\"color:black;display:table-cell;\">Jahresverbr.</td>
+                                                    <td id=\"new_meter_power_headline\" style=\"color:black;display:none;\">Leistung</td>
+                                                    <td id=\"new_meter_limit_headline\" style=\"color:black;min-width:116px;display:none;\">Limit</td>
+                                                    <td id=\"new_meter_placeholder_headline\" style=\"color:black;min-width:116px\">&nbsp;</td>
+                                                    <td style=\"vertical-align:middle\" rowspan=\"2\">
+                                                        <button class=\"search bg-green-gradient\" style=\"margin-bottom:4px\" onclick=\"JaxonInteractives.dashboard_add_meter('" . $registration['id'] . "', document.getElementById('new_meter_type').value, document.getElementById('new_meter_id').value, document.getElementById('new_meter_street').value, document.getElementById('new_meter_streetnum').value, document.getElementById('new_meter_zip').value, document.getElementById('new_meter_city').value, document.getElementById('new_meter_participation').value, document.getElementById('new_meter_power').value, document.getElementById('new_meter_feedlimit').value, document.getElementById('new_meter_consumption').value);\"><i class=\"fa fa-check\"></i></button>
+                                                        <button class=\"search bg-red-gradient\" onclick=\"document.getElementById('new_meter_dialogue').style.display = 'none';document.getElementById('new_meter_button').style.display = 'block';\"><i class=\"fa fa-ban\"></i></button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style=\"color:black;\"><input type=\"text\" id=\"new_meter_participation\" style=\"width:100px;float:left;margin-bottom:6px;text-align:center;\" class=\"detail\"><br />&percnt;</td>
+                                                    <td id=\"new_meter_consumption_data\" style=\"color:black;display:table-cell;\"><input type=\"text\" id=\"new_meter_consumption\" style=\"width:100px;float:left;margin-bottom:6px;text-align:center;\" class=\"detail\"><br />kWh</td>
+                                                    <td id=\"new_meter_power_data\" style=\"color:black;display:none;\"><input type=\"text\" id=\"new_meter_power\" style=\"width:100px;float:left;margin-bottom:6px;text-align:center;\" class=\"detail\"><br />kWp</td>
+                                                    <td id=\"new_meter_limit_data\" style=\"color:black;display:none;min-width:116px;\"><input type=\"text\" id=\"new_meter_feedlimit\" style=\"width:100px;float:left;margin-bottom:6px;text-align:center;\" class=\"detail\"><br />kVA</td>
+                                                    <td id=\"new_meter_placeholder_data\" style=\"color:black;min-width:116px;\">&nbsp;</td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                       </tr>
+                  </table><br />";
 
         print "</table>";
 

@@ -1271,7 +1271,7 @@ class Interactives
                             <td style=\"color:black;\"><input type=\"text\" id=\"meter_power_" . $meter_id . "\" style=\"width:100px;float:left;margin-bottom:6px;text-align:center;\" class=\"detail\" value=\"" . $meter['meter_power'] . "\"><br />kWp</td>
                             <td style=\"color:black;\"><input type=\"text\" id=\"meter_feedlimit_" . $meter_id . "\" style=\"width:100px;float:left;margin-bottom:6px;text-align:center;\" class=\"detail\" value=\"" . $meter['meter_feedlimit'] . "\"><br />kVA</td>
                         </tr>
-                    </table>' 
+                    </table>
                 </td>
             ";
         }
@@ -2270,6 +2270,82 @@ class Interactives
         $response = jaxon()->newResponse();
         $response->assign('modal', 'style.display', 'none');
         $response->assign($div_id, 'innerHTML', $div_content);
+        return $response;
+    }
+
+    public function dashboard_add_meter($registration_id, $new_meter_type, $new_meter_id, $new_meter_street, $new_meter_streetnum, $new_meter_zip, $new_meter_city, $new_meter_participation, $new_meter_power=0, $new_meter_feedlimit=0, $new_meter_consumption=0)
+    {
+        $response = jaxon()->newResponse();
+
+        $clean_meter_id = str_replace(' ', '', $new_meter_id);
+        if (strlen($clean_meter_id) != 33 || !str_starts_with($clean_meter_id, 'AT00') || str_ends_with($clean_meter_id, "0000000"))
+        {
+            $response->alert("Bitte überprüfe das Format der Zählpunktnummer");
+            return $response;
+        }
+
+        $meter_id_count = $this->db->get_rowcount_by_field_value_extended($this->config->user['DBTABLE_METERS'],'meter_id', $new_meter_id);
+        if($meter_id_count > 0)
+        {
+            $response->alert("Diese Zählpunktnummer ist bereits einem Mitglied zugeordnet");
+            return $response;
+        }
+
+        $registration = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'id', $registration_id);
+        $registration = $registration[0];
+
+        $meter_array['meter_state'] = 'new';
+        $meter_array['registration_id'] = $registration_id;
+        $meter_array['meter_id'] = $new_meter_id;
+        $meter_array['meter_uuid'] = $this->generate_uuid4();
+        $meter_array['meter_type'] = $new_meter_type;
+        $meter_array['meter_addr_street'] = $new_meter_street;
+        $meter_array['meter_addr_number'] = $new_meter_streetnum;
+        $meter_array['meter_addr_city'] = $new_meter_city;
+        $meter_array['meter_addr_zip'] = $new_meter_zip;
+        $meter_array['meter_participation'] = $new_meter_participation;
+
+        if($new_meter_type == "supplier")
+        {
+            $meter_array['meter_power'] = $new_meter_power;
+            $meter_array['meter_feedlimit'] = $new_meter_feedlimit;
+        }
+        else
+        {
+            $meter_array['meter_estimated_consumption'] = $new_meter_consumption;
+        }
+
+        $highest_meter_row = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_METERS'],
+            NULL,
+            NULL,
+            1,
+            'meter_oid',
+            'DESC',
+            $this->config->user['DBTABLE_REGISTRATIONS'] . '.tenant = "' . $registration['tenant'] . '" AND ' . $this->config->user['DBTABLE_METERS'] . '.meter_type = "' . $new_meter_type . '"',
+            'INNER JOIN ' . $this->config->user['DBTABLE_REGISTRATIONS'] . ' ON (' . $this->config->user['DBTABLE_METERS'] . '.registration_id = ' . $this->config->user['DBTABLE_REGISTRATIONS'] . '.id) WHERE');
+        if (count($highest_meter_row) > 0)
+        {
+            $highest_meter_row = $highest_meter_row[0];
+            $new_meter_oid = $highest_meter_row['meter_oid'] + 1;
+        } else
+        {
+            $new_meter_oid = 1;
+        }
+
+        $meter_array['meter_oid'] = $new_meter_oid;
+
+        if ($new_meter_type == 'supplier') $shorttype = 'ERZ'; else $shorttype = 'ABN';
+        $tenant_meter_prefix = $this->db->get_column_by_column_value($this->config->user['DBTABLE_TENANTS'], 'meter_prefix_short', 'id', $registration['tenant']);;
+
+        $meter_array['meter_fqoid'] = $tenant_meter_prefix . $shorttype . $new_meter_oid;
+
+        $tenant_network_substation_id = $this->db->get_column_by_column_value($this->config->user['DBTABLE_TENANTS'], 'network_substation_id', 'id', $tenant);
+        $meter_array['meter_substation_id'] = $tenant_network_substation_id;
+
+        $this->object_broker->instance['db']->insert_row_with_array($this->config->user['DBTABLE_METERS'], $meter_array);
+
+        $response->script("window.location.href='/?manage_registrations&registration=$registration_id';");
+
         return $response;
     }
 
