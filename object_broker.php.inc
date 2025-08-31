@@ -4,6 +4,7 @@ class OBJECT_BROKER
 {
 
     public $instance;           // Holds instanciated objects
+    public $plugs;              // holds instantiated plugins
 
     public function __construct()
     {
@@ -11,5 +12,3 @@ class OBJECT_BROKER
     }
 
 }
-
-?>
