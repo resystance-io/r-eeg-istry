@@ -2400,7 +2400,7 @@ class Interactives
 
         $meter_array['meter_fqoid'] = $tenant_meter_prefix . $shorttype . $new_meter_oid;
 
-        $tenant_network_substation_id = $this->db->get_column_by_column_value($this->config->user['DBTABLE_TENANTS'], 'network_substation_id', 'id', $tenant);
+        $tenant_network_substation_id = $this->db->get_column_by_column_value($this->config->user['DBTABLE_TENANTS'], 'network_substation_id', 'id', $registration['tenant']);
         $meter_array['meter_substation_id'] = $tenant_network_substation_id;
 
         $this->object_broker->instance['db']->insert_row_with_array($this->config->user['DBTABLE_METERS'], $meter_array);
@@ -3481,11 +3481,13 @@ class Interactives
 
         $this->view->fpdf->Cell(10,10,"", '');
 
-        $this->view->fpdf->Cell(40,10,"Statuen der " . $tenant['shortname']);
+        $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT', $tenant['shortname']);
+        $this->view->fpdf->Cell(40,10,"Statuen der " . $converted_string);
 
         $this->view->fpdf->Ln(5);
         $this->view->fpdf->SetFont('Arial','',12);
-        $this->view->fpdf->Cell(90,10,$registration['banking_name']);
+        $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT', $registration['banking_name']);
+        $this->view->fpdf->Cell(90,10, $converted_string);
 
         $this->view->fpdf->Cell(10,10,"", '');
 
@@ -3537,7 +3539,8 @@ class Interactives
 
         $this->view->fpdf->Ln(5);
         $this->view->fpdf->SetFont('Arial','',12);
-        $this->view->fpdf->Cell(90,10,$registration['banking_institute']);
+        $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT', $registration['banking_institute']);
+        $this->view->fpdf->Cell(90,10, $converted_string);
 
         $this->view->fpdf->Cell(10,10,"", '');
 
