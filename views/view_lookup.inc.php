@@ -30,6 +30,18 @@ class VIEW_LOOKUP extends VIEW
                 $this->view_render_reset();
                 break;
 
+            case "recovernote":
+                $this->view_render_recovernote();
+                break;
+
+            case "recovernotefail":
+                $this->view_render_recovernotefail();
+                break;
+
+            case "recover":
+                $this->view_render_recover();
+                break;
+
             default:
                 print '
                     <header id="header">
@@ -64,15 +76,99 @@ class VIEW_LOOKUP extends VIEW
         print '<div style="float:right"><a href="/?lookup=reset">Passwort vergessen?</a></div>';
     }
 
+    private function view_render_recover(): void
+    {
+        if(isset($_GET['email']) && isset($_GET['code']))
+        {
+            $recovery_email = $_GET['email'];
+
+            if (!filter_var($recovery_email, FILTER_VALIDATE_EMAIL))
+            {
+                print "Dieser Link ist leider ung&uuml;ltig<br />";
+            }
+            else
+            {
+                $recovery_requests = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_TEMPORARY'], 'value1', $recovery_email,null, null, null, $this->config->user['DBTABLE_TEMPORARY'] . ".feature = \"recover_mnemonic\"");
+                if(count($recovery_requests) == 0)
+                {
+                    print "Dieser Link ist leider nicht (mehr) g&uuml;ltig<br />";
+                }
+                else
+                {
+                    if($recovery_requests[0]['value2'] != $_GET['code'])
+                    {
+                        print "Dieser Link ist leider nicht (mehr) g&uuml;ltig<br />";
+                    }
+                    else
+                    {
+                        $new_mnemonic = $this->object_broker->instance['session']->generate_session_mnemonic();
+                        $account_id = $this->db->get_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'id', 'email', $recovery_email);
+                        if ($account_id)
+                        {
+                            $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'mnemonic', hash('sha256', $new_mnemonic), 'id', $account_id);
+                            $this->db->delete_rows_by_field_value_extended($this->config->user['DBTABLE_TEMPORARY'], 'value1', $recovery_email, $this->config->user['DBTABLE_TEMPORARY'] . ".feature = \"recover_mnemonic\"");
+
+                            print '
+                                    <header id="header">
+                                        <h1>Passwort vergessen</h1>
+                                        <p>Dein neues Passwort wurde erstellt<br /></p>
+                                    </header>
+                            ';
+
+                            print "Wir haben soeben das Passwort Deines Benutzerkontos aktualisiert.<br />";
+                            print "Bitte bewahre dieses an einem sicheren Ort auf.<br />&nbsp;<br />";
+                            print "<b>Dein neues Passwort lautet:</b><br />&nbsp;<br />";
+                            print "<span style=\"font-size:28pt;font-weight:bold;\">$new_mnemonic</span><br />";
+                            print "<br />&nbsp;<br />";
+                            print "<b>Alles bereit?</b><br />Dann kannst Du dich ab sofort mit deinem neuen Passwort anmelden:<br />&nbsp;<br>";
+                            print "<a href=\"?lookup\" style=\"font-weight:bold;\">Weiter zum Login</a>";
+                        }
+                        else
+                        {
+                            print "Wir konnten Dein Benutzerkonto nicht (mehr) finden.<br />Bitte kontaktiere unser Team.";
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            print "Dieser Link ist leider unvollst&auml;ndig<br />";
+        }
+    }
+    private function view_render_recovernote(): void
+    {
+
+        print '
+                    <header id="header">
+                        <h1>Passwort vergessen</h1>
+                        <p>Bitte &uuml;berpr&uuml;fe deinen Posteingang<br /></p>
+                    </header>
+        ';
+
+        print "Falls du mit dieser E-Mail Adresse ein Benutzerkonto bei uns registriert hast, solltest du<br />";
+        print "in K&uuml;rze eine E-Mail mit einem Link zum Zur&uuml;cksetzen deines Passwortes erhalten.<br />&nbsp;<br />";
+        print "Falls du keine E-Mail erhalten hast, &uuml;berpr&uuml;fe bitte deinen Spam-Ordner.<br />";
+    }
+
+
+    private function view_render_recovernotefail(): void
+    {
+
+        print '
+                    <header id="header">
+                        <h1>Passwort vergessen</h1>
+                        <p>Fehler beim Versand der Nachricht<br /></p>
+                    </header>
+        ';
+
+        print "Beim Versand der Nachricht mit den Wiederherstellungsinformationen ist ein Fehler aufgetreten.<br />";
+        print "Bitte kontaktiere unser Team, wir werden versuchen das Problem zu l&ouml;sen.<br />";
+    }
+
+
     private function view_render_reset(): void
     {
-        $registrations = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'id', $_SESSION['authenticated']);
-        if ($registrations == NULL || count($registrations) == 0)
-        {
-            print '<h3>Fehler:</h3><br />Die Daten dieser Registrierung konnten nicht abgerufen werden.<br />Bitte kontaktiere den Support';
-            return;
-        }
-        $registration = $registrations[0];
 
         print '
                     <header id="header">
@@ -82,10 +178,10 @@ class VIEW_LOOKUP extends VIEW
         ';
 
         print "<table>";
-        print "<tr><td class=\"profileheader\">E-Mail Adresse</td><td><input type=\"text\" name=\"forgot_email\" id=\"forgot_email\"></td></tr>";
+        print "<tr><td class=\"profileheader\" style=\"width:400px;\">E-Mail Adresse</td><td><input type=\"text\" style=\"width:400px;\" id=\"forgot_email\"></td></tr>";
 
         print "<tr><td>&nbsp;</td>";
-            print "<td><button style=\"margin-top:12px;\" onclick=\"JaxonInteractives.dashboard_recover_mnemonic(document.getElementById(\'forgot_email\').value);\">Neues Passwort anfordern</button></td>";
+            print "<td><button style=\"margin-top:12px;\" onclick=\"JaxonInteractives.dashboard_recover_mnemonic(document.getElementById('forgot_email').value);\">Neues Passwort anfordern</button></td>";
         print "</tr>";
         print "</table>";
     }

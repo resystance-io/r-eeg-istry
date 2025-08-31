@@ -1175,26 +1175,87 @@ class Interactives
         }
         else
         {
-            $user_status = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'deleted', 'email', $email);
-
-            // create a random string with 8 random alphanumeric characters, but try to prevent homoglyphs
-            $chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Excludes homoglyphs like O/0, I/1, l/1
-            $random_string = '';
-            for ($i = 0; $i < 8; $i++)
+            $user_deleted = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'deleted', 'email', $email);
+            if($user_deleted == 'y')
             {
-                $random_string .= $chars[random_int(0, strlen($chars) - 1)];
+                $response->alert('Das Passwort kann nicht zurückgesetzt werden. Dieses Benutzerkonto wurde bereits gelöscht.');
             }
-            
-            $insert_arr = [
-                'feature' => 'recover_mnemonic',
-                'value1' => $email,
-                'value2' => $random_string
-            ];
+            else
+            {
+                // create a random string with 8 random alphanumeric characters, but try to prevent homoglyphs
+                $chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Excludes homoglyphs like O/0, I/1, l/1
+                $random_string = '';
+                for ($i = 0; $i < 8; $i++)
+                {
+                    $random_string .= $chars[random_int(0, strlen($chars) - 1)];
+                }
 
-            $this->db->insert_row_with_array($this->config->user['DBTABLE_TEMPORARY'], $insert_arr);
+                $insert_arr = [
+                    'feature' => 'recover_mnemonic',
+                    'value1' => $email,
+                    'value2' => $random_string
+                ];
+                $this->db->delete_rows_by_field_value_extended($this->config->user['DBTABLE_TEMPORARY'], 'value1', $email, $this->config->user['DBTABLE_TEMPORARY'] . ".feature = 'recover_mnemonic'");
+                $this->db->insert_row_with_array($this->config->user['DBTABLE_TEMPORARY'], $insert_arr);
 
-            $response = jaxon()->newResponse();
-            $response->script("window.location.href='/?lookup=recovernote';");
+                $mail_template = file_get_contents('assets/templates/mail_recover_password.html');
+
+                $registration_info = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'email', $email);
+                if(count($registration_info) > 0)
+                {
+                    $registration_info = $registration_info[0];
+
+                    $tenant_info = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_TENANTS'], 'id', $registration_info['tenant']);;
+                    $tenant_info = $tenant_info[0];
+
+                    if ($registration_info['type'] == 'company')
+                    {
+                        $mail_template = str_replace('{%FIRSTNAME%}', $registration_info['company_name'], $mail_template);
+                        $mail_template = str_replace('{%LASTNAME%}', '', $mail_template);
+                    } else
+                    {
+                        $mail_template = str_replace('{%FIRSTNAME%}', $registration_info['firstname'], $mail_template);
+                        $mail_template = str_replace('{%LASTNAME%}', $registration_info['lastname'], $mail_template);
+                    }
+                    $mail_template = str_replace('{%USEREMAIL%}', $registration_info['email'], $mail_template);
+                    $mail_template = str_replace('{%REFERRER%}', $tenant_info['referrer'], $mail_template);
+                    $mail_template = str_replace('{%FULLNAME%}', $tenant_info['fullname'], $mail_template);
+                    $mail_template = str_replace('{%SHORTNAME%}', $tenant_info['shortname'], $mail_template);
+                    $mail_template = str_replace('{%SLOGAN%}', $tenant_info['slogan'], $mail_template);
+
+                    $mail_template = str_replace('{%REEGISTRY_WEBSITE%}', $tenant_info['reegistry_website'], $mail_template);
+                    $mail_template = str_replace('{%CONTACT_WEBSITE%}', $tenant_info['contact_website'], $mail_template);
+                    $mail_template = str_replace('{%CONTACT_EMAIL%}', $tenant_info['contact_email'], $mail_template);
+                    $mail_template = str_replace('{%RESET_LINK%}', $tenant_info['reegistry_website'] . '?lookup=recover&email=' . $email . '&code=' . $random_string . '&tenant=' . $tenant_info['referrer'], $mail_template);
+
+                    $this->view->object_broker->instance['email']->subject = $tenant_info['shortname'] . " - Passwort vergessen";
+                    $this->view->object_broker->instance['email']->AddRecipient($email);
+                    $this->view->object_broker->instance['email']->messageHTML = $mail_template;
+
+                    if ($this->view->object_broker->instance['email']->Send('smtp'))
+                    {
+                        $mail_sent = true;
+                    } else
+                    {
+                        $mail_sent = false;
+                    }
+
+                    if ($mail_sent === false)
+                    {
+                        $response->alert('Fehler beim Mailversand: Die Wiederherstellungsinformationen konnten nicht gesendet werden.');
+                        $response->script("window.location.href='/?lookup=recovernotefail';");
+                    }
+                    else
+                    {
+                        $response->script("window.location.href='/?lookup=recovernote';");
+                    }
+                }
+                else
+                {
+                    $response->script("window.location.href='/?lookup=recovernote';");
+                }
+            }
+
         }
 
         return $response;

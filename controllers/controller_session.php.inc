@@ -93,7 +93,7 @@ class CONTROLLER_SESSION
         }
     }
 
-    private function generate_session_mnemonic()
+    public function generate_session_mnemonic()
     {
         // create an mnemonic that will be used as password to authenticate users
         // that want to check their current registration details
