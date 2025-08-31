@@ -3578,7 +3578,7 @@ class Interactives
         $this->view->fpdf->Cell(10,10,"", '');
 
         $this->view->fpdf->SetFont('Arial','',12);
-        if($registration['gdpr_consent'])
+        if($registration['network_consent'])
         {
             $this->view->fpdf->Cell(40,10, 'Erteilt am ' . date('d.m.Y H:i', $registration['gdpr_consent']));
         }
