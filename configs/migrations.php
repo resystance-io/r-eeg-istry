@@ -68,3 +68,12 @@ $database_migrations[10] = [
     "DELETE FROM `dashboard_layout` WHERE `data` = 'id';",
     "UPDATE `temporary` SET `value1` = '10' WHERE `feature` = 'database_version';"
 ];
+
+$database_migrations[11] = [
+    "ALTER TABLE `tenants` CHANGE `download_tos` `download_tos` VARCHAR(128)  CHARACTER SET utf8mb4  COLLATE utf8mb4_general_ci  NULL  DEFAULT NULL;",
+    "ALTER TABLE `tenants` CHANGE `download_bylaws` `download_bylaws` VARCHAR(128)  CHARACTER SET utf8mb4  COLLATE utf8mb4_general_ci  NULL  DEFAULT NULL;",
+    "ALTER TABLE `tenants` CHANGE `download_gdpr` `download_gdpr` VARCHAR(128)  CHARACTER SET utf8mb4  COLLATE utf8mb4_general_ci  NULL  DEFAULT NULL;",
+    "ALTER TABLE `tenants` CHANGE `contact_website` `contact_website` VARCHAR(128)  CHARACTER SET utf8mb4  COLLATE utf8mb4_general_ci  NULL  DEFAULT NULL;",
+    "ALTER TABLE `tenants` CHANGE `reegistry_website` `reegistry_website` VARCHAR(128)  CHARACTER SET utf8mb4  COLLATE utf8mb4_general_ci  NULL  DEFAULT NULL;",
+    "UPDATE `temporary` SET `value1` = '11' WHERE `feature` = 'database_version';"
+];
