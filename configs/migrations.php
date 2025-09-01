@@ -77,3 +77,10 @@ $database_migrations[11] = [
     "ALTER TABLE `tenants` CHANGE `reegistry_website` `reegistry_website` VARCHAR(128)  CHARACTER SET utf8mb4  COLLATE utf8mb4_general_ci  NULL  DEFAULT NULL;",
     "UPDATE `temporary` SET `value1` = '11' WHERE `feature` = 'database_version';"
 ];
+
+$database_migrations[12] = [
+    "ALTER TABLE `meters` ADD `meter_nicename` VARCHAR(128)  NULL  DEFAULT NULL  AFTER `meter_id`;",
+    "UPDATE `temporary` SET `value1` = '12' WHERE `feature` = 'database_version';"
+];
+
+

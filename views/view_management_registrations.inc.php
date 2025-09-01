@@ -406,6 +406,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                             </td>
                             <td class=\"profilemeter\" style=\"text-align:left;padding:0;width:450px;\">
                                 <table style=\"width:100%; height:100%; padding:0; margin:0;\">
+                                    <tr><td style=\"text-align:left;color:black\" id=\"detail_meter_nicename_" . $meter['id'] . "\"><span class=\"metertype\">" . $meter['meter_nicename'] . "<i onclick=\"JaxonInteractives.dashboard_inline_update_init('detail_meter_nicename_" . $meter['id'] . "', 'meter_nicename', '" . $meter['id'] . "', 'meters');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></span></td></tr>
                                     <tr><td style=\"text-align:left;color:black\"><span class=\"metertype\">" . $meter['meter_id'] . "</span></td></tr>
                                     <tr><td style=\"text-align:left;color:black\"><span class=\"metertype\" style=\"font-weight:normal\">" . $meter['meter_addr_street'] . " " . $meter['meter_addr_number'] . ", " . $meter['meter_addr_zip'] . " " . $meter['meter_addr_city'] . "</span></td></tr>
                                     <tr id=\"meter_data_" . $meter['id'] . "\"><td style=\"text-align:left;color:black\"><span class=\"metertype\" style=\"font-weight:normal\">$meter_participation$meter_power$meter_feedlimit$meter_estimated_consumption</span></td></tr>
@@ -414,8 +415,8 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                             </td>
                             <td class=\"profilemeter\" id=\"detail_meter_state_" . $meter['id'] . "\" style=\"text-align:center;vertical-align:middle;font-weight:bold;padding:0;height:100px;\">
                                 <table style=\"width:100%; height:100%; padding:0; margin:0;\">
-                                    <tr><td style=\"height:112px;vertical-align:middle\"><span class=\"metertype\" style=\"color:black\">" . $meter_status_arr[$meter['meter_state']] . "</span></td></tr>
-                                    <tr><td><span class=\"metertype\" style=\"color:black\"><i onclick=\"JaxonInteractives.dashboard_inline_update_meter_state_init('detail_meter_state_" . $meter['id'] . "', '" . $meter['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></span></td></tr>
+                                    <tr><td style=\"vertical-align:middle !important;\"><span class=\"metertype\" style=\"color:black\">" . $meter_status_arr[$meter['meter_state']] . "</span></td></tr>
+                                    <tr><td style=\"height:40px !important;\"><span class=\"metertype\" style=\"color:black;\"><i onclick=\"JaxonInteractives.dashboard_inline_update_meter_state_init('detail_meter_state_" . $meter['id'] . "', '" . $meter['id'] . "');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i></span></td></tr>
                                 </table>
                             </td>
                        </tr>
@@ -474,7 +475,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                         
                         function format_meter_id (\$id) {
                             const positions = [2, 8, 13, 23];
-                            meter_id = document.getElementById(\$id).value.replace(/\s+/g,'');
+                            let meter_id = document.getElementById(\$id).value.replace(/\s+/g,'');
                             positions.forEach((pos, i) => {
                                 if (meter_id.length > pos + i) {
                                     meter_id =  meter_id.slice(0, pos + i) + ' ' + meter_id.slice(pos + i);
@@ -496,7 +497,12 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                                 <table style=\"width:100%; height:100%; padding:0; margin:0;\">
                                     <tr>
                                         <td style=\"text-align:left;color:black;font-weight:bold;width:171px !important;\"><span class=\"metertype\">Z&auml;hlpunktnummer</span></td>
-                                        <td style=\"text-align:left;color:black\"><span class=\"metertype\"><INPUT type=\"text\" id=\"new_meter_id\" class=\"detail\" oninput=\"format_meter_id('new_meter_id');\" value=\"AT 003000 00000 0000000000 0000000000\"></span></td>
+                                        <td style=\"text-align:left;color:black\"><span class=\"metertype\"><INPUT type=\"text\" maxlength=\"37\" style=\"width:305px;float:left\" id=\"new_meter_id\" class=\"detail\" oninput=\"format_meter_id('new_meter_id');\" value=\"AT 003000 00000 0000000000 0000000000\"></span>
+                                        <span id=\"new_meter_counter\" style=\"float:right;margin-top:4px;font-weight:normal !important;display:none\">noch 0 Ziffer(n)</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td style=\"text-align:left;color:black;font-weight:bold;width:171px !important;\"><span class=\"metertype\">Bezeichnung</span></td>
+                                        <td style=\"text-align:left;color:black\"><span class=\"metertype\"><INPUT type=\"text\" maxlength=\"120\" id=\"new_meter_nicename\" class=\"detail\" value=\"\"></span></td>
                                     </tr>
                                     <tr>
                                         <td style=\"text-align:left;color:black;font-weight:bold;min-width:171px !important;\"><span class=\"metertype\">Stra&szlig;e / Nr.</span></td>
@@ -517,7 +523,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                                                     <td id=\"new_meter_limit_headline\" style=\"color:black;min-width:116px;display:none;\">Limit</td>
                                                     <td id=\"new_meter_placeholder_headline\" style=\"color:black;min-width:116px\">&nbsp;</td>
                                                     <td style=\"vertical-align:middle\" rowspan=\"2\">
-                                                        <button class=\"search bg-green-gradient\" style=\"margin-bottom:4px\" onclick=\"JaxonInteractives.dashboard_add_meter('" . $registration['id'] . "', document.getElementById('new_meter_type').value, document.getElementById('new_meter_id').value, document.getElementById('new_meter_street').value, document.getElementById('new_meter_streetnum').value, document.getElementById('new_meter_zip').value, document.getElementById('new_meter_city').value, document.getElementById('new_meter_participation').value, document.getElementById('new_meter_power').value, document.getElementById('new_meter_feedlimit').value, document.getElementById('new_meter_consumption').value);\"><i class=\"fa fa-check\"></i></button>
+                                                        <button class=\"search bg-green-gradient\" style=\"margin-bottom:4px\" onclick=\"JaxonInteractives.dashboard_add_meter('" . $registration['id'] . "', document.getElementById('new_meter_type').value, document.getElementById('new_meter_id').value, document.getElementById('new_meter_nicename').value, document.getElementById('new_meter_street').value, document.getElementById('new_meter_streetnum').value, document.getElementById('new_meter_zip').value, document.getElementById('new_meter_city').value, document.getElementById('new_meter_participation').value, document.getElementById('new_meter_power').value, document.getElementById('new_meter_feedlimit').value, document.getElementById('new_meter_consumption').value);\"><i class=\"fa fa-check\"></i></button>
                                                         <button class=\"search bg-red-gradient\" onclick=\"document.getElementById('new_meter_dialogue').style.display = 'none';document.getElementById('new_meter_button').style.display = 'block';\"><i class=\"fa fa-ban\"></i></button>
                                                     </td>
                                                 </tr>

@@ -1512,16 +1512,34 @@ class Interactives
 
         return $response;
     }
-    public function dashboard_inline_update_init($div_id, $dbkey, $recordid)
+    public function dashboard_inline_update_init($div_id, $dbkey, $recordid, $table='registrations')
     {
-        $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], $dbkey, 'id', $recordid);
+        if($table == 'registrations')
+        {
+            $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], $dbkey, 'id', $recordid);
+            $input_width = '200px';
+            $top_margin = '6px';
+        }
+        elseif($table == 'meters')
+        {
+            $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_METERS'], $dbkey, 'id', $recordid);
+            $input_width = '300px';
+            $top_margin = '2px';
+        }
+        elseif($table == 'storages')
+        {
+            $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_STORAGES'], $dbkey, 'id', $recordid);
+            $input_width = '300px';
+            $top_margin = '2px';
+        }
+
         $input_field = "
-            <div style=\"float:left;margin-top:6px;\">
-                <INPUT type=\"text\" name=\"$dbkey\" id=\"$dbkey\" value=\"$dbvalue\" style=\"width:200px;float:left\" class=\"detail\">
+            <div style=\"float:left;margin-top:" . $top_margin . ";\">
+                <INPUT type=\"text\" name=\"$dbkey\" id=\"$dbkey\" value=\"$dbvalue\" style=\"width:" . $input_width . ";float:left\" class=\"detail\">
             </div>
             <div style=\"float:right\">
-                <button class=\"search bg-green-gradient\" onclick=\"var dbkey='$dbkey'; JaxonInteractives.dashboard_inline_update_save('$div_id', '$dbkey', document.getElementById(dbkey).value, '$recordid');\"><i class=\"fa fa-check\"></i></button>
-                <button class=\"search bg-red-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_cancel('$div_id', '$dbkey', '$recordid');\"><i class=\"fa fa-ban\"></i></button>
+                <button class=\"search bg-green-gradient\" onclick=\"var dbkey='$dbkey'; JaxonInteractives.dashboard_inline_update_save('$div_id', '$dbkey', document.getElementById(dbkey).value, '$recordid', '$table');\"><i class=\"fa fa-check\"></i></button>
+                <button class=\"search bg-red-gradient\" onclick=\"JaxonInteractives.dashboard_inline_update_cancel('$div_id', '$dbkey', '$recordid', '$table');\"><i class=\"fa fa-ban\"></i></button>
             </div>
         ";
         $response = jaxon()->newResponse();
@@ -1530,22 +1548,47 @@ class Interactives
         return $response;
     }
 
-    public function dashboard_inline_update_save($div_id, $dbkey, $dbvalue, $recordid)
+    public function dashboard_inline_update_save($div_id, $dbkey, $dbvalue, $recordid, $table='registrations')
     {
-        $current_value = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], $dbkey, 'id', $recordid);
+        if($table == 'registrations')
+        {
+            $current_value = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], $dbkey, 'id', $recordid);
+            $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], $dbkey, $dbvalue, 'id', $recordid);
+        }
+        elseif($table == 'meters')
+        {
+            $current_value = $this->db->get_column_by_column_value($this->config->user['DBTABLE_METERS'], $dbkey, 'id', $recordid);
+            $this->db->update_column_by_column_values($this->config->user['DBTABLE_METERS'], $dbkey, $dbvalue, 'id', $recordid);
+        }
+        elseif($table == 'storages')
+        {
+            $current_value = $this->db->get_column_by_column_value($this->config->user['DBTABLE_STORAGES'], $dbkey, 'id', $recordid);
+            $this->db->update_column_by_column_values($this->config->user['DBTABLE_STORAGES'], $dbkey, $dbvalue, 'id', $recordid);
+        }
+
         $this->view->record_note($recordid, 'event', 'modify', "Aktualisierung $dbkey: $current_value -> $dbvalue");
-        $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], $dbkey, $dbvalue, 'id', $recordid);
-        $input_field = "$dbvalue <i onclick=\"JaxonInteractives.dashboard_inline_update_init('$div_id', '$dbkey', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
+        $input_field = "$dbvalue <i onclick=\"JaxonInteractives.dashboard_inline_update_init('$div_id', '$dbkey', '$recordid', '$table');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
         $response = jaxon()->newResponse();
         $response->assign($div_id, 'innerHTML', $input_field);
 
         return $response;
     }
 
-    public function dashboard_inline_update_cancel($div_id, $dbkey, $recordid)
+    public function dashboard_inline_update_cancel($div_id, $dbkey, $recordid, $table='registrations')
     {
-        $current_value = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], $dbkey, 'id', $recordid);
-        $input_field = "$current_value <i onclick=\"JaxonInteractives.dashboard_inline_update_init('$div_id', '$dbkey', '$recordid');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
+        if($table == 'registrations')
+        {
+            $current_value = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], $dbkey, 'id', $recordid);
+        }
+        elseif($table == 'meters')
+        {
+            $current_value = $this->db->get_column_by_column_value($this->config->user['DBTABLE_METERS'], $dbkey, 'id', $recordid);
+        }
+        elseif($table == 'storages')
+        {
+            $current_value = $this->db->get_column_by_column_value($this->config->user['DBTABLE_STORAGES'], $dbkey, 'id', $recordid);
+        }
+        $input_field = "$current_value <i onclick=\"JaxonInteractives.dashboard_inline_update_init('$div_id', '$dbkey', '$recordid', '$table');\" class=\"fa fa-edit fa-pull-right\" style=\"padding-top:6px; cursor:pointer\"></i>";
         $response = jaxon()->newResponse();
         $response->assign($div_id, 'innerHTML', $input_field);
 
@@ -2334,7 +2377,7 @@ class Interactives
         return $response;
     }
 
-    public function dashboard_add_meter($registration_id, $new_meter_type, $new_meter_id, $new_meter_street, $new_meter_streetnum, $new_meter_zip, $new_meter_city, $new_meter_participation, $new_meter_power=0, $new_meter_feedlimit=0, $new_meter_consumption=0)
+    public function dashboard_add_meter($registration_id, $new_meter_type, $new_meter_id, $new_meter_nicename, $new_meter_street, $new_meter_streetnum, $new_meter_zip, $new_meter_city, $new_meter_participation, $new_meter_power=0, $new_meter_feedlimit=0, $new_meter_consumption=0)
     {
         $response = jaxon()->newResponse();
 
@@ -2356,6 +2399,7 @@ class Interactives
         $registration = $registration[0];
 
         $meter_array['meter_state'] = 'new';
+        $meter_array['meter_nicename'] = $new_meter_nicename;
         $meter_array['registration_id'] = $registration_id;
         $meter_array['meter_id'] = $new_meter_id;
         $meter_array['meter_uuid'] = $this->generate_uuid4();
