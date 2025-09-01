@@ -15,7 +15,7 @@ class VIEW_MANAGEMENT_UPDATES extends VIEW
 
         print "<br />";
 
-        include(dirname(__FILE__) . '/../configs/version.php');
+        include(dirname(__FILE__) . '/../configs/migrations.php');
         $db_config = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_TEMPORARY'], 'feature', 'database_version');
         if(isset($db_config[0]))
         {
@@ -27,16 +27,14 @@ class VIEW_MANAGEMENT_UPDATES extends VIEW
         }
         /** @var int $latest_database_version */
 
-        if($latest_database_version > $installed_database_version)
+        if(count($database_migrations) > $installed_database_version)
         {
             if (isset($_REQUEST['update_now']))
             {
                 print "<b>Aktualisierung wird initialisiert...</b><br />&nbsp;<br /><hr>";
 
-                include(dirname(__FILE__) . '/../configs/migrations.php');
-
-                print "<b>Installiertes Datenbankschema:</b><br />" . hash('crc32', $latest_database_version) . "<br />&nbsp;<br />";
-                print "<b>Datenbankschema der Codebase:</b><br />" . hash('crc32', $installed_database_version) . "<br /><hr>";
+                print "<b>Installiertes Datenbankschema:</b><br />" . hash('crc32', count($database_migrations)) . '.' . count($database_migrations) . "<br />&nbsp;<br />";
+                print "<b>Datenbankschema der Codebase:</b><br />" . hash('crc32', $installed_database_version) . ".$installed_database_version<br /><hr>";
 
                 $migration_start = $installed_database_version + 1;
                 for ($i = $migration_start; $i <= count($database_migrations); $i++)
@@ -65,8 +63,8 @@ class VIEW_MANAGEMENT_UPDATES extends VIEW
                     $installed_database_version = 0;
                 }
 
-                print "<hr><b>Installiertes Datenbankschema:</b><br />" . hash('crc32', $latest_database_version) . "<br />&nbsp;<br />";
-                print "<b>Datenbankschema der Codebase:</b><br />" . hash('crc32', $installed_database_version) . "<br />";
+                print "<b>Installiertes Datenbankschema:</b><br />" . hash('crc32', count($database_migrations)) . '.' . count($database_migrations) . "<br />&nbsp;<br />";
+                print "<b>Datenbankschema der Codebase:</b><br />" . hash('crc32', $installed_database_version) . ".$installed_database_version<br /><hr>";
                 if($installed_database_version < $latest_database_version)
                 {
                     print "<br /><br /><br /><center><b>Es konnte nicht alle Aktualisierungen durchgeführt werden.</b><br />Bitte konsultiere die Logs f&uuml;r weitere Informationen.&nbsp;<br />&nbsp;<br />";
@@ -82,12 +80,11 @@ class VIEW_MANAGEMENT_UPDATES extends VIEW
                     </div>
                     </center>
                 ';
-
             }
             else
             {
-                print "<b>Installiertes Datenbankschema:</b><br />" . hash('crc32', $latest_database_version) . "<br />&nbsp;<br />";
-                print "<b>Datenbankschema der Codebase:</b><br />" . hash('crc32', $installed_database_version) . "<br />";
+                print "<b>Datenbankschema der Codebase:</b><br />" . hash('crc32', count($database_migrations)) . '.' . count($database_migrations) . "<br />&nbsp;<br />";
+                print "<b>Installiertes Datenbankschema:</b><br />" . hash('crc32', $installed_database_version) . ".$installed_database_version<br /><hr>";
                 print "<br /><br /><br /><center>Die Datenbank muss aktualisiert werden, um die Kompatibilität zur aktuell installierten Version von R-EEG-ISTRY zu gew&auml;hrleisten.<br />&nbsp;<br />";
                 print '
                     <div class="button_container">
@@ -99,8 +96,8 @@ class VIEW_MANAGEMENT_UPDATES extends VIEW
         }
         else
         {
-            print "<b>Installiertes Datenbankschema:</b><br />" . hash('crc32', $latest_database_version) . "<br />&nbsp;<br />";
-            print "<b>Datenbankschema der Codebase:</b><br />" . hash('crc32', $installed_database_version) . "<br />";
+            print "<b>Datenbankschema der Codebase:</b><br />" . hash('crc32', count($database_migrations)) . '.' . count($database_migrations) . "<br />&nbsp;<br />";
+            print "<b></b>Installiertes Datenbankschema:<br />" . hash('crc32', $installed_database_version) . ".$installed_database_version<br /><hr>";
             print "<br /><br /><br /><center>Es ist keine Aktualisierung erforderlich.<br />&nbsp;<br />";
             print '
                     <div class="button_container">

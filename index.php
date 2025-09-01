@@ -164,7 +164,7 @@
                 print '<script>self.location.href="/";</script>';
             }
 
-            include(dirname(__FILE__) . '/configs/version.php');
+            include(dirname(__FILE__) . '/configs/migrations.php');
             $db_config = $view->db->get_rows_by_column_value($view->config->user['DBTABLE_TEMPORARY'], 'feature', 'database_version');
             if(isset($db_config[0]))
             {
@@ -176,7 +176,7 @@
             }
 
             /** @var int $latest_database_version */
-            if($latest_database_version > $installed_database_version)
+            if(count($database_migrations) > $installed_database_version)
             {
                 if ($view->view_handle_backend_login() === true)
                 {

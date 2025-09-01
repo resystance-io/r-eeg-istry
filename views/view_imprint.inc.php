@@ -5,6 +5,8 @@ include_once('view.inc.php');
 class VIEW_IMPRINT extends VIEW
 {
 
+    public $tenant_info;
+
     public function __construct()
     {
         parent::__construct();

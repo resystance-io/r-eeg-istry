@@ -91,8 +91,6 @@ class Interactives
 
         if(isset($_SESSION['auth_backend_username']))   unset($_SESSION['auth_backend_password']);
 
-        $hashed_mnemonic_provided = hash('sha256', $password);
-
         $account_details = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARD_USERS'], 'username', $username, 1, null, null, 'deleted', 'n');
         if(count($account_details) > 0)
         {
