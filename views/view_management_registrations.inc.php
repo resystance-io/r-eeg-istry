@@ -398,6 +398,11 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                 $approved_meters_count++;
             }
 
+            if(!$meter['meter_nicename'])
+            {
+                $meter['meter_nicename'] = 'Unbenannter Z&auml;hlpunkt';
+            }
+
             print "<a id=\"meter_" . $meter['id'] . "\"></a>
                     <table class=\"table\" style=\"width:700px\">
                         <tr class=\"stategray profilemeterline\">
