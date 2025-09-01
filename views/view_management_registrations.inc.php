@@ -789,6 +789,12 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                           &uuml;ber die erfolgreiche Aufnahme in die EEG informiert.
                         </div>
                       </div>
+                      <div>&nbsp;</div>
+                      <div class="timeline-item" style="width:98%;padding:8px;">
+                        <div class="timeline-footer" style="text-align:center">
+                            <a class="btn btn-primary btn-xs" style="font-size:12pt;padding:8px;" onClick="JaxonInteractives.export_sepapdf_by_registration(' . $registration['id'] . ')">&nbsp;Lastschriftmandat erzeugen (PDF)&nbsp;</a >
+                        </div>
+                      </div>
                     </li>
                 ';
         }
