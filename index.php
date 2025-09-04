@@ -182,7 +182,7 @@
                 {
                     include_once('views/view_management_updates.inc.php');
                     $view_manage_updates = new VIEW_MANAGEMENT_UPDATES();
-                    $view_manage_updates->view_render();
+                    $view_manage_updates->view_render_update_database();
                 }
             }
             else
@@ -272,6 +272,15 @@
                     $view_join = new VIEW_JOIN();
                     if (isset($_REQUEST['type'])) $upload_type = $_REQUEST['type']; else    $upload_type = 'other';
                     $view_join->handle_upload_request($upload_type);
+                } elseif (isset($_REQUEST['update']))
+                {
+                    // management
+                    if ($view->view_handle_backend_login() === true)
+                    {
+                        include_once('views/view_management_updates.inc.php');
+                        $view_manage_updates = new VIEW_MANAGEMENT_UPDATES();
+                        $view_manage_updates->view_render_update_codebase();
+                    }
                 } else
                 {
                     // people who did not decide yet
