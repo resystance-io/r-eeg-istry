@@ -381,6 +381,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                 $meter_short_id = $tenant_info['meter_prefix_short'] . $meter_type_shortcode . $meter['meter_oid'];
             }
 
+
             if($meter['meter_state'] == 'new')
             {
                 print '<input form="listselectors" id="' . $meter['meter_uuid'] . '" name="' . $meter['meter_uuid'] . '" type="hidden">';
@@ -788,12 +789,6 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                           &uuml;ber die erfolgreiche Aufnahme in die EEG informiert.
                         </div>
                       </div>
-                      <div>&nbsp;</div>
-                      <div class="timeline-item" style="width:98%;padding:8px;">
-                        <div class="timeline-footer" style="text-align:center">
-                            <a class="btn btn-primary btn-xs" style="font-size:12pt;padding:8px;" onClick="JaxonInteractives.export_sepapdf_by_registration(' . $registration['id'] . ')">&nbsp;Lastschriftmandat erzeugen (PDF)&nbsp;</a >
-                        </div>
-                      </div>
                     </li>
                 ';
         }
@@ -811,6 +806,12 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                       <div class="timeline-item" style="width:98%;padding:8px;">
                         <div class="timeline-footer" style="text-align:center">
                             <a class="btn btn-primary btn-xs" style="font-size:12pt;padding:8px;" onClick="JaxonInteractives.export_pdf_by_registration(' . $registration['id'] . ')">&nbsp;Best&auml;tigung erzeugen (PDF)&nbsp;</a >
+                        </div>
+                      </div>
+                      <div>&nbsp;</div>
+                      <div class="timeline-item" style="width:98%;padding:8px;">
+                        <div class="timeline-footer" style="text-align:center">
+                            <a class="btn btn-primary btn-xs" style="font-size:12pt;padding:8px;" onClick="JaxonInteractives.export_sepapdf_by_registration(' . $registration['id'] . ')">&nbsp;Lastschriftmandat erzeugen (PDF)&nbsp;</a >
                         </div>
                       </div>
                     </li>
