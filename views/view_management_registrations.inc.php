@@ -381,7 +381,6 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                 $meter_short_id = $tenant_info['meter_prefix_short'] . $meter_type_shortcode . $meter['meter_oid'];
             }
 
-
             if($meter['meter_state'] == 'new')
             {
                 print '<input form="listselectors" id="' . $meter['meter_uuid'] . '" name="' . $meter['meter_uuid'] . '" type="hidden">';

@@ -8,18 +8,23 @@ class VIEW_MANAGEMENT_UPDATES extends VIEW
         ?>
 
         <header id="header">
-            <h1>R:EEG:ISTRY | UPDATE | Codebase</h1>
+            <h1><img src="images/noun_dbupdate.png" alt="Update" id="manage_eeg" style="height:38px"> R:EEG:ISTRY | UPDATE | Codebase</h1>
         </header>
 
         <?php
 
         print "<br />";
 
-        $latest_manifest = file_get_contents("https://resystance.io/software/r-eeg-istry/manifest.json");
-        $manifest_data = json_decode($latest_manifest, true);
+        $installed_manifest = file_get_contents('manifest.json');
+        $installed_manifest_data = json_decode($installed_manifest, true);
 
-        $manifest_files = $manifest_data['files'];
-        $manifest_version = $manifest_data['version'];
+        $installed_manifest_version = $installed_manifest_data['version'];
+
+        $latest_manifest = file_get_contents("https://resystance.io/software/r-eeg-istry/manifest.json");
+        $latest_manifest_data = json_decode($latest_manifest, true);
+
+        $manifest_files = $latest_manifest_data['files'];
+        $latest_manifest_version = $latest_manifest_data['version'];
         $update_map = [];
 
         foreach ($manifest_files as $manifest_file_path => $manifest_file_data)
@@ -44,10 +49,10 @@ class VIEW_MANAGEMENT_UPDATES extends VIEW
 
         if($_REQUEST['update'] == 'now')
         {
-            print "Updating to version $manifest_version<br />";
+            print "Updating to version $latest_manifest_version<br />";
 
             // URL of the zip containing the latest version
-            $ZIP_URL = 'https://resystance.io/software/r-eeg-istry/' . $manifest_version . '.zip';
+            $ZIP_URL = 'https://resystance.io/software/r-eeg-istry/' . $latest_manifest_version . '.zip';
 
             // Where your project lives (destination base directory)
             $DEST_BASE = str_replace('/views', '', __DIR__); // e.g. '/var/www/your-project'
@@ -58,12 +63,28 @@ class VIEW_MANAGEMENT_UPDATES extends VIEW
         {
             if(count($update_map) > 0)
             {
-                print "<br />Es ist eine aktuellere Version verf&uuml;gbar:<br /><b>$manifest_version</b><br />&nbsp;<br />";
-                print "<a href=\"?update=now\"><b>&gt;&nbsp;Klicke hier, um die Aktualisierung zu starten&nbsp;&lt;</a>";
+                print "<h3>Es ist ein Update verf&uuml;gbar</h3>";
+                print "Nach den Klick auf <i>&quot;Aktualisierung starten&quot;</i> werden alle Dateien dieser Installation<br />
+                             auf den neuesten Stand gebracht. Sollten &Auml;nderungen an der Datenbank erforderlich sein, so<br />
+                             erfolgen diese im Anschluss an das Update in einem zweiten Schritt.<br />
+                             &nbsp;<br />
+                             <b>Wichtig:</b><br />
+                             Bitte fertige vor der Aktualisierung eine Sicherungskopie deines Installationsordners und der<br />
+                             Datenbank an, um bei unvorhergesehenen Fehlern eine Wiederherstellung zu erm&ouml;glichen.<br />";
+
+                print "&nbsp;<br />";
+
+                print "<br /><b>Derzeit installierte Version:</b><br />$installed_manifest_version<br />";
+                print "<br /><b>Aktuellste Version:</b><br />$latest_manifest_version</b>&nbsp;<br />";
+                print '<br />
+                    
+                        <button type="button" class="mainbtn" style="height:80px;padding-top:20px;margin-left:0px;font-size:12pt;" id="btn_update_now" onClick="document.getElementById(\'btn_update_now\').disabled=true;location.href=\'?update=now\';">AKTUALISIERUNG STARTEN</button>
+                    
+                ';
             }
             else
             {
-                print "Keine Updates verf&uuml;gbar.<br />Du nutzt die aktuellste Version ($manifest_version)<br />";
+                print "<b>Keine Updates verf&uuml;gbar.</b><br />Du nutzt die aktuellste Version ($latest_manifest_version)<br />";
             }
         }
     }
@@ -298,8 +319,6 @@ class VIEW_MANAGEMENT_UPDATES extends VIEW
         }
     }
 
-    /* ===================== ORCHESTRATION ===================== */
-
     private function runUpdater(string $zipUrl, string $destBase, array $fileMap, string $zipRootPrefix = ''): void {
         $temp = $this->makeTempDir();
         $zipFile = $temp . DIRECTORY_SEPARATOR . 'package.zip';
@@ -307,10 +326,10 @@ class VIEW_MANAGEMENT_UPDATES extends VIEW
 
         try {
             echo "<br />";
-            echo "[1/4] R-EEG-ISTRY <b>stable</b> wird heruntergeladen...<br />";
+            echo "[1/5] R-EEG-ISTRY <b>stable</b> wird heruntergeladen...<br />";
             $this->downloadFile($zipUrl, $zipFile);
 
-            echo "[2/4] Dateien werden extrahiert...<br />";
+            echo "[2/5] Dateien werden extrahiert...<br />";
             $this->ensureDir($extractDir);
             $this->unzipTo($zipFile, $extractDir);
             @unlink($zipFile);
@@ -322,14 +341,14 @@ class VIEW_MANAGEMENT_UPDATES extends VIEW
             $prefixPath = rtrim($zipRootPrefix, "/\\");
             $sourceBase = $prefixPath ? ($extractDir . DIRECTORY_SEPARATOR . $prefixPath) : $extractDir;
 
-            echo "[3/4] &Auml;nderungen werden &uuml;bernommen...<br />";
+            echo "[3/5] &Auml;nderungen werden &uuml;bernommen...<br />";
             foreach ($fileMap as $srcRel => $dstRel) {
                 $srcPath = $sourceBase . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $srcRel);
                 $dstPath = rtrim($destBase, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $dstRel);
 
                 if (!file_exists($srcPath)) {
                     print "$srcPath not found in extracted ZIP<br />";
-                    print "<b>Warnung:</b> $srcRel im Manifest, aber nicht im Update.";
+                    print "<b>Warnung:</b> $srcRel im Manifest, aber nicht im Update.<br />";
                 }
 
                 // If destination is a directory mapping, copy recursively
@@ -339,13 +358,24 @@ class VIEW_MANAGEMENT_UPDATES extends VIEW
                 } else {
                     $this->ensureDir(dirname($dstPath));
                     if (!@copy($srcPath, $dstPath)) {
-                        print "<b>Warnung:</b> $srcRel konnte nicht &uuml;bertragen werden.";
+                        print "<b>Warnung:</b> $srcRel konnte nicht &uuml;bertragen werden.<br />";
                     }
                     //echo "  - [FILE] $srcRel -> $dstRel<br />";
                 }
             }
 
-            echo "[4/4] *knock knock* ... Housekeeping!<br />";
+            echo "[4/5] Aktualisiere Manifest...<br />";
+            $latest_manifest = @file_get_contents('https://resystance.io/software/r-eeg-istry/manifest.json');
+            if(!$latest_manifest)
+            {
+                print "<b>Warnung:</b> Manifest ist nicht (mehr) verf&uuml;gbar.<br />";
+            }
+            if (!@file_put_contents('manifest.json', $latest_manifest))
+            {
+                print "<b>Warnung:</b> Manifest konnte nicht gespeichert werden.<br />";
+            }
+
+            echo "[5/5] *knock knock* ... Housekeeping!<br />";
             $this->rrmdir($temp);
 
             echo "&nbsp;<br />";
