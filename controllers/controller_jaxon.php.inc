@@ -3169,7 +3169,8 @@ class Interactives
         $this->view->fpdf->Ln(5);
         $registration['city'] = iconv('UTF-8', 'windows-1252//TRANSLIT', $registration['city']);
         $this->view->fpdf->Cell(40,10,$registration['zip'] . ' ' . $registration['city']);
-
+        $this->view->fpdf->Cell(40,10,$registration['phone']);
+        $this->view->fpdf->Cell(40,10,$registration['email']);
 
         $this->view->fpdf->Ln(20);
         $this->view->fpdf->SetFont('Arial','B',15);
@@ -3196,6 +3197,7 @@ class Interactives
 
         $this->view->fpdf->Ln(5);
         $this->view->fpdf->SetFont('Arial','',12);
+        $registration['banking_name'] = iconv('UTF-8', 'windows-1252//TRANSLIT', $registration['banking_name']);
         $this->view->fpdf->Cell(90,10,$registration['banking_name']);
 
             $this->view->fpdf->Cell(10,10,"", '');
@@ -3248,6 +3250,7 @@ class Interactives
 
         $this->view->fpdf->Ln(5);
         $this->view->fpdf->SetFont('Arial','',12);
+        $registration['banking_institute'] = iconv('UTF-8', 'windows-1252//TRANSLIT', $registration['banking_institute']);
         $this->view->fpdf->Cell(90,10,$registration['banking_institute']);
 
             $this->view->fpdf->Cell(10,10,"", '');
@@ -3270,7 +3273,7 @@ class Interactives
         $this->view->fpdf->SetFont('Arial','',12);
         if($registration['banking_consent'])
         {
-            $this->view->fpdf->Cell(90,10, 'Erteilt am ' . date('d.m.Y H:i', $registration['banking_consent']));
+            $this->view->fpdf->Cell(90,10, 'Erteilt am test' . date('d.m.Y H:i', $registration['banking_consent']));
         }
         else
         {
@@ -3499,10 +3502,11 @@ class Interactives
         $this->view->fpdf->Cell(40,10,$registration['street'] . ' ' . $registration['number']);
         $this->view->fpdf->Ln(5);
         $registration['city'] = iconv('UTF-8', 'windows-1252//TRANSLIT', $registration['city']);
-        $this->view->fpdf->Cell(40,10,$registration['zip'] . ' ' . $registration['city']);
+        $this->view->fpdf->Cell(40,10,$registration['zip'] . ' ' . $registration['city'], 0, 1);
+        $this->view->fpdf->Cell(40,5,$registration['phone'], 0, 1);
+        $this->view->fpdf->Cell(40,5,$registration['email'], 0, 1);
 
-
-        $this->view->fpdf->Ln(20);
+        $this->view->fpdf->Ln(10);
         $this->view->fpdf->SetFont('Arial','B',15);
         $this->view->fpdf->SetLineWidth(0.5);
         $this->view->fpdf->SetDrawColor(0,0,0);
@@ -3622,7 +3626,7 @@ class Interactives
         $this->view->fpdf->SetFont('Arial','',12);
         if($registration['network_consent'])
         {
-            $this->view->fpdf->Cell(40,10, 'Erteilt am ' . date('d.m.Y H:i', $registration['gdpr_consent']));
+            $this->view->fpdf->Cell(40,10, 'Erteilt am ' . date('d.m.Y H:i', $registration['network_consent']));
         }
         else
         {
@@ -3632,19 +3636,24 @@ class Interactives
         $this->view->fpdf->Ln(20);
         $this->view->fpdf->SetFont('Arial','B',15);
         $this->view->fpdf->SetLineWidth(0.5);
-        $this->view->fpdf->Cell(190,10,"Beschluss", "B");
+        $text = iconv('UTF-8', 'windows-1252//TRANSLIT', 'Bestätigung');
+        $this->view->fpdf->Cell(190,10,$text, "B");
         $this->view->fpdf->Ln(15);
         $this->view->fpdf->SetFont('Arial','I',12);
         if(!$registration['migration_date'])
         {
-            $converted_string_1 = iconv('UTF-8', 'windows-1252//TRANSLIT', 'Laut Vorstandsbeschluss wird die Mitgliedschaft des Antragstellers wie oben angeführt bestätigt');
+            $converted_string_1 = iconv('UTF-8', 'windows-1252//TRANSLIT', "Die " . $tenant['shortname'] . " bestätigt die Mitgliedschaft wie oben angeführt, ");
         }
         else
         {
-            $converted_string_1 = iconv('UTF-8', 'windows-1252//TRANSLIT', 'Laut Vorstandsbeschluss vom ' . date('d.m.Y', $registration['migration_date']) . ' wird die Mitgliedschaft wie oben angeführt bestätigt');
+            // $converted_string_1 = iconv('UTF-8', 'windows-1252//TRANSLIT', 'Laut Vorstandsbeschluss vom ' . date('d.m.Y', $registration['migration_date']) . ' wird die Mitgliedschaft wie oben angeführt bestätigt');
+            $converted_string_1 = iconv('UTF-8', 'windows-1252//TRANSLIT', "Die " . $tenant['shortname'] . " bestätigt die Mitgliedschaft wie oben angeführt, ");
         }
+
+
         $this->view->fpdf->Cell(90,5, $converted_string_1, 0, 1);
-        $converted_string_2 = iconv('UTF-8', 'windows-1252//TRANSLIT', 'und das neue Mitglied mit der Nummer ' . $registration['member_id'] . ' in das Mitgliederregister eingetragen.');
+        // $converted_string_2 = iconv('UTF-8', 'windows-1252//TRANSLIT', 'und das neue Mitglied mit der Nummer ' . $registration['member_id'] . ' in das Mitgliederregister eingetragen.');
+        $converted_string_2 = iconv('UTF-8', 'windows-1252//TRANSLIT', "das neue Mitglied wird mit der Nummer " . $registration['member_id'] . " in das Mitgliedsregister eingetragen.");
         $this->view->fpdf->Cell(90,5, $converted_string_2, 0, 1);
 
         // PAGE 2 ========
@@ -3700,7 +3709,7 @@ class Interactives
         $converted_string_1 = iconv('UTF-8', 'windows-1252//TRANSLIT', "Ich erteile der EEG für die Dauer der Mitgliedschaft zeitlich unbegrenzt die Vollmacht, in meinem Namen");
         $converted_string_2 = iconv('UTF-8', 'windows-1252//TRANSLIT', "sämtliche Schritte u. Abstimmungen mit dem zuständigen Netzbetreiber durchzuführen, die zur voll-");
         $converted_string_3 = iconv('UTF-8', 'windows-1252//TRANSLIT', "ständigen (De-)Aktivierung der angeführten Zählpunkte in der EEG notwendig sind. Dies betrifft");
-        $converted_string_4 = iconv('UTF-8', 'windows-1252//TRANSLIT', "insbesondere auch die Registrierung u. Nutzung des E-Service Portals.");
+        $converted_string_4 = iconv('UTF-8', 'windows-1252//TRANSLIT', "insbesondere auch die Registrierung u. Nutzung des Online-Portals des Netzbetreibers.");
 
         $this->view->fpdf->Cell(2,5,null, 0);
         $this->view->fpdf->Cell(40,5,$converted_string_1, 0, 1);
@@ -3819,6 +3828,157 @@ class Interactives
         $export_filename = $this->generate_uuid4();
         $this->view->fpdf->Output('F', 'download/' . $export_filename);
         $response->script("window.open('/download/?$export_filename=registration.pdf', '_blank');");
+        return $response;
+    }
+
+    public function export_sepapdf_by_registration($registration_id)
+    {
+        $registrations = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'id', $registration_id, 1);
+        $registration = $registrations[0];
+
+        $tenants_data = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_TENANTS'], 'id', $registration['tenant'], 1);
+        $tenant = $tenants_data[0];
+
+        $associated_meters = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_METERS'], 'registration_id', $registration['id']);
+        $total_pages = 1;
+
+        $this->view->fpdf->AddPage();
+
+        // Header Hintergrundfarbe
+        $this->view->fpdf->SetFillColor(30, 144, 255); // Blau
+        $this->view->fpdf->Rect(0, 0, 210, 30, 'F'); // Rechteck für den Header
+
+        // Logo einfügen
+        // $this->view->fpdf->Image('logo.png', 160, 10, 30); // (Dateiname, X-Position, Y-Position, Breite)
+        
+        $this->view->fpdf->SetX(-25);
+        $this->view->fpdf->SetFont('Arial','I',8);
+        // Page number
+        $this->view->fpdf->SetTextColor(255, 255, 255); // Weiß
+        $this->view->fpdf->Cell(0,10,'Seite 1 / ' . $total_pages);
+
+        // Titel mit weißer Schrift
+        $this->view->fpdf->SetFont('Arial', 'B', 14);
+        $this->view->fpdf->SetX(0);
+        $this->view->fpdf->SetTextColor(255, 255, 255); // Weiß
+        if($registration['type'] == 'company')
+        {
+            $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT', 'SEPA-Firmenlastschrift-Mandat - Mitgliedsnummer ' . $registration['member_id']);
+        }
+        else
+        {
+            $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT', 'SEPA-Lastschrift-Mandat - Mitgliedsnummer ' . $registration['member_id']);
+        }
+        $this->view->fpdf->Cell(180, 20, $converted_string, 0, 1, 'C');
+        $this->view->fpdf->Ln(5);
+
+        // Set font
+        $this->view->fpdf->SetFont('Arial', '', 10);
+        // Schriftfarbe zurücksetzen
+        $this->view->fpdf->SetTextColor(0, 0, 0);
+
+        // Table rows
+        $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT','Zahlungsempfänger - Creditor ID');
+        $this->view->fpdf->Cell(100, 10, $converted_string, 1, 0, 'C');
+        $this->view->fpdf->Cell(0, 10, $tenant['creditor_id'], 1, 1, 'C');
+
+        $this->view->fpdf->Cell(100, 10, 'SEPA-Lastschrift-Mandat - Mandatsreferenz', 1, 0, 'C');
+        if($registration['banking_mandate_reference'])
+        {
+            $sepamandat = $registration['banking_mandate_reference'];
+        }
+        else
+        {
+            $sepamandat = 'noch nicht vergeben.';
+        }
+        $this->view->fpdf->Cell(0, 10, $sepamandat, 1, 1, 'C');// Empty cell for user input
+
+        $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT',$tenant['fullname'] . ", ");
+        $this->view->fpdf->Cell(0, 8, $converted_string, 'LTR', 1, 'C');
+        $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT',$tenant['contact_imprint_address']);
+        $this->view->fpdf->Cell(0, 8, $converted_string, 'LRB', 1, 'C');
+
+        $this->view->fpdf->SetFont('Arial', '', 10);
+        $this->view->fpdf->Ln(5);
+
+        // Instruction
+        if($registration['type'] == 'company')
+        {
+            $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT', "Ich ermächtige/wir ermächtigen die " . $tenant['fullname'] . ", Zahlungen von meinem/unseren Konto mittels SEPA-Lastschriften einzuziehen. Zugleich weise ich/weisen wir mein/unser Kreditinstitut an, die von der " . $tenant['fullname'] . " gezogenen Lastschriften einzulösen. Hinweis: Dieses SEPA-Firmenlastschrift-Mandat dient nur dem Einzug von SEPA-Firmenlastschriften, die auf Konten von Unternehmen gezogen sind. Ich bin/Wir sind nicht berechtigt, nach der erfolgten Einlösung eine Erstattung des belasteten Betrags zu verlangen. Ich bin/Wir sind berechtigt, mein/unser Kreditinstitut bis zum Fälligkeitstag anzuweisen, SEPA-Firmenlastschriften nicht einzulösen.");
+        }
+        else
+        {
+            $converted_string = iconv('UTF-8', 'windows-1252//TRANSLIT', "Ich ermächtige/wir ermächtigen die " . $tenant['fullname'] . ", Zahlungen von meinem/unseren Konto mittels SEPA-Lastschriften einzuziehen. Zugleich weise ich/weisen wir mein/unser Kreditinstitut an, die von der " . $tenant['fullname'] . " gezogenen Lastschriften einzulösen.\nIch kann/wir können innerhalb von acht Wochen, beginnend mit dem Belastungsdatum, die Erstattung des belasteten Betrages verlangen. Es gelten dabei die mit dem Kreditinstitut vereinbarten Bedingungen.");
+        }
+        $this->view->fpdf->MultiCell(0, 5, $converted_string, 0, 1);
+        $this->view->fpdf->Ln(5);
+
+        // Payment details
+        $this->view->fpdf->Cell(0, 10, 'Zahlungspflichtige*r', 0, 1);
+        // $this->view->fpdf->Ln(5);
+
+        // Table for form fields
+        $this->view->fpdf->SetFont('Arial', '', 10);
+
+        // Table rows
+        $this->view->fpdf->Cell(50, 10, 'Name:', 1, 0, 'C');
+        $registration['firstname'] = iconv('UTF-8', 'windows-1252//TRANSLIT', $registration['firstname']);
+        $registration['lastname'] = iconv('UTF-8', 'windows-1252//TRANSLIT', $registration['lastname']);
+        $name = '';
+        if($registration['title'])  $name .= $registration['title'] . ' ';
+        $name .= $registration['firstname'] . ' ' . $registration['lastname'];
+        if($registration['postnomen']) $name .= ' ' . $registration['postnomen'];
+        if($registration['type'] == 'company')
+        {
+            $name = $registration['company_name'];
+        }
+        $this->view->fpdf->Cell(140, 10, $name, 1, 1, 'C');
+
+        $this->view->fpdf->Cell(50, 10, 'Anschrift:', 1, 0, 'C');
+        $registration['street'] = iconv('UTF-8', 'windows-1252//TRANSLIT', $registration['street']);
+        $registration['city'] = iconv('UTF-8', 'windows-1252//TRANSLIT', $registration['city']);
+        $this->view->fpdf->Cell(140, 10, $registration['street'] . ' ' . $registration['number'] . ', ' . $registration['zip'] . ' ' . $registration['city'], 1, 1, 'C');
+
+        $this->view->fpdf->Cell(50, 10, 'IBAN:', 1, 0, 'C');
+        $this->view->fpdf->Cell(140, 10, $registration['banking_iban'], 1, 1, 'C');
+
+        $this->view->fpdf->Cell(50, 10, 'Name der Bank:', 1, 0, 'C');
+        $this->view->fpdf->Cell(140, 10, $registration['banking_institute'], 1, 1, 'C');
+
+        // Zahlungsart
+        $this->view->fpdf->Cell(50, 10, 'Zahlungsart:', 1, 0, 'C');
+        $this->view->fpdf->Cell(140, 10, 'O  einmalig          X  wiederkehrend', 1, 1, 'C');
+
+        $this->view->fpdf->Ln(2);
+
+        $this->view->fpdf->SetFont('Arial', 'B', 8);
+        if($registration['type'] == 'company')
+        {
+            $text = iconv('UTF-8', 'windows-1252//TRANSLIT', 'Wichtiger Hinweis für die/den Zahlungspflichtigen: Bitte dieses Mandat unbedingt vor dem 1. Einzug an Ihre Hausbank übermitteln!');
+            $this->view->fpdf->cell(0, 10, $text, 0, 1, 'C');
+        }
+        $this->view->fpdf->Ln(25);
+
+
+        $this->view->fpdf->SetFont('Arial', '', 10);
+
+        // Signature
+        if($registration['type'] == 'company')
+        {
+            $text = iconv('UTF-8', 'windows-1252//TRANSLIT', "Der Kunde hat der " . $tenant['shortname'] . " nach Verifizierung seiner E-Mail-Adresse am " . date('d.m.Y H:i', $registration['	banking_consent']) . " von der IP-Adresse " . $registration['ip_address'] . " auf elektronischem Weg (formfreie Willenserklärung gem. § 76 (3) EIWOG 2010) seine Zustimmung zum Vertrag im obigen Sinne sowie für das SEPA-Lastschriftmandat erteilt.");
+            $this->view->fpdf->MultiCell(0, 5, $text);
+        }
+        else
+        {
+            $this->view->fpdf->Cell(0, 10, 'Erlaubnis zum SEPA-Lastschriftmandat:', 0, 1);
+            $this->view->fpdf->Cell(0, 10, 'Erteilt am ' . date('d.m.Y H:i', $registration['banking_consent']), 0, 1);
+            $this->view->fpdf->Ln(15);
+        }
+
+        $response = jaxon()->newResponse();
+        $export_filename = $this->generate_uuid4();
+        $this->view->fpdf->Output('F', 'download/' . $export_filename);
+        $response->script("window.open('/download/?$export_filename=sepa.pdf', '_blank');");
         return $response;
     }
 
