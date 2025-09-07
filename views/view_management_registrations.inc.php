@@ -426,7 +426,6 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                             </td>
                        </tr>
                   </table><br />";
-
         }
 
         print "
@@ -545,8 +544,7 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                                 </table>
                             </td>
                        </tr>
-                  </table><br />";
-
+                  </table>";
         print "</table>";
 
         print '<br />&nbsp;<br />';
@@ -568,12 +566,47 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                 $storage_count++;
                 print "<tr class=\"stategray profilemeterline\">
                             <td class=\"profileheader\" style=\"text-align:left\">&nbsp;<i class=\"fa fa-battery-half\"></i> &nbsp; Speicher #$storage_count</td>
-                            <td>" . $storage['storage_capacity'] . " kWh</td>
+                            <td style=\"vertical-align:middle\">" . $storage['storage_capacity'] . " kWh <i onclick=\"JaxonInteractives.dashboard_delete_storage_init('" . $storage['id'] . "');\" class=\"fa fa-trash fa-pull-right\" style=\"padding-top:10px; padding-right:4px; cursor:pointer\"></i></td>
                        </tr>";
             }
         }
 
-        print "</table>";
+        print "</table><br />";
+
+        print "
+                    <table class=\"table\" id=\"new_storage_button\" style=\"width:700px\" onclick=\"document.getElementById('new_storage_dialogue').style.display = 'block';document.getElementById('new_storage_button').style.display = 'none';\">
+                        <tr class=\"stategray profilemeterline\">
+                            <td class=\"profilemeter\" style=\"width:100px;text-align:center;vertical-align:middle;font-size:12pt;font-weight:bold\">
+                                <i class=\"fa fa-plus-circle\"></i>
+                            </td>
+                            <td class=\"profilemeter\" style=\"text-align:left;padding:10px;width:600px;font-weight:bold;\">
+                                Einen neuen Speicher hinzuf&uuml;gen
+                            </td>
+                       </tr>
+                  </table>
+        ";
+
+        print "
+                <table class=\"table\" id=\"new_storage_dialogue\" style=\"width:700px;display:none\">
+                        <tr class=\"stategray profilemeterline\">
+                            <td class=\"profilemeter\" style=\"width:200px !important; min-width:200px !important; text-align:center;vertical-align:middle;font-size:11pt;font-weight:bold\">
+                               <i class=\"fa fa-battery-half\"></i>
+                            </td>
+                            <td class=\"profilemeter\" style=\"text-align:left;padding:0;width:600px;\">
+                                <table style=\"width:100%; height:100%; padding:0; margin:0;\">
+                                    <tr>
+                                        <td style=\"text-align:center;color:black;font-weight:bold;min-width:22px !important;padding:0;padding-top:16px;\"><span class=\"metertype\" style=\"font-size:11pt;font-weight:bold;\">Kapazit&auml;t</span></td>
+                                        <td id=\"new_storage_capacity_data\" style=\"vertical-align:top;color:black;padding-top:0 !important;\"><input type=\"text\" id=\"new_storage_capacity\" maxlength=\"8\" style=\"width:100px;float:left;text-align:center;margin-top:12px !important\" class=\"detail\"><span style=\"float:left;font-weight:normal;margin-left:4px;margin-top:16px;\">&nbsp;kWh</span></td>
+                                        <td style=\"vertical-align:middle\" rowspan=\"2\">
+                                            <button class=\"search bg-green-gradient\" onclick=\"JaxonInteractives.dashboard_add_storage('" . $registration['id'] . "', document.getElementById('new_storage_capacity').value);\"><i class=\"fa fa-check\"></i></button>
+                                            <button class=\"search bg-red-gradient\" onclick=\"document.getElementById('new_storage_dialogue').style.display = 'none';document.getElementById('new_storage_button').style.display = 'block';\"><i class=\"fa fa-ban\"></i></button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                       </tr>
+                  </table><br />
+        ";
         print '<br />&nbsp;<br />';
         print '</div>'; // END OF MAIN CONTENT: LEFT
         print '<div style="min-width:500px; float:left">';   // TIMELINE: RIGHT

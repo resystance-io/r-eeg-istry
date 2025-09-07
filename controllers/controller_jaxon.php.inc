@@ -2174,7 +2174,39 @@ class Interactives
         $response->assign($div_id, 'innerHTML', $input_field);
         return $response;
     }
+    public function dashboard_delete_storage_init($recordid, $confirm=false, $cancel=false)
+    {
+        $response = jaxon()->newResponse();
+        $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_STORAGES'], 'storage_capacity', 'id', $recordid);
 
+        if(!$confirm && !$cancel)
+        {
+            $footer_actions = "
+                            <button class=\"search bg-green-gradient\" style=\"border: white 1px solid\" onclick=\"JaxonInteractives.dashboard_delete_storage_init('$recordid', true);\"><i class=\"fa fa-check-circle\"></i></button>
+                            <button class=\"search bg-red-gradient\" style=\"border: white 1px solid\" onclick=\"JaxonInteractives.dashboard_inline_update_type_cancel('$recordid', false, true);\"><i class=\"fa fa-ban\"></i></button>
+            ";
+
+            $response->assign('modalheadline', 'innerHTML', "&nbsp;Speicher l&ouml;schen");
+            $response->assign('modalbody', 'innerHTML',
+                "Soll dieser Energiespeicher mit $dbvalue kWh tats&auml;chlich gel&ouml;scht werden?"
+            );
+            $response->assign('modalfooter', 'innerHTML', $footer_actions);
+            $response->assign('modal', 'style.display', 'inline');
+        }
+        elseif($cancel)
+        {
+            $response->assign('modal', 'style.display', 'none');
+        }
+        else
+        {
+            $registration_id = $this->db->get_column_by_column_value($this->config->user['DBTABLE_STORAGES'], 'registration_id', 'id', $recordid);
+            $this->db->delete_row_by_id($this->config->user['DBTABLE_STORAGES'], $recordid);
+            $this->view->record_note($registration_id, 'event', 'modify', "Energiespeicher entfernt: $dbvalue kWh");
+            $response->script("self.location.href='/?manage_registrations&registration=$registration_id';");
+        }
+
+        return $response;
+    }
     public function dashboard_inline_update_type_save($dbvalue, $recordid, $confirm=false)
     {
         $response = jaxon()->newResponse();
@@ -2375,6 +2407,20 @@ class Interactives
         return $response;
     }
 
+    public function dashboard_add_storage($registration_id, $new_storage_capacity)
+    {
+        $response = jaxon()->newResponse();
+
+        $storage_array['registration_id'] = $registration_id;
+        $storage_array['storage_uuid'] = $this->generate_uuid4();
+        $storage_array['storage_capacity'] = $new_storage_capacity;
+
+        $this->object_broker->instance['db']->insert_row_with_array($this->config->user['DBTABLE_STORAGES'], $storage_array);
+        $this->view->record_note($registration_id, 'event', 'modify', "Energiespeicher hinzugef&uuml;gt: $new_storage_capacity kWh");
+        $response->script("window.location.href='/?manage_registrations&registration=$registration_id';");
+
+        return $response;
+    }
     public function dashboard_add_meter($registration_id, $new_meter_type, $new_meter_id, $new_meter_nicename, $new_meter_street, $new_meter_streetnum, $new_meter_zip, $new_meter_city, $new_meter_participation, $new_meter_power=0, $new_meter_feedlimit=0, $new_meter_consumption=0)
     {
         $response = jaxon()->newResponse();
@@ -4024,6 +4070,26 @@ class Interactives
         $this->view->object_broker->instance['email']->AddRecipient('creo@blackmesa.at');
         $this->view->object_broker->instance['email']->messageHTML = "This is a test message.";
 
+        if ($this->view->object_broker->instance['email']->Send('smtp'))
+        {
+            $response->alert("eMail sent successfully");
+        }
+        else
+        {
+            $response->alert("eMail could not be sent");
+        }
+
+        $this->view->object_broker->instance['email'] = new codeworxtech\PhpMailerPro\PHPMailerPro();
+        $this->view->object_broker->instance['email']->SetSender($this->config->user['MAIL_FROM']);
+        $this->view->object_broker->instance['email']->smtpHost     = $this->config->user['MAIL_MTA_ADDRESS'];
+        $this->view->object_broker->instance['email']->smtpDebug    = $this->config->user['MAIL_DEBUGGING'];
+        $this->view->object_broker->instance['email']->smtpPort     = $this->config->user['MAIL_MTA_PORT'];
+        $this->view->object_broker->instance['email']->smtpUsername = $this->config->user['MAIL_MTA_USER'];
+        $this->view->object_broker->instance['email']->smtpPassword = $this->config->user['MAIL_MTA_PASS'];
+        $this->view->object_broker->instance['email']->smtpOptions = $this->config->user['MAIL_OPTIONS'];
+        $this->view->object_broker->instance['email']->subject = "DEBUG EMAIL TEST";
+        $this->view->object_broker->instance['email']->AddRecipient('daniel@resystance.io');
+        $this->view->object_broker->instance['email']->messageHTML = "This is a test message.";
         if ($this->view->object_broker->instance['email']->Send('smtp'))
         {
             $response->alert("eMail sent successfully");
