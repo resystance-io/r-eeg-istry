@@ -44,7 +44,6 @@ class VIEW_MANAGEMENT extends VIEW
 
             function export_serialized_form(formid)
             {
-
                     const form = document.getElementById(formid);
                     const formData = new FormData(form);
                     const data = {};
@@ -160,7 +159,17 @@ class VIEW_MANAGEMENT extends VIEW
 
         if($selectable_list === true)
         {
-            print "<form id=\"listselectors\" name=\"listselectors\"></form>";
+            print "<form id=\"listselectors\" name=\"listselectors\" action=\"?manage&export=csv\" method=\"post\"></form>";
+        }
+
+        if(isset($_REQUEST['export']) && $_REQUEST['export'] == 'csv')
+        {
+            $export_csv = true;
+            $csv_export_data = [];
+        }
+        else
+        {
+            $export_csv = false;
         }
 
         print '
@@ -253,8 +262,21 @@ class VIEW_MANAGEMENT extends VIEW
                 print '<th>' . $columns[$column_count]['nicename'] . '</th>';
             }
 
+            if($export_csv === true)
+            {
+                if(substr_count($columns[$column_count]['nicename'], ';') > 0 || substr_count($columns[$column_count]['nicename'], '"') > 0)
+                {
+                    $csv_export_data[0][$column_count] = '"' . html_entity_decode($columns[$column_count]['nicename']) . '"';
+                }
+                else
+                {
+                    $csv_export_data[0][$column_count] = html_entity_decode($columns[$column_count]['nicename']);
+                }
+            }
+
             $column_count++;
         }
+        $csv_export_row=0;
 
         print '
                   </tr>
@@ -421,6 +443,30 @@ class VIEW_MANAGEMENT extends VIEW
 
         foreach($registrations as $line_id => $registration)
         {
+            // do we want to create a CSV export file?
+            if($export_csv === true)
+            {
+                // only export this line if the user chose it in the selection phase
+                if($search_root == 'registrations' && isset($_POST[$registration['id']]))
+                {
+                    $line_flagged_for_export = true;
+                    $csv_export_row++;
+                }
+                elseif($search_root == 'meters' && isset($_POST[$registration['meter_uuid']]))
+                {
+                    $line_flagged_for_export = true;
+                    $csv_export_row++;
+                }
+                else
+                {
+                    $line_flagged_for_export = false;
+                }
+            }
+            else
+            {
+                $line_flagged_for_export = false;
+            }
+
             switch ($registration[$color_identifier])
             {
                 case 'new':
@@ -472,7 +518,14 @@ class VIEW_MANAGEMENT extends VIEW
 
             if($selectable_list === true)
             {
-                print '<td style="vertical-align:middle" onClick="event.stopPropagation(); invert_checkbox(\''. $registration['meter_uuid'] .'\');"><input form="listselectors" id="' . $registration['meter_uuid'] . '" onClick="event.stopPropagation();" name="' . $registration['meter_uuid'] . '" class="listselector" type="checkbox" checked="checked"></td>';
+                if($search_root == 'registrations')
+                {
+                    print '<td style="vertical-align:middle" onClick="event.stopPropagation(); invert_checkbox(\'' . $registration['id'] . '\');"><input form="listselectors" id="' . $registration['id'] . '" onClick="event.stopPropagation();" name="' . $registration['id'] . '" class="listselector" type="checkbox" value="1" checked="checked"></td>';
+                }
+                elseif($search_root == 'meters')
+                {
+                    print '<td style="vertical-align:middle" onClick="event.stopPropagation(); invert_checkbox(\'' . $registration['meter_uuid'] . '\');"><input form="listselectors" id="' . $registration['meter_uuid'] . '" onClick="event.stopPropagation();" name="' . $registration['meter_uuid'] . '" class="listselector" type="checkbox" value="1" checked="checked"></td>';
+                }
             }
             else
             {
@@ -487,16 +540,52 @@ class VIEW_MANAGEMENT extends VIEW
                     if((($column['name'] == 'firstname' && isset($columns[$rowindex + 1]) && $columns[$rowindex + 1]['name'] == 'lastname') || ($column['name'] == 'lastname' && isset($columns[$rowindex + 1]) && $columns[$rowindex + 1]['name'] == 'firstname')) && $registration['type'] == 'company')
                     {   // this is a given name tuple arrangement, and we loaded a company. Let's merge these columns and load the company name for convenience
                         print '<td colspan="2">' . $registration['company_name'] . '</td>';
-                        $csv_buffer .= $registration['company_name'] . ';;';
+                        $csv_buffer .= $registration['company_name'] . ';';
+
+                        if ($export_csv === true && $line_flagged_for_export === true)
+                        {
+                            if (substr_count($registration['company_name'], ';') > 0 || substr_count($registration['company_name'], '"') > 0)
+                            {
+                                $csv_export_data[$csv_export_row][] = '"' . html_entity_decode($registration['company_name']) . '"';
+                            }
+                            else
+                            {
+                                $csv_export_data[$csv_export_row][] = html_entity_decode($registration['company_name']);
+                            }
+                        }
                     }
                     elseif((($column['name'] == 'firstname' && isset($columns[$rowindex - 1]) && $columns[$rowindex - 1]['name'] == 'lastname') || ($column['name'] == 'lastname' && isset($columns[$rowindex - 1]) && $columns[$rowindex - 1]['name'] == 'firstname')) && $registration['type'] == 'company')
                     {   // it's still a given name tuple, but this is the second column. Suppress this.
                         print '';
+                        $csv_buffer .= $registration['company_name'] . ';';
+
+                        if ($export_csv === true && $line_flagged_for_export === true)
+                        {
+                            if (substr_count($registration['company_name'], ';') > 0 || substr_count($registration['company_name'], '"') > 0)
+                            {
+                                $csv_export_data[$csv_export_row][] = '"' . html_entity_decode($registration['company_name']) . '"';
+                            }
+                            else
+                            {
+                                $csv_export_data[$csv_export_row][] = html_entity_decode($registration['company_name']);
+                            }
+                        }
                     }
                     else
                     {
                         print '<td>' . $registration[$column['name']] . '</td>';
                         $csv_buffer .= $registration[$column['name']] . ';';
+                        if($export_csv === true && $line_flagged_for_export === true)
+                        {
+                            if (substr_count($registration[$column['name']], ';') > 0 || substr_count($registration[$column['name']], '"') > 0)
+                            {
+                                $csv_export_data[$csv_export_row][] = '"' . html_entity_decode($registration[$column['name']]) . '"';
+                            }
+                            else
+                            {
+                                $csv_export_data[$csv_export_row][] = html_entity_decode($registration[$column['name']]);
+                            }
+                        }
                     }
                 }
                 else
@@ -504,6 +593,17 @@ class VIEW_MANAGEMENT extends VIEW
                     $computed_value = $this->lookup_computed_column($column['compute'], $registration);
                     print '<td>' . $computed_value . '</td>';
                     $csv_buffer .= $computed_value . ';';
+                    if($export_csv === true && $line_flagged_for_export === true)
+                    {
+                        if (substr_count($computed_value, ';') > 0 || substr_count($computed_value, '"') > 0)
+                        {
+                            $csv_export_data[$csv_export_row][] = '"' . html_entity_decode($computed_value) . '"';
+                        }
+                        else
+                        {
+                            $csv_export_data[$csv_export_row][] = html_entity_decode($computed_value);
+                        }
+                    }
                 }
             }
 
@@ -539,30 +639,36 @@ class VIEW_MANAGEMENT extends VIEW
                 </div>
         ';
 
-        if($search_root == 'meters')
+        if($selectable_list === true)
         {
-            if($selectable_list === true)
-            {
-                print '
-                    <div class="dataTables_featurebutton" style="background-color:#ffcccc44" onClick="self.location.href=\'?manage\';">
-                        <i class="fa fa-caret-square-left"></i>
-                    </div>
-                ';
+            print '
+                <div class="dataTables_featurebutton" style="background-color:#ffcccc44" onClick="self.location.href=\'?manage\';">
+                    <i class="fa fa-caret-square-left"></i>
+                </div>
+            ';
 
+            if($search_root == 'meters')
+            {
                 print '
                     <div class="dataTables_featurebutton" style="width:260px;" onClick="export_serialized_form(\'listselectors\');">
                         <i class="fa fa-file-excel"></i> &nbsp; Exportieren als <b>EEGfaktura XLSX</b>
                     </div>
                 ';
             }
-            else
-            {
-                print '
-                    <div class="dataTables_featurebutton" onClick="self.location.href=\'?manage_select\';">
-                        <i class="fa fa-check-square"></i>
+
+            print '
+                    <div class="dataTables_featurebutton" style="width:170px;" onClick="document.getElementById(\'listselectors\').submit();">
+                        <i class="fa fa-file-csv"></i> &nbsp; Exportieren als <b>CSV</b>
                     </div>
-                ';
-            }
+            ';
+        }
+        else
+        {
+            print '
+                <div class="dataTables_featurebutton" onClick="self.location.href=\'?manage_select\';">
+                    <i class="fa fa-check-square"></i>
+                </div>
+            ';
         }
 
         if($registrations_count > $page_size)
@@ -605,9 +711,25 @@ class VIEW_MANAGEMENT extends VIEW
             </div>
             &nbsp;<br />&nbsp;<br />&nbsp;<br />
         ';
+
+        if($export_csv === true)
+        {
+            $export_filename = $this->session->generate_uuid4();
+            $export_file_content = "";
+            foreach($csv_export_data as $export_line)
+            {
+                foreach($export_line as $export_column_id => $export_column)
+                {
+                    if($export_column_id > 0) $export_file_content .= ';';
+                    $export_file_content .= $export_column;
+                }
+                $export_file_content .= "\n";
+            }
+
+            file_put_contents('download/' . $export_filename, $export_file_content);
+            print "<script>window.open('/download/?$export_filename=export.csv', '_blank');</script>";
+        }
     }
-
-
 
 
 
@@ -815,6 +937,8 @@ class VIEW_MANAGEMENT extends VIEW
                 }
                 return $total_capacity . ' kWh';
         }
+
+        return null;
     }
 
 }

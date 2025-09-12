@@ -17,33 +17,33 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         }
     }
 
-    public function view_render($fastjoin=false)
+    public function view_render($fastjoin=false): void
     {
         print '
-<script>
-    function format_meter_id($id)
-    {
-        const positions = [2, 8, 13, 23];
-        meter_id = document.getElementById($id).value.replace(/\s+/g,\'\');
-        document.getElementById(\'counter_\' + $id).textContent=33 - meter_id.length;
-        if(meter_id.length === 33)
-        {
-            document.getElementById(\'cta-\' + $id).style.display = \'none\';
-            document.getElementById(\'poa-\' + $id).style.display = \'block\';
-        }
-        else
-        {
-            document.getElementById(\'cta-\' + $id).style.display = \'block\';
-            document.getElementById(\'poa-\' + $id).style.display = \'none\';
-        }
-        positions.forEach((pos, i) => {
-            if (meter_id.length > pos + i) {
-                meter_id =  meter_id.slice(0, pos + i) + \' \' + meter_id.slice(pos + i);
-            }
-        });
-        document.getElementById($id).value = meter_id;
-    }
-</script>';
+            <script>
+                function format_meter_id($id)
+                {
+                    const positions = [2, 8, 13, 23];
+                    meter_id = document.getElementById($id).value.replace(/\s+/g,\'\');
+                    document.getElementById(\'counter_\' + $id).textContent=33 - meter_id.length;
+                    if(meter_id.length === 33)
+                    {
+                        document.getElementById(\'cta-\' + $id).style.display = \'none\';
+                        document.getElementById(\'poa-\' + $id).style.display = \'block\';
+                    }
+                    else
+                    {
+                        document.getElementById(\'cta-\' + $id).style.display = \'block\';
+                        document.getElementById(\'poa-\' + $id).style.display = \'none\';
+                    }
+                    positions.forEach((pos, i) => {
+                        if (meter_id.length > pos + i) {
+                            meter_id =  meter_id.slice(0, pos + i) + \' \' + meter_id.slice(pos + i);
+                        }
+                    });
+                    document.getElementById($id).value = meter_id;
+                }
+            </script>';
         print '
                     <header id="header">
                         <h1>' . $this->tenant_info['fullname'] . '</h1>
@@ -343,15 +343,27 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
 
                         $this->object_broker->instance['email']->subject = "Deine Anmeldung f&uuml;r die " . $this->tenant_info['shortname'];
                         $this->object_broker->instance['email']->AddRecipient($_SESSION['generic_information']['email']['value']);
-                        if($this->tenant_info['carbon_copy_email'])
-                        {
-                            $this->object_broker->instance['email']->AddBCC($this->tenant_info['carbon_copy_email']);
-                        }
                         $this->object_broker->instance['email']->messageHTML = $mail_template;
 
                         if ($this->object_broker->instance['email']->Send('smtp'))
                         {
                             $welcome_mail_sent = true;
+
+                            if($this->tenant_info['carbon_copy_email'])
+                            {
+                                $this->object_broker->instance['email'] = new codeworxtech\PhpMailerPro\PHPMailerPro();
+                                $this->object_broker->instance['email']->SetSender($this->config->user['MAIL_FROM']);
+                                $this->object_broker->instance['email']->smtpHost = $this->config->user['MAIL_MTA_ADDRESS'];
+                                $this->object_broker->instance['email']->smtpDebug = $this->config->user['MAIL_DEBUGGING'];
+                                $this->object_broker->instance['email']->smtpPort = $this->config->user['MAIL_MTA_PORT'];
+                                $this->object_broker->instance['email']->smtpUsername = $this->config->user['MAIL_MTA_USER'];
+                                $this->object_broker->instance['email']->smtpPassword = $this->config->user['MAIL_MTA_PASS'];
+                                $this->object_broker->instance['email']->smtpOptions = $this->config->user['MAIL_OPTIONS'];
+                                $this->object_broker->instance['email']->subject = "Neue Anmeldung f&uuml;r die " . $this->tenant_info['shortname'];
+                                $this->object_broker->instance['email']->AddRecipient($this->tenant_info['carbon_copy_email']);
+                                $this->object_broker->instance['email']->messageHTML = $mail_template;
+                                $this->object_broker->instance['email']->Send('smtp');
+                            }
                         }
                         else
                         {
@@ -420,7 +432,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         print '<i class="fa fa-clipboard-check"></i>&nbsp;&nbsp;&nbsp;&nbsp;Befugnis, eine SEPA-Lastschrift zu akzeptieren<br />';
         print "</div>";
 
-        print "<br />"; "<br />";
+        print "<br /><br />";
 
         print "<h3>Z&auml;hlpunkte</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
@@ -430,7 +442,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;Inventarnummer der betroffenen Z&auml;hler<br />';
         print "</div>";
 
-        print "<br />"; "<br />";
+        print "<br /><br />";
         
         print "<h3>Netzbetreiber</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
@@ -438,7 +450,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Falls vorhanden: Kundennummer beim Netzbetreiber (Achtung: nicht vom Energieversorger!)<br />';
         print "</div>";
 
-        print "<br />"; "<br />";
+        print "<br /><br />";
         
         print "<h3>Energieversorger</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
@@ -507,7 +519,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         print '<i class="fa fa-clipboard-check"></i>&nbsp;&nbsp;&nbsp;&nbsp;Befugnis, eine SEPA-Lastschrift zu akzeptieren<br />';
         print "</div>";
 
-        print "<br />"; "<br />";
+        print "<br /><br />";
 
         print "<h3>Z&auml;hlpunkte</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
@@ -517,7 +529,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;Inventarnummer der betroffenen Z&auml;hler<br />';
         print "</div>";
 
-        print "<br />"; "<br />";
+        print "<br /><br />";
         
         print "<h3>Netzbetreiber</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
@@ -526,7 +538,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
 sorger!)<br />';
         print "</div>";
 
-        print "<br />"; "<br />";
+        print "<br /><br />";
         
         print "<h3>Energieversorger</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
@@ -596,7 +608,7 @@ sorger!)<br />';
         print '<i class="fa fa-clipboard-check"></i>&nbsp;&nbsp;&nbsp;&nbsp;Befugnis, eine SEPA-Lastschrift zu akzeptieren<br />';
         print "</div>";
 
-        print "<br />"; "<br />";
+        print "<br /><br />";
 
         print "<h3>Z&auml;hlpunkte</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
@@ -606,7 +618,7 @@ sorger!)<br />';
         print '<i class="fa fa-list-ol"></i>&nbsp;&nbsp;&nbsp;&nbsp;Inventarnummer der betroffenen Z&auml;hler<br />';
         print "</div>";
 
-        print "<br />"; "<br />";
+        print "<br /><br />";
 
         print "<h3>Netzbetreiber</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
@@ -615,7 +627,7 @@ sorger!)<br />';
 sorger!)<br />';
         print "</div>";
 
-        print "<br />"; "<br />";
+        print "<br /><br />";
 
         print "<h3>Energieversorger</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
@@ -715,7 +727,7 @@ sorger!)<br />';
                 print '<br /><button type="button" class="thinbtn" id="btn_prefill_' . $meter_key . '" onClick="JaxonInteractives.copy_address(' . "'" . $meter_key . "'" . ');">Von Hauptadresse kopieren</button>';
                 print "</div>";
 
-                print "<div style='float:left;height:100%;valign:middle'>";
+                print "<div style='float:left;height:100%;vertical-align:middle'>";
 
                 $this->view_render_meter_detail_explained_inputfield($meter_key, "Teilnahmefaktor", 'participation', 'percent', null, 100, "Prozent", "Ein Z&auml;hlpunkt kann an bis zu 5 EEGs teilnehmen.<br />&nbsp;<br />Der Teilnahmefaktor legt fest, zu wieviel Prozent dieser Z&auml;hlpunkt an <b style=\"color:black\">dieser EEG</b> teilnimmt.");
 

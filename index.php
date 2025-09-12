@@ -1,10 +1,5 @@
 <?php
 
-    // Turn off all error reporting since some servers do not provide a way
-    // to manipulate their php.ini and we can't handle warnings that break our
-    // session setup:
-    error_reporting(-1);
-
     include_once('views/view.inc.php');
     $view = new VIEW();
 
@@ -70,8 +65,8 @@
 
         </head>
 
-        <body class="is-preload" style="min-height: 100vh; display:flex; flex-direction:column; padding-bottom:0px; padding-left:0px; padding-right:0px;">
-            <div style="background-color: #151515; color:white; padding:0px; width:100%; height:46px; vertical-align:middle; text-align:right; position:absolute; top:0px;">
+        <body class="is-preload" style="min-height: 100vh; display:flex; flex-direction:column; padding-bottom:0; padding-left:0; padding-right:0;">
+            <div style="background-color: #151515; color:white; padding:0; width:100%; height:46px; vertical-align:middle; text-align:right; position:absolute; top:0;">
 
                 <div style="float:left; font-family:Helvetica; font-size:10pt; font-weight:bold; color:white; padding:7px; padding-left:14px;"><A href="/" target="_self" style="color:white;">R:EEG:ISTRY</A></div>
 
@@ -81,19 +76,19 @@
                 ?>
 
                 <div style="cursor:pointer; float:right;font-size:10pt;border:1px solid #444;width:50px;height:42px;text-align:center;padding-top:5px;margin:2px" onclick="JaxonInteractives.deauthenticate();">
-                    <li class="fa fa-door-open"></li>
+                    <i class="fa fa-door-open"></i>
                 </div>
 
                 <div style="cursor:pointer; float:right;font-size:10pt;border:1px solid #444;width:50px;height:42px;text-align:center;padding-top:5px;margin:2px" onclick="self.location.href='?manage_users'">
-                    <li class="fa fa-users"></li>
+                    <i class="fa fa-users"></i>
                 </div>
 
                 <div style="cursor:pointer; float:right;font-size:10pt;border:1px solid #444;width:50px;height:42px;text-align:center;padding-top:5px;margin:2px" onclick="self.location.href='?manage_dashboards'">
-                    <li class="fa fa-table"></li>
+                    <i class="fa fa-table"></i>
                 </div>
 
                 <div style="cursor:pointer; float:right;font-size:10pt;border:1px solid #444;width:50px;height:42px;text-align:center;padding-top:5px;margin:2px" onclick="self.location.href='?manage'">
-                    <li class="fa fa-house-damage"></li>
+                    <i class="fa fa-house-damage"></i>
                 </div>
 
                 <?php
@@ -175,7 +170,7 @@
                 $installed_database_version = 0;
             }
 
-            /** @var int $latest_database_version */
+            /** @var array $database_migrations */
             if(count($database_migrations) > $installed_database_version)
             {
                 if ($view->view_handle_backend_login() === true)

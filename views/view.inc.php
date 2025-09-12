@@ -24,6 +24,15 @@ class VIEW
         require_once('controllers/controller_config.php.inc');
         $this->config = $this->object_broker->instance['config'] = new CONTROLLER_CONFIG();
 
+        if(isset($this->config->user['debug']) && $this->config->user['debug'] === true)
+        {
+            error_reporting(-1);
+        }
+        else
+        {
+            error_reporting(0);
+        }
+
         require_once('controllers/controller_db.php.inc');
         $this->db = $this->object_broker->instance['db'] = new CONTROLLER_DB($this->object_broker);
 
@@ -35,7 +44,6 @@ class VIEW
         //class_alias("codeworxtech\PHPMailerPro\PHPMailerPro", "PHPMailerPro");
 
         $this->mail = $this->object_broker->instance['email'] = new codeworxtech\PhpMailerPro\PHPMailerPro();
-
         $this->mail->SetSender($this->config->user['MAIL_FROM']);
         $this->mail->smtpHost     = $this->config->user['MAIL_MTA_ADDRESS'];
         $this->mail->smtpDebug    = $this->config->user['MAIL_DEBUGGING'];

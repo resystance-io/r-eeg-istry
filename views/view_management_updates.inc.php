@@ -8,7 +8,7 @@ class VIEW_MANAGEMENT_UPDATES extends VIEW
         ?>
 
         <header id="header">
-            <h1><img src="images/noun_dbupdate.png" alt="Update" id="manage_eeg" style="height:38px"> R:EEG:ISTRY | UPDATE | Codebase</h1>
+            <h2><i class="fa fa-code-branch"></i>&nbsp;R:EEG:ISTRY | UPDATE | Codebase</h2>
         </header>
 
         <?php
@@ -78,7 +78,7 @@ class VIEW_MANAGEMENT_UPDATES extends VIEW
                 print "<br /><b>Aktuellste Version:</b><br />$latest_manifest_version</b>&nbsp;<br />";
                 print '<br />
                     
-                        <button type="button" class="mainbtn" style="height:80px;padding-top:20px;margin-left:0px;font-size:12pt;" id="btn_update_now" onClick="document.getElementById(\'btn_update_now\').disabled=true;location.href=\'?update=now\';">AKTUALISIERUNG STARTEN</button>
+                        <button type="button" class="mainbtn" style="height:80px;padding-top:20px;margin-left:0;font-size:12pt;" id="btn_update_now" onClick="document.getElementById(\'btn_update_now\').disabled=true;location.href=\'?update=now\';">AKTUALISIERUNG STARTEN</button>
                     
                 ';
             }

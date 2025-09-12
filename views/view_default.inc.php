@@ -4,11 +4,11 @@ include_once('view.inc.php');
 
 class VIEW_DEFAULT extends VIEW
 {
-    public function view_render()
+    public function view_render(): void
     {
         if(isset($_SESSION['tenant']) && $_SESSION['tenant'] != '')
         {
-            $tenant_info = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_TENANTS'], 'id', $_SESSION['tenant'], $limit=1);
+            $tenant_info = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_TENANTS'], 'id', $_SESSION['tenant'], 1);
             $tenant_info = $tenant_info[0];
             print '
                 <header id="header">
@@ -19,15 +19,26 @@ class VIEW_DEFAULT extends VIEW
                 </header>
         
                 <div class="button_container">
-                    <button type="button" class="mainbtn" id="btn_enroll_new" onClick="location.href=\'?join\'"><img src="images/noun_bio_food_energy.png" alt="Join EEG" id="join_eeg" style="height:60px"><br />Ich m&ouml;chte dieser EEG beitreten</button>
-                    <button type="button" class="mainbtnyellow" id="btn_enroll_progress" onClick="location.href=\'?lookup\'"><img src="images/noun_progress.png" alt="View Registration" id="lookup_eeg" style="height:60px"><br />Ich m&ouml;chte meine Daten abrufen</button>
-           ';
+            ';
+
+            if(!isset($_SESSION['backend_authenticated']) || $_SESSION['backend_authenticated'] == null)
+            {
+                print '
+                        <button type="button" class="mainbtn" id="btn_enroll_new" onClick="location.href=\'?join\'"><img src="images/noun_bio_food_energy.png" alt="Join EEG" id="join_eeg" style="height:60px"><br />Ich m&ouml;chte dieser EEG beitreten</button>
+                        <button type="button" class="mainbtnyellow" id="btn_enroll_progress" onClick="location.href=\'?lookup\'"><img src="images/noun_progress.png" alt="View Registration" id="lookup_eeg" style="height:60px"><br />Ich m&ouml;chte meine Daten abrufen</button>
+               ';
+            }
 
             if(isset($_SESSION['backend_authenticated']) && $_SESSION['backend_authenticated'] != null)
             {
-                print '<button type="button" class="mainbtnred" id="btn_manage" onClick="location.href=\'?manage\'"><img src="images/noun_manage.png" alt="Management" id="manage_eeg" style="height:60px"><br />Ich m&ouml;chte diese EEG verwalten</button>';
+                print '<button type="button" class="mainbtnred" id="btn_manage" onClick="location.href=\'?manage\'"><img src="images/noun_manage.png" alt="Management" id="manage_eeg" style="height:60px"><br />Registrierungen verwalten</button>';
                 print '<button type="button" class="mainbtnred" id="btn_manage" onClick="location.href=\'?fastjoin\'"><img src="images/noun_analogue.png" alt="Fast Join" id="manage_eeg" style="height:60px"><br />Analoge Registrierung eingeben</button>';
-                print '<button type="button" class="mainbtnred" id="btn_manage" onClick="location.href=\'?update\'"><img src="images/noun_dbupdate.png" alt="Update" id="manage_eeg" style="height:60px"><br />Update</button>';
+
+                $admin = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARD_USERS'], 'admin', 'id', $_SESSION['backend_authenticated']);
+                if($admin == 'y')
+                {
+                    print '<button type="button" class="mainbtnred" id="btn_manage" onClick="location.href=\'?update\'"><img src="images/noun_dbupdate.png" alt="Update" id="manage_eeg" style="height:60px"><br />Software Update</button>';
+                }
             }
 
             print '
