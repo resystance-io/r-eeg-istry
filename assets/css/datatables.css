@@ -110,12 +110,13 @@ th.navselected:hover {
 }
 
 /* Hover effect for rows */
+
 .table tr:hover {
     font-weight: normal;
-    border: 1px solid black;
+    box-shadow: 0 0 17px black;
+    position: relative;
+    z-index: 1;
 }
-
-
 
 
 .statenew td{
@@ -247,7 +248,6 @@ th.navselected:hover {
     background-color: #BFBFBF;
     transition: background 0.5s ease;
 }
-
 
 
 .stategray:nth-child(even) td{
