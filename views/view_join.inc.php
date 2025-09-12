@@ -69,7 +69,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                     {
                         print '<script>window.location.href="/?fastjoin=' . $_SESSION['generic_information']['join_type'] . '&step=' . $feasible_step . '";</script>';
                     }
-                    return false;
+                    return;
                 }
             }
 

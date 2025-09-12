@@ -111,7 +111,7 @@ th.navselected:hover {
 
 /* Hover effect for rows */
 .table tr:hover {
-    font-weight: bold;
+    font-weight: normal;
     border: 1px solid black;
 }
 
