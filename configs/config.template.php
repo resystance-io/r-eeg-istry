@@ -34,7 +34,7 @@ $MAIL_OPTIONS = ['ssl'=>[ 'verify_peer'=>false, 'verify_peer_name'=>false, 'allo
 
 /////////* BEHAVIOR *///////////////
 
-// CATCH-ALL:
+// CATCH-ALL:                   (DEFAULT: true)
 // if a visitor does not visit with a shortcode,
 // shall we fall back to a default tenant that is going to act as a catch-all?
 $tenant_fallback_on_empty_request = true;
@@ -43,11 +43,18 @@ $tenant_fallback_on_empty_request = true;
 // if catch-all is enabled, which tenant is designated as default tenant?
 $default_tenant_id = '1';
 
-// DEFER TENANT ASSIGNMENT:
+// DEFER TENANT ASSIGNMENT:     (DEFAULT: false)
 // while being used for presenting information about a certain tenant during
 // the onboarding dialogues, the tenant will NOT be assigned to the finished
 // registration. The tenant will be manually assigned later.
 $defer_tenant_assignment = true;
+
+// CROSS-TENANT MEMBER IDs:         (DEFAULT: false)
+// when onboarding a new member, the next free member ID is being proposed
+// by incrementing the highest member ID found within the target tenants
+// member pool. Enabling "cross_tenant_member_ids" changes this to create
+// a shared pool over all tenants on this platform.
+$cross_tenant_member_ids = false;
 
 // DASHBOARD PAGE SIZE
 // how many entries shall be displayed on a single backend result page by

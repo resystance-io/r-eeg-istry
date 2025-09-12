@@ -1608,16 +1608,28 @@ class Interactives
         elseif($tenant)
         {
             // we don't have a member id yet, but a tenant has been set - calculate the next member id
-            $highest_memberid_arr = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_REGISTRATIONS'],
-                'tenant',
-                $tenant,
-                1,
-                'member_id',
-                'DESC');
+            if($this->config->user['cross_tenant_member_ids'] === true)
+            {
+                $highest_memberid_arr = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_REGISTRATIONS'],
+                    NULL,
+                    NULL,
+                    1,
+                    'member_id',
+                    'DESC');
+            }
+            else
+            {
+                $highest_memberid_arr = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_REGISTRATIONS'],
+                    'tenant',
+                    $tenant,
+                    1,
+                    'member_id',
+                    'DESC');
+            }
             $highest_memberid = $highest_memberid_arr[0]['member_id'];
             if($highest_memberid)
             {
-                // the next member id is ....
+                // the next member id is ...
                 $highest_memberid++;
             }
             else
@@ -2914,16 +2926,28 @@ class Interactives
             if ($tenant)
             {
                 // we don't have a member id yet, but a tenant has been set - calculate the next member id
-                $highest_memberid_arr = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_REGISTRATIONS'],
-                    'tenant',
-                    $tenant,
-                    1,
-                    'member_id',
-                    'DESC');
+                if($this->config->user['cross_tenant_member_ids'] === true)
+                {
+                    $highest_memberid_arr = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_REGISTRATIONS'],
+                        NULL,
+                        NULL,
+                        1,
+                        'member_id',
+                        'DESC');
+                }
+                else
+                {
+                    $highest_memberid_arr = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_REGISTRATIONS'],
+                        'tenant',
+                        $tenant,
+                        1,
+                        'member_id',
+                        'DESC');
+                }
                 $highest_memberid = $highest_memberid_arr[0]['member_id'];
                 if ($highest_memberid)
                 {
-                    // the next member id is ....
+                    // the next member id is ...
                     $highest_memberid++;
                 } else
                 {
