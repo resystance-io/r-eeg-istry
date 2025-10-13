@@ -1681,6 +1681,69 @@ class Interactives
         return $response;
     }
 
+    public function dashboard_workflow_send_registration_reminder($recordid)
+    {
+        $response = jaxon()->newResponse();
+
+        $registration_info = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'id', $recordid);
+        $registration_info = $registration_info[0];
+
+        $mail_template = file_get_contents('assets/templates/mail_onboarding_reminder.html');
+
+        $tenant_info = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_TENANTS'], 'id', $registration_info['tenant']);
+        $tenant_info = $tenant_info[0];
+
+        if ($registration_info['type'] == 'company')
+        {
+            $mail_template = str_replace('{%FIRSTNAME%}', $registration_info['company_name'], $mail_template);
+            $mail_template = str_replace('{%LASTNAME%}', '', $mail_template);
+        }
+        else
+        {
+            $mail_template = str_replace('{%FIRSTNAME%}', $registration_info['firstname'], $mail_template);
+            $mail_template = str_replace('{%LASTNAME%}', $registration_info['lastname'], $mail_template);
+        }
+
+        $mail_template = str_replace('{%USEREMAIL%}', $registration_info['email'], $mail_template);
+        $mail_template = str_replace('{%REFERRER%}', $tenant_info['referrer'], $mail_template);
+        $mail_template = str_replace('{%FULLNAME%}', $tenant_info['fullname'], $mail_template);
+        $mail_template = str_replace('{%SHORTNAME%}', $tenant_info['shortname'], $mail_template);
+        $mail_template = str_replace('{%SLOGAN%}', $tenant_info['slogan'], $mail_template);
+        $mail_template = str_replace('{%DOWNLOAD_TOS%}', $tenant_info['reegistry_website'] . '/' . $tenant_info['download_tos'], $mail_template);
+        $mail_template = str_replace('{%DOWNLOAD_BYLAWS%}', $tenant_info['reegistry_website'] . '/' . $tenant_info['download_bylaws'], $mail_template);
+        $mail_template = str_replace('{%DOWNLOAD_GDPR%}', $tenant_info['reegistry_website'] . '/' . $tenant_info['download_gdpr'], $mail_template);
+        $mail_template = str_replace('{%REEGISTRY_WEBSITE%}', $tenant_info['reegistry_website'], $mail_template);
+        $mail_template = str_replace('{%CONTACT_WEBSITE%}', $tenant_info['contact_website'], $mail_template);
+        $mail_template = str_replace('{%CONTACT_EMAIL%}', $tenant_info['contact_email'], $mail_template);
+        $mail_template = str_replace('{%CREDITOR_ID%}', $tenant_info['creditor_id'], $mail_template);
+
+        $this->view->object_broker->instance['email']->subject = "Erinnerung: EEG Datenfreigabe bei Netzbetreiber erforderlich";
+        $this->view->object_broker->instance['email']->AddRecipient($registration_info['email']);
+        $this->view->object_broker->instance['email']->messageHTML = $mail_template;
+
+        if ($this->view->object_broker->instance['email']->Send('smtp'))
+        {
+            $mail_sent = true;
+        }
+        else
+        {
+            $mail_sent = false;
+        }
+
+        if($mail_sent === false)
+        {
+            $response->alert('Fehler: Erinnerung konnte nicht gesendet werden.');
+        }
+        else
+        {
+            $this->view->record_note($recordid, 'event', 'modify', "Erinnerung zur Datenfreigabe wurde versendet");
+            $response->alert('Erinnerung gesendet.');
+        }
+
+        $response->remove('btn_registration_reminder');
+        return $response;
+    }
+
     public function dashboard_inline_update_state_init($div_id, $recordid)
     {
         $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'state', 'id', $recordid);
@@ -2959,6 +3022,8 @@ class Interactives
                 $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'tenant', $tenant, 'id', $recordid);
                 $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'state', 'onboarding', 'id', $recordid);
                 $this->db->update_column_by_column_values($this->config->user['DBTABLE_REGISTRATIONS'], 'migration_date', time(), 'id', $recordid);
+                $this->view->record_note($recordid, 'event', 'modify', 'Mitglied wurde in EEG aufgenommen.');
+                
                 $successfully_activated = true;
             }
             else

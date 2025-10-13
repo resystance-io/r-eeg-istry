@@ -799,10 +799,11 @@ class VIEW_MANAGEMENT_REGISTRATIONS extends VIEW
                       <div class="timeline-item" style="width:98%">
                         <h3 class="timeline-header">Z&auml;hlpunkte best&auml;tigen</h3>
                         <div class="timeline-body" style="font-size:12pt; text-align:center">
-                          Wurden alle Z&auml;hlpunkte vom Netzbetreiber best&auml;tigt?
+                          Abschlussmeldung vom Netzbetreiber erhalten? (Zustimmung vom Mitglied positiv)
                         </div>
                         <div class="timeline-footer" style="text-align:center">
                           <a class="btn btn-success btn-xs" style="font-size:12pt;padding:8px;" onClick="JaxonInteractives.dashboard_workflow_fully_accepted(\''. $registration['id'] . '\')">&nbsp;Ja&nbsp;</a>
+                          &nbsp;&nbsp;&nbsp;<a id="btn_registration_reminder" class="btn btn-warning btn-xs" style="font-size:12pt;padding:8px;color:black" onClick="JaxonInteractives.dashboard_workflow_send_registration_reminder(\''. $registration['id'] . '\')">&nbsp;Erinnerung senden&nbsp;</a>
                         </div>
                       </div>
                     </li>
