@@ -59,10 +59,13 @@ class CONTROLLER_API
                         {
                             //print "DBG: Supplier found: LIMIT(" . $meter['meter_feedlimit'] . ") POWER(" . $meter['meter_power'] . ") PARTICIPATION(" . $meter['meter_participation'] . ")\n";
                             $total_supplying_meters++;
-                            $meter['meter_feedlimit'] = str_replace('.', ',', $meter['meter_feedlimit']);
-                            $meter['meter_power'] = str_replace('.', ',', $meter['meter_power']);
+                            $meter['meter_feedlimit'] = str_replace(',', '.', $meter['meter_feedlimit']);
+                            $meter['meter_power'] = str_replace(',', '.', $meter['meter_power']);
                             if ($meter['meter_feedlimit']) $meter_power = $meter['meter_feedlimit']; else    $meter_power = $meter['meter_power'];
-                            $total_supplier_kwp += $meter_power / 100 * $meter['meter_participation'];
+                            if(is_numeric($meter_power))
+                            {
+                                $total_supplier_kwp += $meter_power / 100 * $meter['meter_participation'];
+                            }
                         } else
                         {
                             $total_consuming_meters++;
@@ -80,8 +83,11 @@ class CONTROLLER_API
 
                     foreach ($storages as $storage)
                     {
-                        $storage['storage_capacity'] = str_replace('.', ',', $storage['storage_capacity']);
-                        $total_storage_kwh += $storage['storage_capacity'];
+                        $storage['storage_capacity'] = str_replace(',', '.', $storage['storage_capacity']);
+                        if(is_numeric($storage['storage_capacity']))
+                        {
+                            $total_storage_kwh += $storage['storage_capacity'];
+                        }
                     }
 
                     $result_array['total_kwp_generated'] = $total_supplier_kwp;
@@ -120,14 +126,18 @@ class CONTROLLER_API
 
                 foreach ($meters as $meter)
                 {
+
                     if ($meter['meter_type'] == 'supplier')
                     {
                         //print "DBG: Supplier found: LIMIT(" . $meter['meter_feedlimit'] . ") POWER(" . $meter['meter_power'] . ") PARTICIPATION(" . $meter['meter_participation'] . ")\n";
                         $total_supplying_meters++;
-                        $meter['meter_feedlimit'] = str_replace('.', ',', $meter['meter_feedlimit']);
-                        $meter['meter_power'] = str_replace('.', ',', $meter['meter_power']);
-                        if ($meter['meter_feedlimit']) $meter_power = $meter['meter_feedlimit']; else    $meter_power = $meter['meter_power'];
-                        $total_supplier_kwp += $meter_power / 100 * $meter['meter_participation'];
+                        $meter['meter_feedlimit'] = str_replace(',', '.', $meter['meter_feedlimit']);
+                        $meter['meter_power'] = str_replace(',', '.', $meter['meter_power']);
+                        if ($meter['meter_feedlimit'] && $meter['meter_feedlimit'] != '') $meter_power = $meter['meter_feedlimit']; else    $meter_power = $meter['meter_power'];
+                        if(is_numeric($meter_power))
+                        {
+                            $total_supplier_kwp += $meter_power / 100 * $meter['meter_participation'];
+                        }
                     }
                     else
                     {
@@ -146,8 +156,11 @@ class CONTROLLER_API
 
                 foreach ($storages as $storage)
                 {
-                    $storage['storage_capacity'] = str_replace('.', ',', $storage['storage_capacity']);
-                    $total_storage_kwh += $storage['storage_capacity'];
+                    $storage['storage_capacity'] = str_replace(',', '.', $storage['storage_capacity']);
+                    if(is_numeric($storage['storage_capacity']))
+                    {
+                        $total_storage_kwh += $storage['storage_capacity'];
+                    }
                 }
             }
 
