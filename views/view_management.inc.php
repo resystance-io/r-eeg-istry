@@ -5,6 +5,9 @@ class VIEW_MANAGEMENT extends VIEW
 {
     function view_render_registrations($selectable_list = false)
     {
+
+        $canvas = '';
+
         if(isset($_REQUEST['sortkey']))
         {
             $_SESSION['dashboard']['sortkey'] = $_REQUEST['sortkey'];
@@ -59,120 +62,116 @@ class VIEW_MANAGEMENT extends VIEW
 
         <?php
 
-        print "<br />";
+        $canvas .= "<br />";
 
         $dashboards = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARDS'], 'user_id', $_SESSION['backend_authenticated']);
 
-        print '<div class="table-container" style="height:46px;vertical-align:top">';
+        $canvas .= '<div class="table-container" style="height:46px;vertical-align:top">';
 
-        print '<table class="navigation" style="float:left; height:48px;">
-                <thead>
-                  <tr class="navigation">';
+        $canvas .= '<table class="navigation" style="float:left; height:48px;">
+            <thead>
+              <tr class="navigation">';
 
-        if(!isset($_SESSION['dashboard']['id']) || $_SESSION['dashboard']['id'] == '')
+        if (!isset($_SESSION['dashboard']['id']) || $_SESSION['dashboard']['id'] == '')
         {
-            if(count($dashboards) > 0)
+            if (count($dashboards) > 0)
             {
                 // if no dashboard is selected, default to the first one
                 $_SESSION['dashboard']['id'] = $dashboards[0]['id'];
-            }
-            else
+            } else
             {
-                print "Bitte richte dein erstes Dashboard in den Einstellungen ein.";
+                $canvas .= "Bitte richte dein erstes Dashboard in den Einstellungen ein.";
             }
         }
 
-        foreach($dashboards as $dashboard)
+        foreach ($dashboards as $dashboard)
         {
-            if(count($dashboards) > 0)
+            if (count($dashboards) > 0)
             {
                 if (isset($_SESSION['dashboard']['id']) && $_SESSION['dashboard']['id'] == $dashboard['id']) $navclass = 'navselected'; else $navclass = '';
-                print '<th style="white-space:nowrap" class="' . $navclass . '" onclick="self.location.href=\'?manage&dashboard=' . $dashboard['id'] . '\'">&nbsp;<li class="fa fa-table"></li>&nbsp;' . $dashboard['name'] . '&nbsp;</th>';
-            }
-            else
+                $canvas .= '<th style="white-space:nowrap" class="' . $navclass . '" onclick="self.location.href=\'?manage&dashboard=' . $dashboard['id'] . '\'">&nbsp;<li class="fa fa-table"></li>&nbsp;' . $dashboard['name'] . '&nbsp;</th>';
+            } else
             {
-                print '<th style="white-space:nowrap">Bitte erstelle dein erstes Dashboard in den Einstellungen.</th>';
+                $canvas .= '<th style="white-space:nowrap">Bitte erstelle dein erstes Dashboard in den Einstellungen.</th>';
             }
         }
 
-        print '   </tr>
-               </thead>
-             </table>
+        $canvas .= '   </tr>
+           </thead>
+         </table>
         ';
 
-        print '<div style="width:20px; height:1px; float:left">&nbsp;</div>';
+        $canvas .= '<div style="width:20px; height:1px; float:left">&nbsp;</div>';
 
-        print '<table class="navigation" style="float:right; width:600px; height:46px;">
-                <thead>
-                  <tr>
-                    <th style="width:45px;"><li class="fa fa-search"></li></th>
-                    <th>
-                        <select id="searchcolumn" name="searchcolumn" class="filter">
-                            <option value="">Suchen nach...</option>
+        $canvas .= '<table class="navigation" style="float:right; width:600px; height:46px;">
+            <thead>
+              <tr>
+                <th style="width:45px;"><li class="fa fa-search"></li></th>
+                <th>
+                    <select id="searchcolumn" name="searchcolumn" class="filter">
+                        <option value="">Suchen nach...</option>
         ';
 
         $searchable_fields = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARD_COLUMNS'], 'searchable', 'y');
         $searchprefill = '';
-        foreach($searchable_fields as $searchable_field)
+        foreach ($searchable_fields as $searchable_field)
         {
-            if(isset($_SESSION['dashboard']['search'][$searchable_field['name']]))
+            if (isset($_SESSION['dashboard']['search'][$searchable_field['name']]))
             {
                 $selected = 'selected="selected"';
-                if($searchable_field['source'] != null) $searchable_path = $searchable_field['source'] . '.' . $searchable_field['name']; else $searchable_path = $searchable_field['name'];
+                if ($searchable_field['source'] != null) $searchable_path = $searchable_field['source'] . '.' . $searchable_field['name']; else $searchable_path = $searchable_field['name'];
                 $searchprefill = $_SESSION['dashboard']['search'][$searchable_field['name']];
-            }
-            else
+            } else
             {
                 $selected = '';
             }
 
-            print '<option ' . $selected . ' value="' . $searchable_field['name'] . '">' . $searchable_field['nicename'] . '</option>';
+            $canvas .= '<option ' . $selected . ' value="' . $searchable_field['name'] . '">' . $searchable_field['nicename'] . '</option>';
         }
 
-        print '
-                        </select>
-                    </th>
-                    <th>
-                        <input type="text" id="searchvalue" name="searchvalue" value="' . $searchprefill . '" class="filter"/>
-                        <script>
-                          input = document.getElementById("searchvalue");
-                          input.addEventListener("keydown", function(event) {
-                            if (event.key === "Enter") {
-                                JaxonInteractives.dashboard_set_search(document.getElementById(' . "'searchcolumn'" . ').value, document.getElementById(' . "'searchvalue'" . ').value);
-                            }
-                          });
-                        </script>
-                    </th>
-                    <th style="width:60px">
-                        <button class="search" onclick="JaxonInteractives.dashboard_set_search(document.getElementById(' . "'searchcolumn'" . ').value, document.getElementById(' . "'searchvalue'" . ').value);">Suchen</button>
-                    </th>
-                  </tr>
-               </thead>
-             </table>
+        $canvas .= '
+                    </select>
+                </th>
+                <th>
+                    <input type="text" id="searchvalue" name="searchvalue" value="' . $searchprefill . '" class="filter"/>
+                    <script>
+                      input = document.getElementById("searchvalue");
+                      input.addEventListener("keydown", function(event) {
+                        if (event.key === "Enter") {
+                            JaxonInteractives.dashboard_set_search(document.getElementById(' . "'searchcolumn'" . ').value, document.getElementById(' . "'searchvalue'" . ').value);
+                        }
+                      });
+                    </script>
+                </th>
+                <th style="width:60px">
+                    <button class="search" onclick="JaxonInteractives.dashboard_set_search(document.getElementById(' . "'searchcolumn'" . ').value, document.getElementById(' . "'searchvalue'" . ').value);">Suchen</button>
+                </th>
+              </tr>
+           </thead>
+         </table>
         ';
 
-        print '</div><br />';
+        $canvas .= '</div><br />';
 
-        print '
+        $canvas .= '
             <div class="table-container">
         ';
 
-        if($selectable_list === true)
+        if ($selectable_list === true)
         {
-            print "<form id=\"listselectors\" name=\"listselectors\" action=\"?manage&export=csv\" method=\"post\"></form>";
+            $canvas .= "<form id=\"listselectors\" name=\"listselectors\" action=\"?manage&export=csv\" method=\"post\"></form>";
         }
 
-        if(isset($_REQUEST['export']) && $_REQUEST['export'] == 'csv')
+        if (isset($_REQUEST['export']) && $_REQUEST['export'] == 'csv')
         {
             $export_csv = true;
             $csv_export_data = [];
-        }
-        else
+        } else
         {
             $export_csv = false;
         }
 
-        print '
+        $canvas .= '
               <table class="table">
                 <thead>
                   <tr>
@@ -182,89 +181,84 @@ class VIEW_MANAGEMENT extends VIEW
         $layout_columns = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_DASHBOARD_LAYOUT'], 'dashboard', $_SESSION['dashboard']['id'], NULL, 'sort', 'ASC');
         $dashboard_sort = $this->db->get_column_by_column_value($this->config->user['DBTABLE_DASHBOARDS'], 'sort', 'id', $_SESSION['dashboard']['id']);
 
-        print '<th style="width:60px">&nbsp;</th>';
+        $canvas .= '<th style="width:60px">&nbsp;</th>';
 
         $columns = []; // store every column configuration we get for this dashboard layout to avoid multiple lookups
         $column_count = 0;
         $search_root = 'registrations';
 
-        foreach($layout_columns as $layout_column)
+        foreach ($layout_columns as $layout_column)
         {
-            $column_config = array_values(array_filter($column_configs, function($column) use ($layout_column)
+            $column_config = array_values(array_filter($column_configs, function ($column) use ($layout_column)
             {
                 return $column['name'] === $layout_column['data'];
             }));
             $columns[$column_count] = $column_config[0];
 
-            if($column_config[0]['source'] == 'meters')
+            if ($column_config[0]['source'] == 'meters')
             {
                 // switch to meter-centric lookups
                 $search_root = 'meters';
             }
 
-            if($columns[$column_count]['sortable'] == 'y')
+            if ($columns[$column_count]['sortable'] == 'y')
             {
-                if(isset($_SESSION['dashboard']['sortkey']))
+                if (isset($_SESSION['dashboard']['sortkey']))
                 {
                     $sortkey_arr = explode(';', $_SESSION['dashboard']['sortkey']);
-                }
-                elseif($dashboard_sort)
+                } elseif ($dashboard_sort)
                 {
                     $sortkey_arr = explode(';', $dashboard_sort);
                 }
 
-                if(isset($sortkey_arr))
+                if (isset($sortkey_arr))
                 {
                     $sortkey_field = $sortkey_arr[0];
                     $sortkey_direction = $sortkey_arr[1];
-                    if($sortkey_field == $columns[$column_count]['name'])
+                    if ($sortkey_field == $columns[$column_count]['name'])
                     {
                         // this is the sorted column
                         $fa_sort_color = 'black';
-                        if($sortkey_direction == 'asc')
+                        if ($sortkey_direction == 'asc')
                         {
                             // currently we're sorting ascending
                             $fa_sort_icon = 'fa-sort-up';
                             $fa_sort_link = 'sortkey=' . $columns[$column_count]['name'] . ';desc';
-                        }
-                        elseif($sortkey_direction == 'desc')
+                        } elseif ($sortkey_direction == 'desc')
                         {
                             // currently we're sorting descending
                             $fa_sort_icon = 'fa-sort-down';
                             $fa_sort_link = 'sortkey=' . $columns[$column_count]['name'] . ';asc';
-                        }
-                        else
+                        } else
                         {
                             // wtf?
                             $fa_sort_icon = 'fa-sort';
                             $fa_sort_link = 'sortkey=' . $columns[$column_count]['name'] . ';asc';
                         }
-                    }
-                    else
+                    } else
                     {
                         // this is not the sorted column
                         $fa_sort_color = 'lightblue';
                         $fa_sort_icon = 'fa-sort';
                         $fa_sort_link = 'sortkey=' . $columns[$column_count]['name'] . ';asc';
                     }
-                }
-                else
+                } else
                 {
                     $fa_sort_color = 'lightblue';
                     $fa_sort_icon = 'fa-sort';
                     $fa_sort_link = 'sortkey=' . $columns[$column_count]['name'] . ';asc';
                 }
 
-                print '<th style="cursor:pointer" onclick="self.location.href=\'?manage&' . $fa_sort_link . '\'">' . $columns[$column_count]['nicename'] . '<i style="margin-top:6px;color:' . $fa_sort_color . '" class="fa ' . $fa_sort_icon . ' fa-pull-right"></i></th>';
+                $canvas .= '<th style="cursor:pointer" onclick="self.location.href=\'?manage&' . $fa_sort_link . '\'">' . $columns[$column_count]['nicename'] . '<i style="margin-top:6px;color:' . $fa_sort_color . '" class="fa ' . $fa_sort_icon . ' fa-pull-right"></i></th>';
             }
             else
             {
-                print '<th>' . $columns[$column_count]['nicename'] . '</th>';
+                $canvas .= '<th>' . $columns[$column_count]['nicename'] . '</th>';
             }
 
-            if($export_csv === true)
+            if ($export_csv === true)
             {
-                if(substr_count($columns[$column_count]['nicename'], ';') > 0 || substr_count($columns[$column_count]['nicename'], '"') > 0)
+                if (substr_count($columns[$column_count]['nicename'], ';') > 0 || substr_count($columns[$column_count]['nicename'], '"') > 0)
                 {
                     $csv_export_data[0][$column_count] = '"' . html_entity_decode($columns[$column_count]['nicename']) . '"';
                 }
@@ -276,23 +270,23 @@ class VIEW_MANAGEMENT extends VIEW
 
             $column_count++;
         }
-        $csv_export_row=0;
+        $csv_export_row = 0;
 
-        print '
+        $canvas .= '
                   </tr>
                   <tr style="background-color:transparent">
         ';
 
-        print '<td style="background-color:transparent;color:white;"><i class="fa fa-filter"></i></td>';
-        foreach($columns as $column)
+        $canvas .= '<td style="background-color:transparent;color:white;"><i class="fa fa-filter"></i></td>';
+        foreach ($columns as $column)
         {
-            if($column['filterable'] == 'y' && $column['compute'] == null)
+            if ($column['filterable'] == 'y' && $column['compute'] == null)
             {
-                if($column['source'] != NULL)   $column_path = $column['source'] . '.' . $column['name']; else $column_path = $column['name'];
+                if ($column['source'] != NULL) $column_path = $column['source'] . '.' . $column['name']; else $column_path = $column['name'];
 
-                if(isset($_SESSION['dashboard']['filter']) && $_SESSION['dashboard']['filter'][$column_path] != null) $filter_value = $_SESSION['dashboard']['filter'][$column_path]; else $filter_value = '';
+                if (isset($_SESSION['dashboard']['filter']) && $_SESSION['dashboard']['filter'][$column_path] != null) $filter_value = $_SESSION['dashboard']['filter'][$column_path]; else $filter_value = '';
 
-                print '<td>
+                $canvas .= '<td>
                             <input type="text" id="filter-' . $column['name'] . '" onclick="this.select();" onfocusout="JaxonInteractives.dashboard_set_filter(' . "'$column_path'" . ', document.getElementById(' . "'filter-" . $column['name'] . "'" . ').value);" class="filter" name="filter-' . $column['name'] . '" value="' . $filter_value . '">
                             <script>
                               input = document.getElementById("filter-' . $column['name'] . '");
@@ -303,25 +297,24 @@ class VIEW_MANAGEMENT extends VIEW
                               });
                             </script>
                        </td>';
-            }
-            elseif($column['filterable'] == 'y' && $column['compute'] != null)
+            } elseif ($column['filterable'] == 'y' && $column['compute'] != null)
             {
-                print '<td>';
-                if(isset($_SESSION['dashboard']['filter'][$column['name']]))  $filter_value = $_SESSION['dashboard']['filter'][$column['name']]; else $filter_value = null;
-                $this->render_computed_filter_column($column['compute'], $column['name'], $filter_value);
-                print '</td>';
-            }
-            else
+                $canvas .= '<td>';
+                if (isset($_SESSION['dashboard']['filter'][$column['name']])) $filter_value = $_SESSION['dashboard']['filter'][$column['name']]; else $filter_value = null;
+                $canvas .= $this->render_computed_filter_column($column['compute'], $column['name'], $filter_value);
+                $canvas .= '</td>';
+            } else
             {
-                print '<td>&nbsp;</td>';
+                $canvas .= '<td>&nbsp;</td>';
             }
         }
 
-        print '
+        $canvas .= '
                   </tr>
                 </thead>
                 <tbody>
         ';
+
 
         if(isset($_SESSION['dashboard']['sortkey']))
         {
@@ -415,7 +408,15 @@ class VIEW_MANAGEMENT extends VIEW
 
         if($search_root == 'registrations')
         {
-            $registrations = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_REGISTRATIONS'], 'deleted', 'n', $start_index . ',' . $page_size, $sortkey_arr[0], $sortkey_arr[1], $filter_string);
+            if(isset($_REQUEST['full']))
+            {
+                // this is a full export - do not limit the number of results
+                $registrations = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_REGISTRATIONS'], 'deleted', 'n', null, $sortkey_arr[1], $filter_string);
+            }
+            else
+            {
+                $registrations = $this->db->get_rows_by_column_value_extended($this->config->user['DBTABLE_REGISTRATIONS'], 'deleted', 'n', $start_index . ',' . $page_size, $sortkey_arr[0], $sortkey_arr[1], $filter_string);
+            }
         }
         else
         {
@@ -429,7 +430,15 @@ class VIEW_MANAGEMENT extends VIEW
             }
             else { $order = null; };
 
-            $registrations = $this->db->get_rows($this->config->user['DBTABLE_METERS'], $inner_joins, $filter_array, $start_index . ',' . $page_size, $order);
+            if(isset($_REQUEST['full']))
+            {
+                // this is a full export - do not limit the number of results
+                $registrations = $this->db->get_rows($this->config->user['DBTABLE_METERS'], $inner_joins, $filter_array, null, $order);
+            }
+            else
+            {
+                $registrations = $this->db->get_rows($this->config->user['DBTABLE_METERS'], $inner_joins, $filter_array, $start_index . ',' . $page_size, $order);
+            }
         }
 
         if($search_root == 'registrations')
@@ -446,20 +455,28 @@ class VIEW_MANAGEMENT extends VIEW
             // do we want to create a CSV export file?
             if($export_csv === true)
             {
-                // only export this line if the user chose it in the selection phase
-                if($search_root == 'registrations' && isset($_POST[$registration['id']]))
+                // is this a full export?
+                if(isset($_REQUEST['full']))
                 {
-                    $line_flagged_for_export = true;
-                    $csv_export_row++;
-                }
-                elseif($search_root == 'meters' && isset($_POST[$registration['meter_uuid']]))
-                {
+                    // yes, every line is to be exported
                     $line_flagged_for_export = true;
                     $csv_export_row++;
                 }
                 else
                 {
-                    $line_flagged_for_export = false;
+                    // only export this line if the user chose it in the selection phase
+                    if ($search_root == 'registrations' && isset($_POST[$registration['id']]))
+                    {
+                        $line_flagged_for_export = true;
+                        $csv_export_row++;
+                    } elseif ($search_root == 'meters' && isset($_POST[$registration['meter_uuid']]))
+                    {
+                        $line_flagged_for_export = true;
+                        $csv_export_row++;
+                    } else
+                    {
+                        $line_flagged_for_export = false;
+                    }
                 }
             }
             else
@@ -514,22 +531,21 @@ class VIEW_MANAGEMENT extends VIEW
                 $class = 'stategray';
             }
 
-            print '<tr class="' . $class . '" onclick="self.location.href=\'/?manage_registrations&registration=' . $registration['id'] . '\'">';
+            $canvas .= '<tr class="' . $class . '" onclick="self.location.href=\'/?manage_registrations&registration=' . $registration['id'] . '\'">';
 
-            if($selectable_list === true)
+            if ($selectable_list === true)
             {
-                if($search_root == 'registrations')
+                if ($search_root == 'registrations')
                 {
-                    print '<td style="vertical-align:middle" onClick="event.stopPropagation(); invert_checkbox(\'' . $registration['id'] . '\');"><input form="listselectors" id="' . $registration['id'] . '" onClick="event.stopPropagation();" name="' . $registration['id'] . '" class="listselector" type="checkbox" value="1" checked="checked"></td>';
-                }
-                elseif($search_root == 'meters')
+                    $canvas .= '<td style="vertical-align:middle" onClick="event.stopPropagation(); invert_checkbox(\'' . $registration['id'] . '\');"><input form="listselectors" id="' . $registration['id'] . '" onClick="event.stopPropagation();" name="' . $registration['id'] . '" class="listselector" type="checkbox" value="1" checked="checked"></td>';
+                } elseif ($search_root == 'meters')
                 {
-                    print '<td style="vertical-align:middle" onClick="event.stopPropagation(); invert_checkbox(\'' . $registration['meter_uuid'] . '\');"><input form="listselectors" id="' . $registration['meter_uuid'] . '" onClick="event.stopPropagation();" name="' . $registration['meter_uuid'] . '" class="listselector" type="checkbox" value="1" checked="checked"></td>';
+                    $canvas .= '<td style="vertical-align:middle" onClick="event.stopPropagation(); invert_checkbox(\'' . $registration['meter_uuid'] . '\');"><input form="listselectors" id="' . $registration['meter_uuid'] . '" onClick="event.stopPropagation();" name="' . $registration['meter_uuid'] . '" class="listselector" type="checkbox" value="1" checked="checked"></td>';
                 }
             }
             else
             {
-                print '<td onMouseOver="document.getElementById(\'headcol-' . $line_id . '\').className = \'fa fa-clipboard\';" onMouseOut="document.getElementById(\'headcol-' . $line_id . '\').className = \'fa ' . $icon . '\';" onClick="copy_to_clipboard(' . $line_id . '); event.stopPropagation();"><i id="headcol-' . $line_id . '" class="fa ' . $icon . '"></td>';
+                $canvas .= '<td onMouseOver="document.getElementById(\'headcol-' . $line_id . '\').className = \'fa fa-clipboard\';" onMouseOut="document.getElementById(\'headcol-' . $line_id . '\').className = \'fa ' . $icon . '\';" onClick="copy_to_clipboard(' . $line_id . '); event.stopPropagation();"><i id="headcol-' . $line_id . '" class="fa ' . $icon . '"></td>';
             }
 
             $csv_buffer = '';
@@ -539,7 +555,8 @@ class VIEW_MANAGEMENT extends VIEW
                 {
                     if((($column['name'] == 'firstname' && isset($columns[$rowindex + 1]) && $columns[$rowindex + 1]['name'] == 'lastname') || ($column['name'] == 'lastname' && isset($columns[$rowindex + 1]) && $columns[$rowindex + 1]['name'] == 'firstname')) && $registration['type'] == 'company')
                     {   // this is a given name tuple arrangement, and we loaded a company. Let's merge these columns and load the company name for convenience
-                        print '<td colspan="2">' . $registration['company_name'] . '</td>';
+
+                        $canvas .= '<td colspan="2">' . $registration['company_name'] . '</td>';
                         $csv_buffer .= $registration['company_name'] . ';';
 
                         if ($export_csv === true && $line_flagged_for_export === true)
@@ -556,7 +573,7 @@ class VIEW_MANAGEMENT extends VIEW
                     }
                     elseif((($column['name'] == 'firstname' && isset($columns[$rowindex - 1]) && $columns[$rowindex - 1]['name'] == 'lastname') || ($column['name'] == 'lastname' && isset($columns[$rowindex - 1]) && $columns[$rowindex - 1]['name'] == 'firstname')) && $registration['type'] == 'company')
                     {   // it's still a given name tuple, but this is the second column. Suppress this.
-                        print '';
+
                         $csv_buffer .= $registration['company_name'] . ';';
 
                         if ($export_csv === true && $line_flagged_for_export === true)
@@ -573,8 +590,10 @@ class VIEW_MANAGEMENT extends VIEW
                     }
                     else
                     {
-                        print '<td>' . $registration[$column['name']] . '</td>';
+
+                        $canvas .= '<td>' . $registration[$column['name']] . '</td>';
                         $csv_buffer .= $registration[$column['name']] . ';';
+
                         if($export_csv === true && $line_flagged_for_export === true)
                         {
                             if (substr_count($registration[$column['name']], ';') > 0 || substr_count($registration[$column['name']], '"') > 0)
@@ -591,8 +610,10 @@ class VIEW_MANAGEMENT extends VIEW
                 else
                 {
                     $computed_value = $this->lookup_computed_column($column['compute'], $registration);
-                    print '<td>' . $computed_value . '</td>';
+
+                    $canvas .= '<td>' . $computed_value . '</td>';
                     $csv_buffer .= $computed_value . ';';
+
                     if($export_csv === true && $line_flagged_for_export === true)
                     {
                         if (substr_count($computed_value, ';') > 0 || substr_count($computed_value, '"') > 0)
@@ -607,73 +628,76 @@ class VIEW_MANAGEMENT extends VIEW
                 }
             }
 
-            print '<script>window.backend_linebuffer[' . $line_id . '] = "' . $csv_buffer . '";</script>';
-            print '</tr>';
+            $canvas .= '<script>window.backend_linebuffer[' . $line_id . '] = "' . $csv_buffer . '";</script>';
+            $canvas .= '</tr>';
+
         }
 
-        print '
+        $canvas .= '
                 </tbody>
               </table>
-        
-            <div class="dataTables_pagesize">
-                <select onchange="JaxonInteractives.dashboard_select_page_size(this.value)">
         ';
 
-        if($page_size == 5) $selected = "selected=\"selected\""; else $selected = "";
-        print "         <option value=\"5\" $selected>5 Ergebnisse / Seite</option>";
-        if($page_size == 10) $selected = "selected=\"selected\""; else $selected = "";
-        print "         <option value=\"10\" $selected>10 Ergebnisse / Seite</option>";
-        if($page_size == 20) $selected = "selected=\"selected\""; else $selected = "";
-        print "         <option value=\"20\" $selected>20 Ergebnisse / Seite</option>";
-        if($page_size == 30) $selected = "selected=\"selected\""; else $selected = "";
-        print "         <option value=\"30\" $selected>30 Ergebnisse / Seite</option>";
-        if($page_size == 40) $selected = "selected=\"selected\""; else $selected = "";
-        print "         <option value=\"40\" $selected>40 Ergebnisse / Seite</option>";
-        if($page_size == 50) $selected = "selected=\"selected\""; else $selected = "";
-        print "         <option value=\"50\" $selected>50 Ergebnisse / Seite</option>";
-        if($page_size == 100) $selected = "selected=\"selected\""; else $selected = "";
-        print "         <option value=\"100\" $selected>100 Ergebnisse / Seite</option>";
+        $canvas .= '
+        <div class="dataTables_pagesize">
+            <select onchange="JaxonInteractives.dashboard_select_page_size(this.value)">
+        ';
 
-        print '
+        if ($page_size == 5) $selected = "selected=\"selected\""; else $selected = "";
+        $canvas .= "         <option value=\"5\" $selected>5 Ergebnisse / Seite</option>";
+        if ($page_size == 10) $selected = "selected=\"selected\""; else $selected = "";
+        $canvas .= "         <option value=\"10\" $selected>10 Ergebnisse / Seite</option>";
+        if ($page_size == 20) $selected = "selected=\"selected\""; else $selected = "";
+        $canvas .= "         <option value=\"20\" $selected>20 Ergebnisse / Seite</option>";
+        if ($page_size == 30) $selected = "selected=\"selected\""; else $selected = "";
+        $canvas .= "         <option value=\"30\" $selected>30 Ergebnisse / Seite</option>";
+        if ($page_size == 40) $selected = "selected=\"selected\""; else $selected = "";
+        $canvas .= "         <option value=\"40\" $selected>40 Ergebnisse / Seite</option>";
+        if ($page_size == 50) $selected = "selected=\"selected\""; else $selected = "";
+        $canvas .= "         <option value=\"50\" $selected>50 Ergebnisse / Seite</option>";
+        if ($page_size == 100) $selected = "selected=\"selected\""; else $selected = "";
+        $canvas .= "         <option value=\"100\" $selected>100 Ergebnisse / Seite</option>";
+
+        $canvas .= '
                     </select>
                 </div>
         ';
 
-        if($selectable_list === true)
+        if ($selectable_list === true)
         {
-            print '
+            $canvas .= '
                 <div class="dataTables_featurebutton" style="background-color:#ffcccc44" onClick="self.location.href=\'?manage\';">
                     <i class="fa fa-caret-square-left"></i>
                 </div>
             ';
 
-            if($search_root == 'meters')
+            if ($search_root == 'meters')
             {
-                print '
+                $canvas .= '
                     <div class="dataTables_featurebutton" style="width:260px;" onClick="export_serialized_form(\'listselectors\');">
                         <i class="fa fa-file-excel"></i> &nbsp; Exportieren als <b>EEGfaktura XLSX</b>
                     </div>
                 ';
             }
 
-            print '
-                    <div class="dataTables_featurebutton" style="width:170px;" onClick="document.getElementById(\'listselectors\').submit();">
+            $canvas .= '
+                    <div class="dataTables_featurebutton" style="width:170px;" onClick="JaxonInteractives.dashboard_modal_choose_exporttype();">
                         <i class="fa fa-file-csv"></i> &nbsp; Exportieren als <b>CSV</b>
                     </div>
             ';
         }
         else
         {
-            print '
+            $canvas .= '
                 <div class="dataTables_featurebutton" onClick="self.location.href=\'?manage_select\';">
                     <i class="fa fa-check-square"></i>
                 </div>
             ';
         }
 
-        if($registrations_count > $page_size)
+        if ($registrations_count > $page_size)
         {
-            print '
+            $canvas .= '
                   <div class="dataTables_paginate">
                         <ul class="paginationlist">
             ';
@@ -682,32 +706,33 @@ class VIEW_MANAGEMENT extends VIEW
             {
                 if (isset($_SESSION['dashboard']['page']) && $_SESSION['dashboard']['page'] == $page_selector)
                 {
-                    print "
+                    $canvas .= "
                                 <li class=\"paginate_button pageactive\">
                                     $page_selector
                                 </li>
                     ";
-                } else
+                }
+                else
                 {
-                    print "
+                    $canvas .= "
                                 <li class=\"paginate_button\" onclick=\"JaxonInteractives.dashboard_select_pagination_page($page_selector)\">
                                     $page_selector
                                 </li>
                     ";
                 }
-                if($page_selector % 15 == 0 && $page_selector != 0)
+                if ($page_selector % 15 == 0 && $page_selector != 0)
                 {
-                    print '<br>';
+                    $canvas .= '<br>';
                 }
             }
 
-            print '      
+            $canvas .= '      
                         </ul>
                   </div>
             ';
         }
 
-        print '
+        $canvas .= '
             </div>
             &nbsp;<br />&nbsp;<br />&nbsp;<br />
         ';
@@ -729,75 +754,90 @@ class VIEW_MANAGEMENT extends VIEW
             file_put_contents('download/' . $export_filename, $export_file_content);
             print "<script>window.open('/download/?$export_filename=export.csv', '_blank');</script>";
         }
+
+        if(isset($_REQUEST['full']) && $export_csv === true)
+        {
+            print "<b>Die Zusammenstellung der angeforderten Daten ist abgeschlossen</b><br />Der Export wird in wenigen Augenblicken heruntergeladen.";
+            print '<script>self.location.href=\'?manage\';</script>';
+        }
+        else
+        {
+            print $canvas;
+        }
+
     }
 
 
 
     function render_computed_filter_column($compute_type, $column_name, $filter_value=null)
     {
+        $canvas = '';
+
         switch($compute_type)
         {
 
             case 'eeg_short':
-                print '<select class="filter" id="filter-' . $column_name . '" name="filter-' . $column_name . '" onchange="JaxonInteractives.dashboard_set_filter(' . "'" . $column_name . "'" . ', document.getElementById(' . "'filter-" . $column_name . "'" . ').value);">';
+                $canvas .= '<select class="filter" id="filter-' . $column_name . '" name="filter-' . $column_name . '" onchange="JaxonInteractives.dashboard_set_filter(' . "'" . $column_name . "'" . ', document.getElementById(' . "'filter-" . $column_name . "'" . ').value);">';
                 $options_arr = $this->db->get_rows_by_column_value($this->config->user['DBTABLE_TENANTS'], 'shortname', null, null, 'shortname', 'ASC');
 
                 if($filter_value == 'null') $selected = 'selected'; else $selected = '';
-                print '<option ' . $selected . ' value="">&nbsp;</option>';
+                $canvas .= '<option ' . $selected . ' value="">&nbsp;</option>';
 
                 foreach($options_arr as $option)
                 {
                     if($filter_value == $option['id'])  $selected = 'selected';     else    $selected = '';
-                    print '<option ' . $selected . ' value="' . $option['id'] . '">' . $option['shortname'] . '</option>';
+                    $canvas .= '<option ' . $selected . ' value="' . $option['id'] . '">' . $option['shortname'] . '</option>';
                 }
-                print "</select>";
+                $canvas .= "</select>";
                 break;
 
             case 'type':
-                print '<select class="filter" id="filter-' . $column_name . '" name="filter-' . $column_name . '" onchange="JaxonInteractives.dashboard_set_filter(' . "'" . $column_name . "'" . ', document.getElementById(' . "'filter-" . $column_name . "'" . ').value);">';
+                $canvas .= '<select class="filter" id="filter-' . $column_name . '" name="filter-' . $column_name . '" onchange="JaxonInteractives.dashboard_set_filter(' . "'" . $column_name . "'" . ', document.getElementById(' . "'filter-" . $column_name . "'" . ').value);">';
                 $options_arr = ['individual' => 'Privatperson', 'company' => 'Unternehmen', 'agriculture' => 'Landwirtschaft'];
 
                 if($filter_value == 'null') $selected = 'selected'; else $selected = '';
-                print '<option ' . $selected . ' value="">&nbsp;</option>';
+                $canvas .= '<option ' . $selected . ' value="">&nbsp;</option>';
 
                 foreach($options_arr as $key => $value)
                 {
                     if($filter_value == $key)  $selected = 'selected';     else    $selected = '';
-                    print '<option ' . $selected . ' value="' . $key . '">' . $value . '</option>';
+                    $canvas .= '<option ' . $selected . ' value="' . $key . '">' . $value . '</option>';
                 }
-                print "</select>";
+                $canvas .= "</select>";
                 break;
 
             case 'state':
-                print '<select class="filter" id="filter-' . $column_name . '" name="filter-' . $column_name . '" onchange="JaxonInteractives.dashboard_set_filter(' . "'" . $column_name . "'" . ', document.getElementById(' . "'filter-" . $column_name . "'" . ').value);">';
+                $canvas .= '<select class="filter" id="filter-' . $column_name . '" name="filter-' . $column_name . '" onchange="JaxonInteractives.dashboard_set_filter(' . "'" . $column_name . "'" . ', document.getElementById(' . "'filter-" . $column_name . "'" . ').value);">';
                 $options_arr = ['new' => 'Neu', 'onboarding' => "In Bearbeitung", 'active' => "Aktiv", 'suspended' => "Gesperrt", 'deactivated' => "Deaktiviert", 'refused' => "Abgelehnt"];
 
                 if($filter_value == 'null') $selected = 'selected'; else $selected = '';
-                print '<option ' . $selected . ' value="">&nbsp;</option>';
+                $canvas .= '<option ' . $selected . ' value="">&nbsp;</option>';
 
                 foreach($options_arr as $key => $value)
                 {
                     if($filter_value == $key)  $selected = 'selected';     else    $selected = '';
-                    print '<option ' . $selected . ' value="' . $key . '">' . $value . '</option>';
+                    $canvas .= '<option ' . $selected . ' value="' . $key . '">' . $value . '</option>';
                 }
-                print "</select>";
+                $canvas .= "</select>";
                 break;
 
             case 'meter_state':
-                print '<select class="filter" id="filter-' . $column_name . '" name="filter-' . $column_name . '" onchange="JaxonInteractives.dashboard_set_filter(' . "'" . $column_name . "'" . ', document.getElementById(' . "'filter-" . $column_name . "'" . ').value);">';
+                $canvas .= '<select class="filter" id="filter-' . $column_name . '" name="filter-' . $column_name . '" onchange="JaxonInteractives.dashboard_set_filter(' . "'" . $column_name . "'" . ', document.getElementById(' . "'filter-" . $column_name . "'" . ').value);">';
                 $options_arr = ['new' => 'Neu', 'pending' => "In Bearbeitung", 'approved' => "Aktiv", 'suspended' => "Gesperrt", 'inactive' => "Deaktiviert", 'refused' => "Abgelehnt"];
 
                 if($filter_value == 'null') $selected = 'selected'; else $selected = '';
-                print '<option ' . $selected . ' value="">&nbsp;</option>';
+                $canvas .= '<option ' . $selected . ' value="">&nbsp;</option>';
 
                 foreach($options_arr as $key => $value)
                 {
                     if($filter_value == $key)  $selected = 'selected';     else    $selected = '';
-                    print '<option ' . $selected . ' value="' . $key . '">' . $value . '</option>';
+                    $canvas .= '<option ' . $selected . ' value="' . $key . '">' . $value . '</option>';
                 }
-                print "</select>";
+                $canvas .= "</select>";
                 break;
         }
+
+        return $canvas;
     }
     function lookup_computed_column($compute_type, $registration_arr)
     {

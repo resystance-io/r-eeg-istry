@@ -2320,6 +2320,34 @@ class Interactives
         return $response;
     }
 
+    public function dashboard_modal_choose_exporttype()
+    {
+        $response = jaxon()->newResponse();
+
+        $footer_actions = "
+                    <button class=\"search bg-yellow-gradient\" style=\"border: white 1px solid\" onclick=\"document.getElementById('listselectors').submit();\"><i class=\"fa fa-check-square\"></i> &nbsp;Alle ausgew&auml;hlten</button>
+                    <button class=\"search bg-green-gradient\" style=\"border: white 1px solid\" onclick=\"window.location.href='/?manage&export=csv&full';\"><i class=\"fa fa-list-alt\"></i> &nbsp;Alle gefundenen</button>
+                    <button class=\"search bg-red-gradient\" style=\"border: white 1px solid\" onclick=\"JaxonInteractives.dashboard_modal_close_exporttype();\"><i class=\"fa fa-window-close\"></i> &nbsp;Abbrechen</button>
+                ";
+
+        $response->assign('modalheadline', 'innerHTML', "&nbsp;Exportieren");
+        $response->assign('modalbody', 'innerHTML', "In welchem Umfang sollen die dargestellten Daten exportiert werden?<br />");
+        $response->assign('modal-header', 'style.color', 'green');
+
+        $response->assign('modalfooter', 'innerHTML', $footer_actions);
+        $response->assign('modal', 'style.display', 'flex');
+
+        return $response;
+    }
+
+    public function dashboard_modal_close_exporttype()
+    {
+        $response = jaxon()->newResponse();
+        $response->assign('modal', 'style.display', 'none');
+
+        return $response;
+    }
+
     public function dashboard_inline_update_type_cancel($div_id, $recordid)
     {
         $dbvalue = $this->db->get_column_by_column_value($this->config->user['DBTABLE_REGISTRATIONS'], 'type', 'id', $recordid);
