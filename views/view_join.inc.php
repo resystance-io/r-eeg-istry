@@ -135,6 +135,22 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
                     <button type="button" class="mainbtn" style="" id="btn_enroll_company" onClick="location.href=' . "'?join=company&step=0'" . '"><img src="images/noun_company.png" alt="Join as Company" id="join_eeg" style="height: 60px; margin-left: 30px;"><br />Als Unternehmen beitreten</button>
                     <button type="button" class="mainbtn" style="" id="btn_enroll_individual" onClick="location.href=' . "'?join=individual&step=0'" . '"><img src="images/noun_individual.png" alt="Join as Individual" id="lookup_eeg" style="height: 60px; margin-left: 30px;"><br />Als Privatperson beitreten</button>
                     <button type="button" class="mainbtn" style="" id="btn_enroll_agriculture" onClick="location.href=' . "'?join=agriculture&step=0'" . '"><img src="images/noun_agriculture.png" alt="Join as Agriculture" id="lookup_eeg" style="height: 60px; margin-left: 30px;"><br />Als Landwirtschaft beitreten</button>
+
+                    <div style="max-width: 1250px; margin: 20px 0 20px 10px; padding: 15px; background: #44a1ff; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); border-radius: 8px;">
+                        <h3>&Uuml;bersicht Beitrittsoptionen</h3>
+                        <div button_container>
+                            <p>
+                                <b>Als Unternehmen beitreten</b> <br />Ich trete als umsatzsteuerpflichtiges Unternehmen bei und betreibe meine Erzeugungsanlage im unternehmerischen Sinn. <br />Meine UID-Nummer wird im Zuge der Anmeldung abgefragt und ist zwingend einzugeben. Die Umsatzsteuer meiner Einspeisegutschrift wird im Sinne der Reverse-Charge-Regelung von der EEG an das Finanzamt abgef&uuml;hrt.
+                            </p>
+                            <p>
+                                <b>Als Privatperson beitreten</b> <br />Ich trete als Privatperson bei und betreibe meine Erzeugungsanlage &uuml;berwiegend privat oder als Kleinunternehmen und unterliege <strong>nicht</strong> der Umsatzsteuerpflicht.
+                            </p>
+                            <p>
+                                <b>Als Landwirtschaft beitreten</b> <br />Ich trete mit meiner Landwirtschaft bei und betreibe meine Erzeugungsanlage im Rahmen einer pauschalierten Land- oder Forstwirtschaft und unterliege der Umsatzsteuerpflicht im Sinne des § 22 UstG. <br />
+                                <b>Achtung:</b> Diese Option gilt nur, wenn der von der Erzeugungsanlage produzierte Strom &uuml;berwiegend in der eigenen, namensgleich betriebenen Landwirtschaft verbraucht und nur ein untergeordneter Anteil ins Netz eingespeist bzw. der EEG zur Verfügung gestellt wird.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             ';
         }
@@ -425,8 +441,8 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
 
         print "<h3>Allgemein</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
-        print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Umsatzsteuer ID (falls vorhanden)<br />';
-        print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Firmenbuchnummer oder ZVR Zahl (falls vorhanden)<br />';
+        print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Umsatzsteuer-ID (falls vorhanden)<br />';
+        print '<i class="fa fa-keyboard"></i>&nbsp;&nbsp;&nbsp;&nbsp;Firmenbuchnummer oder ZVR-Zahl (falls vorhanden)<br />';
         print '<i class="fa fa-envelope"></i>&nbsp;&nbsp;&nbsp;&nbsp;Aktive E-Mail-Adresse f&uuml;r die Registrierung (und zum Erhalt der Rechnungen)<br />';
         print '<i class="fa fa-piggy-bank"></i>&nbsp;&nbsp;&nbsp;Bankinformationen (IBAN und Name des Kontoinhabers)<br />';
         print '<i class="fa fa-clipboard-check"></i>&nbsp;&nbsp;&nbsp;&nbsp;Befugnis, eine SEPA-Lastschrift zu akzeptieren<br />';
@@ -462,7 +478,7 @@ class VIEW_JOIN extends VIEW_JOIN_BASE
         print "<br />";
         print "<br />";
 
-        print "<h3>Alles bereit? Dann geht's auch schon los...</h3>";
+        print "<h3>Alles bereit? Dann gehts auch schon los...</h3>";
     }
 
     private function view_render_company()
@@ -823,11 +839,11 @@ sorger!)<br />';
         print "<h3>Netzbetreibervollmacht</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
         $this->view_render_part_annotated_checkbox(
-            "Ich erteile der EEG " . $this->tenant_info['shortname'] . " f&uuml;r die Dauer der Mitgliedschaft zeitlich unbegrenzt die Vollmacht,<br />
+            "Ich erteile der " . $this->tenant_info['shortname'] . " f&uuml;r die Dauer der Mitgliedschaft zeitlich unbegrenzt die Vollmacht,<br />
                         in meinem Namen s&auml;mtliche Schritte und Abstimmungen mit dem zust&auml;ndigen Netzbetreiber<br />
                         (Netz O&Ouml;) durchzuf&uuml;hren, die zur vollst&auml;ndigen Aktivierung und Deaktivierung der angef&uuml;hrten<br />
-                        Z&auml;hlpunkte in der EEG " . $this->tenant_info['shortname'] . " notwendig sind.<br />
-                        Dies betrifft insbesondere auch die Registrierung und Nutzung des E-Service-Portals der Netz O&Ouml;.",
+                        Z&auml;hlpunkte in der " . $this->tenant_info['shortname'] . " notwendig sind.<br />
+                        Dies betrifft insbesondere auch die Registrierung und Nutzung des eService-Portals der Netz O&Ouml;.",
             "network_consent", "generic_information", "required");
 
         $this->view_render_part_captioned_inputfield("Kundennummer beim zust&auml;ndigen Netzbetreiber", "network_customerid", "generic_information", null, "max-width:500px;padding-left:60px;");
@@ -845,7 +861,7 @@ sorger!)<br />';
                     <br />
                     <header id="header">
                         <h2>Bereitzustellende Unterlagen</h2>
-                        <p>Bitte stelle uns folgende Unterlage(n) bereit damit wir Deine Teilnahme an unserer EEG besser kalkulieren k&ouml;nnen:</p>
+                        <p>Bitte stelle uns folgende Unterlage(n) bereit, damit wir Deine Teilnahme an unserer EEG besser kalkulieren k&ouml;nnen:</p>
                     </header>
         ';
 
@@ -901,7 +917,7 @@ sorger!)<br />';
             print "</div><br />";
         }
 
-        print "<h3>Foto eines (oder mehrerer) Z&auml;hler (bitte beachte, dass die INV.Nr. gut sichbar sind)</h3>";
+        print "<h3>Foto eines (oder mehrerer) Z&auml;hler - bitte beachte, dass die INV.Nr. gut sichtbar ist.</h3>";
         print "<div class=\"form-container\" style=\"min-width:960px; width:960px;\">";
         print '
             <script>
