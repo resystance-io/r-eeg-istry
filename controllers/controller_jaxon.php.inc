@@ -1224,7 +1224,15 @@ class Interactives
                     $mail_template = str_replace('{%REEGISTRY_WEBSITE%}', $tenant_info['reegistry_website'], $mail_template);
                     $mail_template = str_replace('{%CONTACT_WEBSITE%}', $tenant_info['contact_website'], $mail_template);
                     $mail_template = str_replace('{%CONTACT_EMAIL%}', $tenant_info['contact_email'], $mail_template);
-                    $mail_template = str_replace('{%RESET_LINK%}', $tenant_info['reegistry_website'] . '?lookup=recover&email=' . $email . '&code=' . $random_string . '&tenant=' . $tenant_info['referrer'], $mail_template);
+
+                    if(substr_count($tenant_info['reegistry_website'], '?') > 0)
+                    {
+                        $mail_template = str_replace('{%RESET_LINK%}', $tenant_info['reegistry_website'] . '&lookup=recover&email=' . $email . '&code=' . $random_string . '&tenant=' . $tenant_info['referrer'], $mail_template);
+                    }
+                    else
+                    {
+                        $mail_template = str_replace('{%RESET_LINK%}', $tenant_info['reegistry_website'] . '?lookup=recover&email=' . $email . '&code=' . $random_string . '&tenant=' . $tenant_info['referrer'], $mail_template);
+                    }
 
                     $this->view->object_broker->instance['email']->subject = $tenant_info['shortname'] . " - Passwort vergessen";
                     $this->view->object_broker->instance['email']->AddRecipient($email);
